@@ -32,7 +32,7 @@ for (i in colnames(data)[-(1:2)]){
 }
 
 
-# Gr?fico de nuestra serie de inter?s.
+# Grafico de nuestra serie de interes.
 
 autoplot(sentsmooth, ts.colour = colores[1]) + 
   ggtitle("Evoluci?n sentimental de Alberto Fern?ndez") + 
@@ -43,31 +43,109 @@ autoplot(sentsmooth, ts.colour = colores[1]) +
         plot.title = element_text(hjust = 0.5))
 
 
-# Unit root tests. Esto es solo con Dickey-Fuller al 1%.
+#Creamos una función que devuelve el estadístico con su significatividad 
+
+stars <- function(estadistico, criticalvector){
+  if (estadistico < criticalvector[1]){
+    return(paste(round(estadistico,2), "***", sep = "")) 
+  }else{
+    if (estadistico < criticalvector[2]){
+      return(paste(round(estadistico,2), "**", sep = ""))
+    }else{
+      if (estadistico < criticalvector[3]){
+        return(paste(round(estadistico,2), "*", sep = ""))
+      }else{
+        return(paste(round(estadistico,2), "", sep = ""))
+      }
+    }
+  }
+}
+
+
+stars2 <- function(estadistico, criticalvector){
+  if (estadistico > criticalvector[1]){
+    return(paste(round(estadistico,2), "***", sep = "")) 
+  }else{
+    if (estadistico > criticalvector[2]){
+      return(paste(round(estadistico,2), "**", sep = ""))
+    }else{
+      if (estadistico > criticalvector[3]){
+        return(paste(round(estadistico,2), "*", sep = ""))
+      }else{
+        return(paste(round(estadistico,2), "", sep = ""))
+      }
+    }
+  }
+}
+
 
 library(urca)
-results <- matrix(nrow = 23,ncol = 7, NA)
+library(stargazer)
+
+results <- matrix(nrow = 23,ncol = 4, NA)
 r = 1
 for (i in colnames(data)[-(1:2)]){
   results[r,1] <- i
   series <- xts(data[[i]], order.by=as.Date(rownames(data),"%Y-%m-%d"))
   series <- na.omit(series)
   test <- ur.df(series, type = c("none"))
-  results[r,2] <- test@cval[1]
-  results[r,3] <- round(test@teststat[1],2)
+  results[r,2] <- stars(test@teststat[1], test@cval[1,])
   test <- ur.df(series, type = c("trend"))
-  results[r,4] <- test@cval[1]
-  results[r,5] <- round(test@teststat[1],2)
+  results[r,3] <- stars(test@teststat[1], test@cval[1,])
   test <- ur.df(series, type = c("drift"))
-  results[r,6] <- test@cval[1]
-  results[r,7] <- round(test@teststat[1],2)
+  results[r,4] <- stars(test@teststat[1], test@cval[1,])
   r = r+1
 }
-colnames(results) <- c("Variable", "None", "Stat", "Trend", "Stat", "Drift", "Stat")
+colnames(results) <- c("Variable", "None","Trend","Drift")
 
-# La ?nica variable que no es estacionaria es la de las reservas del BCRA.
+test.est[1,3] <- stars(test.M1.1@teststat, test.M1.1@cval)
 
-#Eri confia
+#Descargamos la tabla 
 
+stargazer(results , type = "latex", dep.var.labels.include = FALSE,
+          notes = "Nota: *** significativo al 1%, ** significativo al 5%, * significativo al 10%")
+
+results1 <- matrix(nrow = 23,ncol = 3, NA)
+r = 1
+for (i in colnames(data)[-(1:2)]){
+  results1[r,1] <- i
+  series <- xts(data[[i]], order.by=as.Date(rownames(data),"%Y-%m-%d"))
+  series <- na.omit(series)
+  test <- ur.pp(series, type = c("Z-tau"), model=c("constant"), lags=c("long"))
+  results1[r,2] <- stars(test@teststat[1], test@cval[1,])
+  test <- ur.pp(series, type = c("Z-tau"), model=c("trend"), lags=c("long"))
+  results1[r,3] <- stars(test@teststat[1], test@cval[1,])
+  r = r+1
+}
+colnames(results1) <- c("Variable", "Constant", "Trend")
+
+#Descargamos la tabla 
+
+stargazer(results1 , type = "latex", dep.var.labels.include = FALSE,
+          notes = "Nota: *** significativo al 1%, ** significativo al 5%, * significativo al 10%")
+
+results2 <- matrix(nrow = 23,ncol = 3, NA)
+r = 1
+for (i in colnames(data)[-(1:2)]){
+  results2[r,1] <- i
+  series <- xts(data[[i]], order.by=as.Date(rownames(data),"%Y-%m-%d"))
+  series <- na.omit(series)
+  test <- ur.kpss(series, type = c("mu"), lags=c("short"))
+  results2[r,2] <- stars2(test@teststat[1], test@cval[1,])
+  test <- ur.kpss(series, type = c("tau"), lags=c("short"))
+  results2[r,3] <- stars2(test@teststat[1], test@cval[1,])
+  r = r+1
+}
+colnames(results2) <- c("Variable", "Constant", "Trend")
+
+stargazer(results2 , type = "latex", dep.var.labels.include = FALSE,
+          notes = "Nota: *** significativo al 1%, ** significativo al 5%, * significativo al 10%")
+
+
+#Definimos la ventana in-sample y out-of-sample
+
+in.sample <- data[1:424,]
+
+out.of.sample <- data[425:483,]
 
 
