@@ -1,4 +1,4 @@
-## Importamos algunas de las librerías que vamos a usar.
+## Importamos algunas de las librer?as que vamos a usar.
 
 library(xts)
 library(ggplot2)
@@ -8,8 +8,8 @@ library(dplyr)
 
 ## Seteamos el directorio. Prueba.
 
-dir <- "G:\\Mi unidad\\UdeSA\\Pronósticos\\Final\\Data\\dep"
-setwd("C:/Users/Usuario/Desktop/2021/Pronósiticos")
+dir <- "G:\\Mi unidad\\UdeSA\\Pron?sticos\\Final\\Data\\dep"
+setwd("C:/Users/Usuario/Desktop/2021/Pron?siticos")
 dir <- ""
 
 setwd(dir)
@@ -32,10 +32,10 @@ for (i in colnames(data)[-(1:2)]){
 }
 
 
-# Gráfico de nuestra serie de interés.
+# Gr?fico de nuestra serie de inter?s.
 
 autoplot(sentsmooth, ts.colour = colores[1]) + 
-  ggtitle("Evolución sentimental de Alberto Fernández") + 
+  ggtitle("Evoluci?n sentimental de Alberto Fern?ndez") + 
   xlab("Tiempo") + 
   ylab("Sentimiento") + 
   theme_minimal() + 
@@ -65,8 +65,9 @@ for (i in colnames(data)[-(1:2)]){
 }
 colnames(results) <- c("Variable", "None", "Stat", "Trend", "Stat", "Drift", "Stat")
 
-# La única variable que no es estacionaria es la de las reservas del BCRA.
+# La ?nica variable que no es estacionaria es la de las reservas del BCRA.
 
+#Eri confia
 
 
 
