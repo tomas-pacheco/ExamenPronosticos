@@ -1,5 +1,3 @@
-# Hago un cambio
-
 ## Importamos algunas de las librerías que vamos a usar.
 
 library(xts)
