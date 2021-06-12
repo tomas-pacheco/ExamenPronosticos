@@ -283,10 +283,27 @@ adl.1 <- dynlm(adl, data = adl.dl$data)
 
 identical(adl.dl$coefficients, adl.1$coefficients)
 
+# Test
+
+act4 <- Box.test(adl.1$residuals, lag = 13, type = c("Ljung-Box"))
+test4 <- round(act4$p.value, 4)
+
+
+
 
 model <- lm(rnorm(100,0,1) ~ rnorm(100,20,3))
 
-stargazer(arima.to.table, arimax.to.table, adl.1, type = "latex")
+stargazer(arima.to.table, arimax.to.table, model, adl.1,
+          align = TRUE, 
+          dep.var.labels = c("SentIndex", "SentIndex", "SentIndex", "SentIndex"),
+          omit = c("mes01", "mes02", "mes03", "mes04",
+                   "mes05", "mes06", "mes07", "mes08",
+                   "mes09", "mes10", "mes11"),
+          keep.stat = c("n", "ll", "rsq"),
+          no.space = TRUE,
+          type = "latex")
+
+
 
 
 
@@ -354,6 +371,7 @@ var.dl <- VAR(in.sample.d, p = 1, type = "both", season = 4)
 
 serial.test(var.dl) 
 
+
 # Rechazamos la hipótesis nula de que los residuos están
 # incorrelacionados. Por lo tanto, no podemos validar el modelo. 
 
@@ -376,15 +394,44 @@ jct.t <-ca.jo(in.sample[,3:25],type = "eigen", ecdet = "trend",
 
 summary(jct.t)
 
+# Ahora, un FAVAR.
+
+PCA1 <- prcomp(in.sample[,4:25], scale =TRUE) 
+
+# Veremos los autovalores para evaluar qué cantidad de componentes utilizaremos
+
+PCA1$sdev^2
+
+# Como hay 6 componentes cuyo autovalor es superior a 1, los usaremos.
+
+PC <- scale(in.sample[,4:25])%*%PCA1$rotation
+
+# Ahora estimamos el modelo FAVAR.
+
+favar.data <- cbind(in.sample[,3], PC[,1:6])
+
+VARselect(favar.data, lag.max = 10, type = c("both"), season = 4)
+
+favar<- VAR(favar.data, p= 2, type = "both")
+summary(favar)
+
+# Correlacion
+
+serial.test(favar) 
+
+favar$varresult$X
 
 
-
-
-
-
-
-
-
+stargazer(var.dl$varresult$sentsmooth, favar$varresult$X,
+          align = TRUE, 
+          dep.var.labels = c("SentIndex", "SentIndex"),
+          omit = c("mes01", "mes02", "mes03", "mes04",
+                   "mes05", "mes06", "mes07", "mes08",
+                   "mes09", "mes10", "mes11", "sd1", 
+                   "sd2", "sd3"),
+          keep.stat = c("n", "ll", "rsq"),
+          no.space = TRUE,
+          type = "latex")
 
 
 
