@@ -8,7 +8,7 @@ library(dplyr)
 
 ## Seteamos el directorio. Prueba.
 
-dir <- "G:\\Mi unidad\\UdeSA\\Pron?sticos\\Final\\Data\\dep"
+dir <- "G:\\Mi unidad\\UdeSA\\Pronósticos\\Final\\Data\\dep"
 setwd("C:/Users/Usuario/Desktop/2021/Pron?siticos")
 dir <- ""
 
@@ -140,6 +140,8 @@ colnames(results1) <- c("Variable", "Constant", "Trend")
 
 # Descargamos la tabla 
 
+library(stargazer)
+
 stargazer(results1 , type = "latex", dep.var.labels.include = FALSE,
           notes = "Nota: *** significativo al 1%, ** significativo al 5%, * significativo al 10%")
 
@@ -191,8 +193,6 @@ test <- round(act1$p.value, 2)
 # podemos decir que los residuos no están correlacionados.
 # Modelo valido, pval = 0.1405
 
-stargazer(arima.to.table, type = "latex")
-
 # Estimamos un modelo ETS
 
 
@@ -232,7 +232,6 @@ test3 <- round(act3$p.value, 2)
 
 # PREGUNTA M: ¿Tenemos que diferenciar las reservas? 
 
-stargazer(arimax.to.table, type = "latex")
 
 
 
@@ -273,16 +272,23 @@ adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + t
                  casos.arg.rel|
                  mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
                  mes07 + mes08 + mes09 +  mes10 + mes11, 
-               data = data.in.sample.dum, order = c(4, 0, 0, 3, 2, 0, 3, 0, 0, 0, 4, 4, 3, 0, 4, 1, 0, 0, 4, 3, 0, 2, 0))
+               data = data.in.sample.dum, order = as.vector(order.adl.dl$best_order))
 
 # Estimamos el ADL pero con la función dynlm
 
-adl<-adl.dl$full_formula
+adl <- adl.dl$full_formula
 adl.1 <- dynlm(adl, data = adl.dl$data)
 
 # Comprobamos que tiene los mismos coeficientes
 
 identical(adl.dl$coefficients, adl.1$coefficients)
+
+
+model <- lm(rnorm(100,0,1) ~ rnorm(100,20,3))
+
+stargazer(arima.to.table, arimax.to.table, adl.1, type = "latex")
+
+
 
 # Estimamos un modelo MCE
 
@@ -313,6 +319,12 @@ summary(egcm(in.sample[,3], in.sample[,8]))
 summary(egcm(in.sample[,3], in.sample[,9]))
 
 # COMPLETAR !!!
+
+
+stargazer(arima.to.table, )
+
+
+
 
 
 
