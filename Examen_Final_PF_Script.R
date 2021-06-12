@@ -6,7 +6,7 @@ library(devtools)
 library(ggfortify)
 library(dplyr)
 
-## Seteamos el directorio.
+## Seteamos el directorio. Prueba.
 
 dir <- "G:\\Mi unidad\\UdeSA\\Pronósticos\\Final\\Data\\dep"
 setwd("C:/Users/Usuario/Desktop/2021/Pronósiticos")
