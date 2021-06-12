@@ -9,7 +9,7 @@ library(dplyr)
 ## Seteamos el directorio.
 
 dir <- "G:\\Mi unidad\\UdeSA\\Pronósticos\\Final\\Data\\dep"
-dir <- ""
+setwd("C:/Users/Usuario/Desktop/2021/Pronósiticos")
 dir <- ""
 
 setwd(dir)
