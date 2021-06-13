@@ -10,13 +10,12 @@ library(dplyr)
 
 dir <- "G:\\Mi unidad\\UdeSA\\Pronósticos\\Final\\Data\\dep"
 dir <- "C:\\Users\\Abi\\Downloads"
-dir <- ""
 
 setwd(dir)
 
 # Definimos la paleta de colores.
 
-colores <- c("#00ABC5")
+colores <- c("#00ABC5", "#f7941c")
 
 # Abrimos la base de datos.
 
@@ -478,4 +477,17 @@ stargazer(var.dl$varresult$sentsmooth, favar$varresult$X,
           keep.stat = c("n", "ll", "rsq"),
           no.space = TRUE,
           type = "latex")
+
+
+
+
+
+
+
+
+
+
+
+
+
 
