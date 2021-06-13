@@ -25,6 +25,8 @@ data <- data[,-2]
 data <- na.omit(data)
 rownames(data) <- data$time
 
+options(scipen=999)
+
 # Construimos nuevas variables 
 
 #Las muertes en Argentina respecto de las muertes en el resto del mundo 
@@ -313,46 +315,38 @@ library(egcm)
 
 # Evaluamos cointegración con el test de E&G entre la variable sentsmooth y las demás variables consideradas 
 
-#Intento de la tabla (no encuentro cómo sacar el p valor del test de D-F después de aplicar el test de E&G)
+# Creamos una función para mostrar la significatividad de los p valores 
+
+stars3<-function(x){
+  if (x < 0.01){
+    return(paste(x,"***", sep = ""))
+  }else{
+    if (x < 0.05){
+    return(paste(x,"**", sep = ""))
+  }else{
+    if (x < 0.1){
+    return(paste(x,"*", sep = ""))  
+  }else{
+    return(paste(x,"", sep = ""))
+  }
+}
+}
+}
+
 
 Test.cointEG <- matrix(nrow = 24,ncol = 2, NA)
 r=1
 for (i in 1:24) {
-  Test.cointEG[,1] <- colnames(data)[-(1:3)]
-  j <- summary(egcm(in.sample[,3], in.sample[,3+i]))
-  Test.cointEG[i,2]<-j[["EGCM"]][[""]]
+  Test.cointEG[,1] <- colnames(data)[4:27]
+  j <- egcm(in.sample[,3], in.sample[,3+i], urtest = 'adf', i1test = 'adf')
+  Test.cointEG[i,2]<-stars3(round(j[["r.p"]],4))
 }
 
-# Estan cointegradas alberto y twfav 
+colnames(Test.cointEG) <- c("Variable", "p valor")
 
-summary(egcm(in.sample[,3], in.sample[,5]))
+# Descargamos la tabla de los test de E&G
 
-# Estan cointegradas alberto y twret
-
-reservas.est <- diff(in.sample[,6])
-
-summary(egcm(in.sample[-1,3], reservas.est))
-
-# Están cointegradas alberto y reservar del bcra 
-
-summary(egcm(in.sample[,3], in.sample[,7]))
-
-# No están cointegradas alberto y tasa de interes 
-
-summary(egcm(in.sample[,3], in.sample[,8]))
-
-# No están cointegradas alberto y base monetaria 
-
-summary(egcm(in.sample[,3], in.sample[,9]))
-
-# COMPLETAR !!!
-
-
-stargazer(arima.to.table, )
-
-
-
-
+stargazer(Test.cointEG, no.space = TRUE, type = "latex")
 
 
 # Estimamos un modelo VAR 
