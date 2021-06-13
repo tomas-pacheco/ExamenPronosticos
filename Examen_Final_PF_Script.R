@@ -27,6 +27,11 @@ rownames(data) <- data$time
 
 options(scipen=999)
 
+
+colnames(data)
+data <- data[,-c(12,13,14,18,19,20,21,22,23)]
+
+
 # Construimos nuevas variables 
 
 #Las muertes en Argentina respecto de las muertes en el resto del mundo 
@@ -41,9 +46,21 @@ data$muertes.arg.rel<-ifelse(is.na(data$muertes.arg.rel),0,data$muertes.arg.rel)
 
 data$casos.arg.rel <- data$casosarg/data$casosmundo
 
-# Ponemos cero donde hay NA
+#, Ponemos cero donde hay NA
 
 data$casos.arg.rel<-ifelse(is.na(data$casos.arg.rel),0,data$casos.arg.rel)
+
+
+
+
+# Borramos las variables 'nominales' del resto del mundo
+
+data <- data[, -c(16,15)]
+
+
+
+
+
 
 # Ahora generamos un objeto de series de tiempo para cada una de las variables.
 
@@ -118,8 +135,7 @@ for (i in colnames(data)[-(1:2)]){
 }
 colnames(results) <- c("Variable", "None","Trend","Drift")
 
-test.est[1,3] <- stars(test.M1.1@teststat, test.M1.1@cval)
- 
+
 # Descargamos la tabla 
 
 stargazer(results , type = "latex", dep.var.labels.include = FALSE,
@@ -219,10 +235,10 @@ test2 <- round(act2$p.value, 2)
 
 
 arimax.1 <- Arima(in.sample[,3], order = c(5,0,1),
-                     xreg = as.matrix(in.sample[,4:27]))
+                     xreg = as.matrix(in.sample[,4:length(in.sample)]))
 
 arimax.to.table <- arima(in.sample[,3],order = c(5,0,1),
-                         xreg = as.matrix(in.sample[,4:27]))
+                         xreg = as.matrix(in.sample[,4:length(in.sample)]))
 
 
 act3 <- Box.test(arimax.1$residuals, lag = 13, type = c("Ljung-Box"))
@@ -257,20 +273,17 @@ data.in.sample.dum <- data_1[1:425,]
 
 # Seleccionamos el orden del ADL 
 
-order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + casosarg + muertosarg + terapiaarg +
-                            edadarg + sexoarg + vacunasarg + maxtemp + mintemp + horassol +
-                            indiceuv + nubes + humedad + lluvia + velviento + muertes.arg.rel + 
-                            casos.arg.rel|
+order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + casosarg + muertosarg +
+                            vacunasarg + maxtemp + mintemp + muertes.arg.rel + casos.arg.rel |
                             mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
                             mes07 + mes08 + mes09 +  mes10 + mes11, 
                           data = data.in.sample.dum, max_order = 5)
 
 # Ahora estimamos el modelo:
 
-adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + casosarg + muertosarg + terapiaarg +
-                 edadarg + sexoarg + vacunasarg + maxtemp + mintemp + horassol +
-                 indiceuv + nubes + humedad + lluvia + velviento + muertes.arg.rel + 
-                 casos.arg.rel|
+adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
+                 casosarg + muertosarg + vacunasarg + maxtemp + 
+                 mintemp + muertes.arg.rel + casos.arg.rel|
                  mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
                  mes07 + mes08 + mes09 +  mes10 + mes11, 
                data = data.in.sample.dum, order = as.vector(order.adl.dl$best_order))
@@ -288,7 +301,6 @@ identical(adl.dl$coefficients, adl.1$coefficients)
 
 act4 <- Box.test(adl.1$residuals, lag = 13, type = c("Ljung-Box"))
 test4 <- round(act4$p.value, 4)
-
 
 
 
@@ -312,7 +324,6 @@ stargazer(arima.to.table, arimax.to.table, model, adl.1,
 
 library(egcm)
 
-
 # Evaluamos cointegración con el test de E&G entre la variable sentsmooth y las demás variables consideradas 
 
 # Creamos una función para mostrar la significatividad de los p valores 
@@ -334,10 +345,10 @@ stars3<-function(x){
 }
 
 
-Test.cointEG <- matrix(nrow = 24,ncol = 2, NA)
+Test.cointEG <- matrix(nrow = 13,ncol = 2, NA)
 r=1
-for (i in 1:24) {
-  Test.cointEG[,1] <- colnames(data)[4:27]
+for (i in 1:13) {
+  Test.cointEG[,1] <- colnames(data)[4:16]
   j <- egcm(in.sample[,3], in.sample[,3+i], urtest = 'adf', i1test = 'adf')
   Test.cointEG[i,2]<-stars3(round(j[["r.p"]],4))
 }
@@ -349,6 +360,28 @@ colnames(Test.cointEG) <- c("Variable", "p valor")
 stargazer(Test.cointEG, no.space = TRUE, type = "latex")
 
 
+# Modelo de corrección de errores.
+
+
+library(ecm)
+
+ecm(sentsmooth, twfav, lags = 1)
+
+summary(lm(sentsmooth ~ twfav))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Estimamos un modelo VAR 
 
 library(vars)
@@ -357,9 +390,11 @@ library(vars)
 
 reservas.est <- diff(in.sample[,6])
 
-in.sample.d <- cbind(in.sample[-1,-6],reservas.est)
+dolar.est <- diff(in.sample[,9])
 
-in.sample.d <- in.sample.d[,3:27]
+in.sample.d <- cbind(in.sample[-1,-c(6,9)],reservas.est, dolar.est)
+
+in.sample.d <- in.sample.d[,3:16]
 
 var.d <- VARselect(in.sample.d, type ="both", season = 12)
 
@@ -369,7 +404,7 @@ var.d$selection
 # El orden de rezagos óptimos, de acuerdo al criterio de FPE, es 1.
 # Estimamos:
 
-var.dl <- VAR(in.sample.d, p = 1, type = "both", season = 4)
+var.dl <- VAR(in.sample.d, p = 6, type = "both", season = 4)
 
 # Par
 
@@ -387,20 +422,28 @@ serial.test(var.dl)
 # El orden de rezagos óptimos, de acuerdo al criterio de FPE, es 1.
 # Estimamos:
 
-var.l <- VAR(in.sample[,3:27], p = 1,type = "both", season = 12)
+var.l <- VAR(in.sample[,3:16], p = 1, type = "both", season = 12)
 
 # Ahora, corremos el test de normalidad en los residuos:
 
 normality.test(var.l, multivariate.only = TRUE)
 
-jct.t <-ca.jo(in.sample[,3:25],type = "eigen", ecdet = "trend", 
+jct.t.e <-ca.jo(in.sample[,c(3,4,5)],type = "eigen", ecdet = "trend", 
               spec = "transitory", K=2)
 
-summary(jct.t)
+summary(jct.t.e)
+
+jct.t.t <-ca.jo(in.sample[,c(3,4,5)],type = "trace", ecdet = "trend", 
+              spec = "transitory", K=2)
+
+summary(jct.t.t)
+
+# Estan las 3 cointegradas. Resultados de ambos tests.
+
 
 # Ahora, un FAVAR.
 
-PCA1 <- prcomp(in.sample[,4:25], scale =TRUE) 
+PCA1 <- prcomp(in.sample[,4:16], scale =TRUE) 
 
 # Veremos los autovalores para evaluar qué cantidad de componentes utilizaremos
 
@@ -408,15 +451,15 @@ PCA1$sdev^2
 
 # Como hay 6 componentes cuyo autovalor es superior a 1, los usaremos.
 
-PC <- scale(in.sample[,4:25])%*%PCA1$rotation
+PC <- scale(in.sample[,4:16])%*%PCA1$rotation
 
 # Ahora estimamos el modelo FAVAR.
 
-favar.data <- cbind(in.sample[,3], PC[,1:6])
+favar.data <- cbind(in.sample[,3], PC[,1:4])
 
 VARselect(favar.data, lag.max = 10, type = c("both"), season = 4)
 
-favar<- VAR(favar.data, p= 2, type = "both")
+favar<- VAR(favar.data, p= 8, type = "both")
 summary(favar)
 
 # Correlacion
@@ -424,7 +467,6 @@ summary(favar)
 serial.test(favar) 
 
 favar$varresult$X
-
 
 stargazer(var.dl$varresult$sentsmooth, favar$varresult$X,
           align = TRUE, 
@@ -436,9 +478,4 @@ stargazer(var.dl$varresult$sentsmooth, favar$varresult$X,
           keep.stat = c("n", "ll", "rsq"),
           no.space = TRUE,
           type = "latex")
-
-
-
-
-
 
