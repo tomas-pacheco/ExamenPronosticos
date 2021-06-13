@@ -9,7 +9,7 @@ library(dplyr)
 ## Seteamos el directorio. Prueba.
 
 dir <- "G:\\Mi unidad\\UdeSA\\Pronósticos\\Final\\Data\\dep"
-setwd("C:/Users/Usuario/Desktop/2021/Pron?siticos")
+dir <- "C:\\Users\\Abi\\Downloads"
 dir <- ""
 
 setwd(dir)
@@ -34,7 +34,6 @@ data$muertes.arg.rel <- data$muertosarg/data$muertesmundo
 # Ponemos cero donde hay NA
 
 data$muertes.arg.rel<-ifelse(is.na(data$muertes.arg.rel),0,data$muertes.arg.rel)
-
 
 #Los casos en Argentina respecto de los casos en el resto del mundo 
 
@@ -311,7 +310,18 @@ stargazer(arima.to.table, arimax.to.table, model, adl.1,
 
 library(egcm)
 
-summary(egcm(in.sample[,3], in.sample[,4]))
+
+# Evaluamos cointegración con el test de E&G entre la variable sentsmooth y las demás variables consideradas 
+
+#Intento de la tabla (no encuentro cómo sacar el p valor del test de D-F después de aplicar el test de E&G)
+
+Test.cointEG <- matrix(nrow = 24,ncol = 2, NA)
+r=1
+for (i in 1:24) {
+  Test.cointEG[,1] <- colnames(data)[-(1:3)]
+  j <- summary(egcm(in.sample[,3], in.sample[,3+i]))
+  Test.cointEG[i,2]<-j[["EGCM"]][[""]]
+}
 
 # Estan cointegradas alberto y twfav 
 
