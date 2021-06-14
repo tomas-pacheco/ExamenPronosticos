@@ -395,13 +395,6 @@ for(i in 1:58){
 
 
 
-
-
-
-
-
-
-
 # Estimamos un modelo VAR 
 
 library(vars)
