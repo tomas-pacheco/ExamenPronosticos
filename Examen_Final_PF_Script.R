@@ -6,7 +6,7 @@ library(devtools)
 library(ggfortify)
 library(dplyr)
 
-## Seteamos el directorio. Prueba.
+## Seteamos el directorio. Prueba.``
 
 dir <- "G:\\Mi unidad\\UdeSA\\Pronósticos\\Final\\Data\\dep"
 dir <- "C:\\Users\\Abi\\Downloads"
@@ -19,7 +19,7 @@ colores <- c("#00ABC5", "#f7941c")
 
 # Abrimos la base de datos.
 
-data <- read.csv("Data_Final_PF.csv")
+data <- read.csv("Data_Final_PF2.csv")
 data <- data[,-2]
 data <- na.omit(data)
 rownames(data) <- data$time
