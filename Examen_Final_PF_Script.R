@@ -369,6 +369,27 @@ ecm(sentsmooth, twfav, lags = 1)
 summary(lm(sentsmooth ~ twfav))
 
 
+## PRONOSTICOS 
+
+#Esquema fijo 
+
+# h=1 
+
+data1<-ts(data, frequency = 365, start = c(2019,12))
+
+pr.f.h1 <- ts(matrix(0, 58, 4), frequency = 12, start=c(2018,12))
+colnames(pr.f.h1) <- c("ARIMA", "ARIMAX", "ADL", "ETS")
+h<-1
+for(i in 1:58){
+  temp<-window(data1[,3], start = 2019.030, end = 2020.195 + (i-1)/365)
+  # ARIMA 
+  f1 <- Arima(temp, model=arima.1)
+  forecast <- forecast(f1,h = h)
+  pr.f.h1[i,1] <- forecast$mean[h]
+  
+  
+}
+  
 
 
 
