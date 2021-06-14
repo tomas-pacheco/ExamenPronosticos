@@ -54,7 +54,7 @@ data$casos.arg.rel<-ifelse(is.na(data$casos.arg.rel),0,data$casos.arg.rel)
 
 # Borramos las variables 'nominales' del resto del mundo
 
-data <- data[, -c(16,15)]
+data <- data[, -c(15,16)]
 
 
 
@@ -71,7 +71,7 @@ for (i in colnames(data)[-(1:2)]){
 # Grafico de nuestra serie de interes.
 
 autoplot(sentsmooth, ts.colour = colores[1]) + 
-  ggtitle("Evolucion sentimental de Alberto Fernandez") + 
+  ggtitle("Evolución sentimental de Alberto Fernández") + 
   xlab("Tiempo") + 
   ylab("Sentimiento") + 
   theme_minimal() + 
@@ -118,7 +118,7 @@ stars2 <- function(estadistico, criticalvector){
 library(urca)
 library(stargazer)
 
-results <- matrix(nrow = 25,ncol = 4, NA)
+results <- matrix(nrow = 16,ncol = 4, NA)
 r = 1
 for (i in colnames(data)[-(1:2)]){
   results[r,1] <- i
