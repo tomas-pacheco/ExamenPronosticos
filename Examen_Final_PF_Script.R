@@ -273,12 +273,12 @@ for (i in num){
 
 data_1 <- subset(data, select = -c(mes))
 
-data.in.sample.dum <- data_1[1:425,]
+data.in.sample.dum <- data_1[1:425,-c(1,2,15,30)]
 
 # Seleccionamos el orden del ADL 
 
 order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + casosarg + muertosarg +
-                            vacunasarg + maxtemp + mintemp + muertes.arg.rel + casos.arg.rel |
+                            vacunasarg + maxtemp + mintemp + sent_trends + muertes.arg.rel + casos.arg.rel |
                             mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
                             mes07 + mes08 + mes09 +  mes10 + mes11, 
                           data = data.in.sample.dum, max_order = 5)
@@ -287,7 +287,7 @@ order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + 
 
 adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                  casosarg + muertosarg + vacunasarg + maxtemp + 
-                 mintemp + muertes.arg.rel + casos.arg.rel|
+                 mintemp + sent_trends + muertes.arg.rel + casos.arg.rel|
                  mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
                  mes07 + mes08 + mes09 +  mes10 + mes11, 
                data = data.in.sample.dum, order = as.vector(order.adl.dl$best_order))
@@ -374,31 +374,6 @@ ecm(sentsmooth, twfav, lags = 1)
 summary(lm(sentsmooth ~ twfav))
 
 
-## PRONOSTICOS 
-
-#Esquema fijo 
-
-# h=1 
-
-data1<-ts(data, frequency = 365, start = c(2019,12))
-
-pr.f.h1 <- ts(matrix(0, 58, 4), frequency = 12, start=c(2018,12))
-colnames(pr.f.h1) <- c("ARIMA", "ARIMAX", "ADL", "ETS")
-h<-1
-for(i in 1:58){
-  temp<-window(data1[,3], start = 2019.030, end = 2020.195 + (i-1)/365)
-  # ARIMA 
-  f1 <- Arima(temp, model=arima.1)
-  forecast <- forecast(f1,h = h)
-  pr.f.h1[i,1] <- forecast$mean[h]
-  
-  
-}
-
-plot.ts(pr.f.h1[,1])
-
-plot.ts(out.of.sample[,3])
-
 
 # Estimamos un modelo VAR 
 
@@ -410,11 +385,15 @@ reservas.est <- diff(in.sample[,6])
 
 dolar.est <- diff(in.sample[,9])
 
-in.sample.d <- cbind(in.sample[-1,-c(6,9)],reservas.est, dolar.est)
+sentiment.trend.est <-diff(in.sample[,15])
 
-in.sample.d <- in.sample.d[,3:16]
+in.sample.d <- cbind(in.sample[-1,-c(6,9,15)],reservas.est, dolar.est, sentiment.trend.est)
 
-var.d <- VARselect(in.sample.d, type ="both", season = 12)
+#[,3_17]
+
+in.sample.d <- in.sample.d[,3:17]
+
+var.d <- VARselect(in.sample.d, type ="const", season = 12)
 
 var.d$selection
 
@@ -422,7 +401,7 @@ var.d$selection
 # El orden de rezagos óptimos, de acuerdo al criterio de FPE, es 1.
 # Estimamos:
 
-var.dl <- VAR(in.sample.d, p = 6, type = "both", season = 4)
+var.dl <- VAR(in.sample.d, p = 6, type = "const", season = 12)
 
 # Par
 
@@ -500,12 +479,131 @@ stargazer(var.dl$varresult$sentsmooth, favar$varresult$X,
 
 
 
+## PRONOSTICOS 
+
+#Esquema fijo 
+
+# h=1 
+
+data1<-ts(data, frequency = 365, start = c(2019,12))
+
+pr.f.h1 <- ts(matrix(0, 58, 4), frequency = 365, start=c(2020,11))
+colnames(pr.f.h1) <- c("ARIMA", "ARIMAX", "ADL", "ETS")
+h<-1
+for(i in 1:58){
+  temp<-window(data1[,3], start = 2019.030, end = 2020.195 + (i-1)/365)
+  temp2 <-window(data1[,4:17], start = 2019.030, end = 2020.195 + (i-1)/365)
+  
+  # ARIMA 
+  f1 <- Arima(temp, model=arima.1)
+  forecast <- forecast(f1,h = h)
+  pr.f.h1[i,1] <- forecast$mean[h]
+  
+  #ARIMAX
+  f2 <- Arima(temp,model=arima.1,xreg=temp2)
+  forecast2 <- forecast(f2$fitted,h=h)
+  pr.f.h1[i,2] <- forecast2$mean[h]
+  
+}
+
+data_1.1<-ts(data_1,frequency = 365, start = c(2019,12))
+pr.adl <- ts(matrix(0, 58, 1), frequency = 365, start=c(2020,11))
+
+
+#ADL 
+
+#Seleccionamos el orden del ADL 
+
+data_dum.1<-data_1.1[1:425,-c(1,2,15,30)]
+
+order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
+                            casosarg + muertosarg + vacunasarg + maxtemp + 
+                            mintemp + sent_trends + muertes.arg.rel + casos.arg.rel|
+                            mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
+                            mes07 + mes08 + mes09 +  mes10 + mes11, 
+                          data = data_dum.1, max_order = 8)
+
+
+h<-1
+
+count <- 2
+for(i in 1:58){
+  temp2 <-window(data_1.1[,-c(1,2,15,30)],start = c(2019,12), end = 2020.195 + (i-1)/365)
+  colnames(temp2) <- c("sentsmooth","twfav", "twret", "reservasbcra", "tasaint", "basemon", "tcdolar", "casosarg",          
+                       "muertosarg", "vacunasarg", "maxtemp", "mintemp",
+                       "sent_trends", "muertes.arg.rel", "casos.arg.rel",     
+                       "mes01", "mes02", "mes03", "mes04", "mes05", "mes06",
+                       "mes07", "mes08", "mes09", "mes10", "mes11")
+          
+#el orden del ADL es el conseguido al aplicar el modelo al período in sample 
+  
+  adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
+                   casosarg + muertosarg + vacunasarg + maxtemp + 
+                   mintemp + sent_trends + muertes.arg.rel + casos.arg.rel|
+                   mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
+                   mes07 + mes08 + mes09 +  mes10 + mes11, 
+                 data = temp2, order = as.vector(order.adl.dl$best_order))
+  
+  # Estimamos el ADL pero con la función dynlm
+  
+  adl<-adl.dl$full_formula
+  adl.1 <- dynlm(adl, data = temp2)
+  forecast2 <- predict(adl.1$fitted.values,h=1)
+  pr.adl[i,1] <- forecast2$mean[h]
+  print(count) 
+  count = count + 1
+}
 
 
 
 
+#ADL opcion 2 (recursivo)
 
+h<-1
+count <- 2
+for(i in 1:58){
+  temp2 <-window(data_1.1[,-c(1,2,30)],start = c(2019,12), end = 2020.195 + (i-1)/365)
+  colnames(temp2) <- c("sentsmooth","twfav", "twret", "reservasbcra", "tasaint", "basemon", "tcdolar", "casosarg",          
+                       "muertosarg", "vacunasarg", "maxtemp", "mintemp", "sentiment_trend_orig",
+                       "sent_trends", "muertes.arg.rel", "casos.arg.rel",     
+                       "mes01", "mes02", "mes03", "mes04", "mes05", "mes06",
+                       "mes07", "mes08", "mes09", "mes10", "mes11")
+  
+  # Actualizamos el orden del ADL
+  
+  order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
+                              casosarg + muertosarg + vacunasarg + maxtemp + 
+                              mintemp + sent_trends + muertes.arg.rel + casos.arg.rel|
+                              mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
+                              mes07 + mes08 + mes09 +  mes10 + mes11, 
+                            data = temp2, max_order = 5)
+  
+  adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
+                   casosarg + muertosarg + vacunasarg + maxtemp + 
+                   mintemp + sent_trends + muertes.arg.rel + casos.arg.rel|
+                   mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
+                   mes07 + mes08 + mes09 +  mes10 + mes11, 
+                 data = temp2, order = as.vector(order.adl.dl$best_order))
+  
+  # Estimamos el ADL pero con la función dynlm
+  
+  adl<-adl.dl$full_formula
+  adl.1 <- dynlm(adl, data = adl.dl$data)
+  forecast2 <- predict(adl.1$fitted.values,h=1)
+  pr.adl[i,1] <- forecast2$mean[h]
+  print(count) 
+  count = count + 1
+}
 
+# Grafico 
+
+autoplot(ts.union(out.of.sample[,3], pr.f.h1[,1], pr.f.h1[,2], pr.adl), size = 1.3) + 
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ADL rec"),
+                     values = c("black", "sienna2", "palegreen3","#00AFBB")) +
+  ggtitle("Pronósticos fijos con h = 1") + 
+  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+  theme_minimal() +  
+  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
 
 
