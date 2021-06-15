@@ -73,6 +73,16 @@ autoplot(sentsmooth, ts.colour = colores[1]) +
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5))
 
+# Grafico mercado sintetico
+
+autoplot(sent_trends, ts.colour = colores[2]) + 
+  ggtitle("Evolución de nuestro 'synthetic market'") + 
+  xlab("Tiempo") + 
+  ylab("Sentimiento") + 
+  theme_minimal() + 
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5))
+
 
 # Creamos una función que devuelve el estadístico con su significatividad 
 
