@@ -56,11 +56,6 @@ data$casos.arg.rel<-ifelse(is.na(data$casos.arg.rel),0,data$casos.arg.rel)
 
 data <- data[, -c(15,16)]
 
-
-
-
-
-
 # Ahora generamos un objeto de series de tiempo para cada una de las variables.
 
 for (i in colnames(data)[-(1:2)]){
@@ -389,10 +384,10 @@ for(i in 1:58){
   
   
 }
-  
 
+plot.ts(pr.f.h1[,1])
 
-
+plot.ts(out.of.sample[,3])
 
 
 # Estimamos un modelo VAR 
