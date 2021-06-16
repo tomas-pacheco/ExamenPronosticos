@@ -491,8 +491,8 @@ pr.f.h1 <- ts(matrix(0, 58, 4), frequency = 365, start=c(2020,11))
 colnames(pr.f.h1) <- c("ARIMA", "ARIMAX", "ADL", "ETS")
 h<-1
 for(i in 1:58){
-  temp<-window(data1[,3], start = 2019.030, end = 2020.195 + (i-1)/365)
-  temp2 <-window(data1[,4:17], start = 2019.030, end = 2020.195 + (i-1)/365)
+  temp<-window(data1[,3], start = c(2019,12), end = 2020.195 + (i-1)/365)
+  temp2 <-window(data1[,4:17], start = c(2019,12), end = 2020.195 + (i-1)/365)
   
   # ARIMA 
   f1 <- Arima(temp, model=arima.1)
@@ -504,15 +504,18 @@ for(i in 1:58){
   forecast2 <- forecast(f2$fitted,h=h)
   pr.f.h1[i,2] <- forecast2$mean[h]
   
+  #ETS 
+  f1 <- ets(temp, model=ets.1, use.initial.values=TRUE)
+  pre <- forecast(f1, n.ahead=h)
+  pr.f.h1[i,3] <- pre$mean[h]
+  
 }
-
-data_1.1<-ts(data_1,frequency = 365, start = c(2019,12))
-pr.adl <- ts(matrix(0, 58, 1), frequency = 365, start=c(2020,11))
-
 
 #ADL 
 
 #Seleccionamos el orden del ADL 
+
+data_1.1<-ts(data_1,frequency = 365, start = c(2019,12))
 
 data_dum.1<-data_1.1[1:425,-c(1,2,15,30)]
 
@@ -549,7 +552,7 @@ for(i in 1:58){
   adl<-adl.dl$full_formula
   adl.1 <- dynlm(adl, data = temp2)
   forecast2 <- predict(adl.1$fitted.values,h=1)
-  pr.adl[i,1] <- forecast2$mean[h]
+  pr.f.h1[i,4] <- forecast2$mean[h]
   print(count) 
   count = count + 1
 }
@@ -557,7 +560,7 @@ for(i in 1:58){
 
 
 
-#ADL opcion 2 (recursivo)
+# ESQUEMA RECURSIVO  (recursivo)
 
 h<-1
 count <- 2
