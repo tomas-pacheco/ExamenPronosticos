@@ -495,7 +495,7 @@ stargazer(var.dl$varresult$sentsmooth, favar$varresult$X,
 
 # h=1 
 
-data1<-ts(data, frequency = 365, start = c(2019,12))
+data1 <- ts(data, frequency = 365, start = c(2019,12))
 
 pr.f.h1 <- ts(matrix(0, 58, 5), frequency = 365, start=c(2020,11))
 colnames(pr.f.h1) <- c("ARIMA", "ARIMAX", "ADL", "ETS","VAR")
@@ -582,11 +582,11 @@ dolar.est <- diff(data1[,9])
 data.diff<-cbind(data1[-1,-c(6,9,15)], reservas.est, dolar.est)
 
 h<-1
-for(i in 1:58){
-  temp<-window(data.diff, start = c(2019,12), end = 2020.195 + (i-1)/365)
-  f5 <- VAR(temp, lag.max = 1, type = "both", season = 12)
-  forecast1<-forecast(f5,h=h)
-  pr.f.h1[i,5] <- forecast1$forecast$data1..1...c.6..9..15...sentsmooth$mean[1]
+for(i in 2:59){ #ARREGLAR!!!!
+  temp<-window(data.diff, start = 2019.030, end = 2020.192 + (i-1)/365)
+  f5 <- VAR(temp, p = 1, type = "trend", season = 12)
+  forecast1<- forecast(f5, h= h)
+  pr.f.h1[i-1,5] <- forecast1$forecast$data1..1...c.6..9..15...sentsmooth$mean[1]
 }
 
 
