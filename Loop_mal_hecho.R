@@ -1,5 +1,7 @@
 # Event study. Loop trucho.
 
+# corcho vip.
+
 dir <- "G:\\Mi unidad\\UdeSA\\Pronósticos\\Final\\Data\\dep"
 #dir <- "C:\\Users\\Abi\\Downloads"
 
