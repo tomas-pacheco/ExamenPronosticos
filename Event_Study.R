@@ -1,7 +1,7 @@
 # Event study
 
 dir <- "G:\\Mi unidad\\UdeSA\\Pronósticos\\Final\\Data\\dep"
-#dir <- "C:\\Users\\Abi\\Downloads"
+dir <- "C:\\Users\\Abi\\Downloads"
 
 setwd(dir)
 
@@ -211,7 +211,7 @@ p2 <- ggplot(aes(x = sim_assumed, y = power ), data = power_vicentin) +
   geom_line(aes(x = sim_assumed , y = power), size = 1, col = colores[2]) + 
   theme_minimal() + 
   ylab("Potencia") + 
-  xlab("Retorno anormal hipotético") + 0
+  xlab("Retorno anormal hipotético") + 
   ggtitle(label = "Curva de potencia (AR del sentimiento del presidente)",
           subtitle = "(Intento de) Expropiación de Vicentin - 21/06/2020 ") + 
   theme(plot.title = element_text(hjust = 0.5),
