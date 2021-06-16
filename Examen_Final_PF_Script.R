@@ -29,7 +29,7 @@ setwd(dir)
 
 # Definimos la paleta de colores.
 
-colores <- c("#00ABC5", "#f7941c", "#edf71c", "#ff3c84")
+colores <- c("#00ABC5", "#f7941c", "#edf71c", "#ff3c84","#f75144")
 
 # Abrimos la base de datos.
 
@@ -593,13 +593,16 @@ for(i in 1:58){
 }
 
 
-
 # Grafico de los pronosticos con esquema fijo y h=1 
 
-autoplot(ts.union(out.of.sample[,3], pr.f.h1[,1], pr.f.h1[,2],pr.f.h1[,3],pr.f.h1[,4],pr.f.h1[,5]), size = 1.3) + 
-  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR"),
-                     values = c("black", "sienna2", "palegreen3","#00AFBB", colores[2], colores[1])) +
-  ggtitle("Pronósticos fijos con h = 1") + 
+
+colores <- c("#00ABC5","#cfb0b4" ,"#ff3c84","#f7941c", "#edf71c")
+
+
+autoplot(ts.union(out.of.sample[,3], pr.f.h1[,1], pr.f.h1[,2],pr.f.h1[,3],pr.f.h1[,4],pr.f.h1[,5]), size = 1) +
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR"), 
+                     values = c("#4b4b4b", colores[1], colores[2],colores[3], colores[4], colores[5]))+
+  ggtitle("Pronósticos fijos con h = 1") +
   xlab("Tiempo") + ylab("Sentimiento Alberto")+
   theme_minimal() +  
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
@@ -817,5 +820,32 @@ autoplot(ts.union(out.of.sample[,3], pr.rol.h1[,1], pr.rol.h1[,2],pr.rol.h1[,3],
   xlab("Tiempo") + ylab("Sentimiento Alberto")+
   theme_minimal() +  
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+
+
+# Realizamos bagging con los modelos arima, ets, var, adl con esquema fijo y h=1
+
+# ARIMA 
+
+library(quantmod)
+
+a<-bld.mbb.bootstrap(data[,3], 1000) %>% as.data.frame() %>% ts(start=c(2019,12), frequency=365)
+
+fcst.boot.arima <- purrr::map(as.list(a),
+                              function(x){forecast(auto.arima(x), h=1)[["mean"]]})
+
+fcst.boot.arima1 <- as.data.frame(fcst.boot.arima)
+
+fcst.bagged.arima2 <- rowMeans(fcst.boot.arima1)%>% ts(start=c(2011,1), frequency = 365) 
+
+
+
+
+
+
+
+
+
+
+
 
 
