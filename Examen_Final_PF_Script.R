@@ -9,11 +9,13 @@ library(dplyr)
 
 ######################
 
-#cosas para agregar 
+# cosas para agregar 
 
 #hacer los test de raiz unitaria para ver 
 #que las reservas y el dolar son 
 # I (1)
+
+# Ver si al estimar el VAR season tiene que ser igual a 4 o a 12 (4 por las estaciones)
 
 ######################
 
@@ -579,32 +581,64 @@ reservas.est <- diff(data1[,6])
 
 dolar.est <- diff(data1[,9])
 
-data.diff<-cbind(data1[-1,-c(6,9,15)], reservas.est, dolar.est)
+data.diff<-cbind(data1[-1,-c(1,2,6,9,15)], reservas.est, dolar.est)
 
 h<-1
-for(i in 2:59){ #ARREGLAR!!!!
-  temp<-window(data.diff, start = 2019.030, end = 2020.192 + (i-1)/365)
-  f5 <- VAR(temp, p = 1, type = "trend", season = 12)
-  forecast1<- forecast(f5, h= h)
-  pr.f.h1[i-1,5] <- forecast1$forecast$data1..1...c.6..9..15...sentsmooth$mean[1]
+
+for(i in 1:58){ 
+  temp2<-window(data.diff, start = c(2019,12), end = 2020.195 + (i-1)/365)
+  f5 <- VAR(temp2, p = 1, type = "trend", season = 4)
+  forecast1<- predict(f5, h= h)
+  pr.f.h1[i,5] <- forecast1$fcst$data1..1...c.1..2..6..9..15...sentsmooth[h]
 }
 
 
 
 # Grafico de los pronosticos con esquema fijo y h=1 
 
-autoplot(ts.union(out.of.sample[,3], pr.f.h1[,1], pr.f.h1[,2],pr.f.h1[,3],pr.f.h1[,4]), size = 1.3) + 
-  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL"),
-                     values = c("black", "sienna2", "palegreen3","#00AFBB", colores[2])) +
+autoplot(ts.union(out.of.sample[,3], pr.f.h1[,1], pr.f.h1[,2],pr.f.h1[,3],pr.f.h1[,4],pr.f.h1[,5]), size = 1.3) + 
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR"),
+                     values = c("black", "sienna2", "palegreen3","#00AFBB", colores[2], colores[1])) +
   ggtitle("Pronósticos fijos con h = 1") + 
   xlab("Tiempo") + ylab("Sentimiento Alberto")+
   theme_minimal() +  
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
 
-
 # ESQUEMA RECURSIVO 
 
+data1 <- ts(data, frequency = 365, start = c(2019,12))
+
+pr.rec.h1 <- ts(matrix(0, 58, 5), frequency = 365, start=c(2020,11))
+colnames(pr.rec.h1) <- c("ARIMA", "ARIMAX", "ADL", "ETS","VAR")
+h<-1
+for(i in 1:58){
+  temp<-window(data1[,3], start = c(2019,12), end = 2020.195 + (i-1)/365)
+  temp2 <-window(data1[,4:17], start = c(2019,12), end = 2020.195 + (i-1)/365)
+  
+  # ARIMA 
+  f1 <- auto.arima(temp)
+  forecast <- forecast(f1,h = h)
+  pr.rec.h1[i,1] <- forecast$mean[h]
+  
+  #ARIMAX
+  f2 <- Arima(temp,model=f1, newxreg=temp2)
+  forecast2 <- forecast(f2$fitted,h=h)
+  pr.rec.h1[i,2] <- forecast2$mean[h]
+  
+  #ETS 
+  f3 <- ets(temp)
+  pre <- forecast(f1, n.ahead=h)
+  pr.rec.h1[i,3] <- pre$mean[h]
+  
+}
+
+
+#ADL 
+
+data_1.1<-ts(data_1,frequency = 365, start = c(2019,12))
+
+data_dum.1<-data_1.1[1:425,-c(1,2,15,30)]
 
 h<-1
 count <- 2
@@ -637,10 +671,34 @@ for(i in 1:58){
   adl<-adl.dl$full_formula
   adl.1 <- dynlm(adl, data = adl.dl$data)
   forecast2 <- predict(adl.1$fitted.values,h=1)
-  pr.adl[i,1] <- forecast2$mean[h]
+  pr.rec.h1[i,4] <- forecast2$mean[h]
   print(count) 
   count = count + 1
 }
 
+
+# Realizamos los pronósticos con el VAR 
+
+# Construimos la serie diferenciando las variables que son I(1)
+
+reservas.est <- diff(data1[,6])
+
+dolar.est <- diff(data1[,9])
+
+data.diff<-cbind(data1[-1,-c(1,2,6,9,15)], reservas.est, dolar.est)
+
+library(forecast)
+
+h<-1
+
+for(i in 1:58){ 
+  temp2<-window(data.diff, start = c(2019,12), end = 2020.195 + (i-1)/365)
+  a<-VARselect(data.diff, lag.max = 13, type = "const")
+  b<-a$selection
+  c<-b[1]
+  f5 <- VAR(temp2, p = c, type = "trend", season = 4)
+  forecast1<- forecast(f5, h= h)
+  pr.rec.h1[i,5] <- forecast1$forecast$data1..1...c.1..2..6..9..15...sentsmooth$mean[h]
+}
 
 
