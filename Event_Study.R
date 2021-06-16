@@ -22,8 +22,8 @@ data <- na.omit(data)
 
 # Generamos los retornos, tanto de nuestra serie como la del 'mercado'.
 
-data$retpres <- log(data$sentsmooth/lag(data$sentsmooth, 1))
-data$retmarket <- log(data$sent_trends/lag(data$sent_trends, 1))
+data$retpres <- log(data$sentsmooth/lag(data$sentsmooth))
+data$retmarket <- log(data$sent_trends/lag(data$sent_trends))
 
 # Volvemos a borrar los missings.
 
@@ -45,7 +45,7 @@ data$ev_vicentin_time <- data$t - data$ev_vicentin
 
 # Tercer evento. Velatorio Maradona: 26 de noviembre de 2020.
 
-data$ev_maradona <- 303
+data$ev_maradona <- 304
 data$ev_maradona_time <- data$t - data$ev_maradona
 
 # Cuarto evento. Llegada del primer lota de vacunas al país. 
@@ -211,7 +211,7 @@ p2 <- ggplot(aes(x = sim_assumed, y = power ), data = power_vicentin) +
   geom_line(aes(x = sim_assumed , y = power), size = 1, col = colores[2]) + 
   theme_minimal() + 
   ylab("Potencia") + 
-  xlab("Retorno anormal hipotético") + 
+  xlab("Retorno anormal hipotético") + 0
   ggtitle(label = "Curva de potencia (AR del sentimiento del presidente)",
           subtitle = "(Intento de) Expropiación de Vicentin - 21/06/2020 ") + 
   theme(plot.title = element_text(hjust = 0.5),
