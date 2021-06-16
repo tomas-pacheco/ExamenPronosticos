@@ -6,6 +6,18 @@ library(devtools)
 library(ggfortify)
 library(dplyr)
 
+
+######################
+
+#cosas para agregar 
+
+#hacer los test de raiz unitaria para ver 
+#que las reservas y el dolar son 
+# I (1)
+
+######################
+
+
 ## Seteamos el directorio. Prueba.``
 
 dir <- "G:\\Mi unidad\\UdeSA\\Pronósticos\\Final\\Data\\dep"
@@ -15,7 +27,7 @@ setwd(dir)
 
 # Definimos la paleta de colores.
 
-colores <- c("#00ABC5", "#f7941c")
+colores <- c("#00ABC5", "#f7941c", "#edf71c", "#ff3c84")
 
 # Abrimos la base de datos.
 
@@ -254,8 +266,6 @@ test3 <- round(act3$p.value, 2)
 # PREGUNTA M: ¿Tenemos que diferenciar las reservas? 
 
 
-
-
 # Estimamos un modelo ADL 
 
 library(ARDL)
@@ -487,12 +497,12 @@ stargazer(var.dl$varresult$sentsmooth, favar$varresult$X,
 
 data1<-ts(data, frequency = 365, start = c(2019,12))
 
-pr.f.h1 <- ts(matrix(0, 58, 4), frequency = 365, start=c(2020,11))
-colnames(pr.f.h1) <- c("ARIMA", "ARIMAX", "ADL", "ETS")
+pr.f.h1 <- ts(matrix(0, 58, 5), frequency = 365, start=c(2020,11))
+colnames(pr.f.h1) <- c("ARIMA", "ARIMAX", "ADL", "ETS","VAR")
 h<-1
 for(i in 1:58){
-  temp<-window(data1[,3], start = 2019.030, end = 2020.195 + (i-1)/365)
-  temp2 <-window(data1[,4:17], start = 2019.030, end = 2020.195 + (i-1)/365)
+  temp<-window(data1[,3], start = c(2019,12), end = 2020.195 + (i-1)/365)
+  temp2 <-window(data1[,4:17], start = c(2019,12), end = 2020.195 + (i-1)/365)
   
   # ARIMA 
   f1 <- Arima(temp, model=arima.1)
@@ -504,15 +514,18 @@ for(i in 1:58){
   forecast2 <- forecast(f2$fitted,h=h)
   pr.f.h1[i,2] <- forecast2$mean[h]
   
+  #ETS 
+  f1 <- ets(temp, model=ets.1, use.initial.values=TRUE)
+  pre <- forecast(f1, n.ahead=h)
+  pr.f.h1[i,3] <- pre$mean[h]
+  
 }
-
-data_1.1<-ts(data_1,frequency = 365, start = c(2019,12))
-pr.adl <- ts(matrix(0, 58, 1), frequency = 365, start=c(2020,11))
-
 
 #ADL 
 
 #Seleccionamos el orden del ADL 
+
+data_1.1<-ts(data_1,frequency = 365, start = c(2019,12))
 
 data_dum.1<-data_1.1[1:425,-c(1,2,15,30)]
 
@@ -549,15 +562,49 @@ for(i in 1:58){
   adl<-adl.dl$full_formula
   adl.1 <- dynlm(adl, data = temp2)
   forecast2 <- predict(adl.1$fitted.values,h=1)
-  pr.adl[i,1] <- forecast2$mean[h]
+  pr.f.h1[i,4] <- forecast2$mean[h]
   print(count) 
   count = count + 1
 }
 
+library(forecast)
+
+library(vars)
+
+# Realizamos los pronósticos con el VAR 
+
+# Construimos la serie diferenciando las variables que son I(1)
+
+reservas.est <- diff(data1[,6])
+
+dolar.est <- diff(data1[,9])
+
+data.diff<-cbind(data1[-1,-c(6,9,15)], reservas.est, dolar.est)
+
+h<-1
+for(i in 1:58){
+  temp<-window(data.diff, start = c(2019,12), end = 2020.195 + (i-1)/365)
+  f5 <- VAR(temp, lag.max = 1, type = "both", season = 12)
+  forecast1<-forecast(f5,h=h)
+  pr.f.h1[i,5] <- forecast1$forecast$data1..1...c.6..9..15...sentsmooth$mean[1]
+}
 
 
 
-#ADL opcion 2 (recursivo)
+# Grafico de los pronosticos con esquema fijo y h=1 
+
+autoplot(ts.union(out.of.sample[,3], pr.f.h1[,1], pr.f.h1[,2],pr.f.h1[,3],pr.f.h1[,4]), size = 1.3) + 
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL"),
+                     values = c("black", "sienna2", "palegreen3","#00AFBB", colores[2])) +
+  ggtitle("Pronósticos fijos con h = 1") + 
+  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+  theme_minimal() +  
+  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+
+
+
+# ESQUEMA RECURSIVO 
+
 
 h<-1
 count <- 2
@@ -594,17 +641,6 @@ for(i in 1:58){
   print(count) 
   count = count + 1
 }
-
-# Grafico 
-
-autoplot(ts.union(out.of.sample[,3], pr.f.h1[,1], pr.f.h1[,2], pr.adl), size = 1.3) + 
-  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ADL rec"),
-                     values = c("black", "sienna2", "palegreen3","#00AFBB")) +
-  ggtitle("Pronósticos fijos con h = 1") + 
-  xlab("Tiempo") + ylab("Sentimiento Alberto")+
-  theme_minimal() +  
-  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
-
 
 
 
