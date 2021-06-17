@@ -12,10 +12,16 @@ library(dplyr)
 # cosas para agregar 
 
 #hacer los test de raiz unitaria para ver 
-#que las reservas y el dolar son 
-# I (1)
+#que las reservas y el dolar son  
+# I (1) ya esta
 
-# Ver si al estimar el VAR season tiene que ser igual a 4 o a 12 (4 por las estaciones)
+#ver de hacer 7 pasos adelante en vez de 6 
+
+# solapamiento de las series de alberto y del mercado (hacer)
+
+# Ver si al estimar el VAR season tiene que ser igual a 4 o a 12 (4 por las estaciones) sacar !
+
+# sacar las dummies del adl 
 
 ######################
 
@@ -828,14 +834,17 @@ autoplot(ts.union(out.of.sample[,3], pr.rol.h1[,1], pr.rol.h1[,2],pr.rol.h1[,3],
 
 library(quantmod)
 
-a<-bld.mbb.bootstrap(data[,3], 1000) %>% as.data.frame() %>% ts(start=c(2019,12), frequency=365)
+a<-bld.mbb.bootstrap(data[,3], 10) %>% as.data.frame() %>% ts(start=c(2019,12), frequency=365)
 
 fcst.boot.arima <- purrr::map(as.list(a),
-                              function(x){forecast(auto.arima(x), h=1)[["mean"]]})
+                                   function(x){forecast(auto.arima(x), h=1)[["mean"]]})
 
 fcst.boot.arima1 <- as.data.frame(fcst.boot.arima)
 
-fcst.bagged.arima2 <- rowMeans(fcst.boot.arima1)%>% ts(start=c(2011,1), frequency = 365) 
+plot(fcst.boot.arima1[,1])
+
+fcst.bagged.arima2 <- rowMeans(fcst.boot.arima1)%>% ts(start=c(2019,12), frequency = 365) 
+
 
 
 
