@@ -8,6 +8,7 @@ setwd(dir)
 options(scipen=999)
 
 library(ggplot2)
+library(dplyr)
 
 # Definimos la paleta de colores.
 
@@ -116,6 +117,84 @@ t.test(AR_anuncio, df=length(AR_anuncio)-1, alternative = "two.sided")
 t.test(AR_vicentin, df=length(AR_vicentin)-1, alternative = "two.sided")
 t.test(AR_maradona, df=length(AR_maradona)-1, alternative = "two.sided")
 t.test(AR_vacunas, df=length(AR_vacunas)-1, alternative = "two.sided")
+
+# Vamos a ver para que cantidad de observaciones rechazamos. Sensibility.
+# Para esto, hacemos una función.
+
+sensibility <- function(list){
+  pv <- matrix(nrow = length(list), ncol = 3)
+  row <- 1
+  for (i in seq(4, length(list))){
+    temp <- list[1:i]
+    test <- t.test(temp, df = length(temp) - 1, alternative = "two.sided")
+    test2 <- wilcox.test(temp)
+    pv[row, 1] <- i
+    pv[row, 2] <- test[["p.value"]]
+    pv[row, 3] <- test2[["p.value"]]
+    row <- row + 1
+  }
+  pv <- as.data.frame(pv)
+  colnames(pv) <- c("obsahead", "ttest", "wilcox")
+  return(pv)
+}
+
+# Aplicamos una función para cada caso y graficamos. 
+
+sensibility_anuncio <- sensibility(AR_anuncio)
+
+ggplot(aes(x = obsahead, y = ttest), data = sensibility_anuncio) + 
+  geom_line(aes(x = obsahead, y = ttest)) + 
+  geom_line(aes(x = obsahead, y = wilcox), color = colores[1]) + 
+  theme_minimal() + 
+  xlab("Observaciones adelante") + 
+  ylab("p-valor") + 
+  ylim(0,0.35) + 
+  geom_hline(yintercept=0.1, linetype="dashed", color = colores[2])+ 
+  geom_hline(yintercept=0.05, linetype="dashed", color = colores[2])+ 
+  geom_hline(yintercept=0.01, linetype="dashed", color = colores[2]) + 
+  ggtitle("Análisis de sensibilidad - Anuncio cuarentena")
+
+sensibility_vicentin <- sensibility(AR_vicentin)
+
+ggplot(aes(x = obsahead, y = ttest), data = sensibility_vicentin) + 
+  geom_line(aes(x = obsahead, y = ttest)) + 
+  geom_line(aes(x = obsahead, y = wilcox), color = colores[1]) + 
+  theme_minimal() + 
+  xlab("Observaciones adelante") + 
+  ylab("p-valor") + 
+  ylim(0,1) + 
+  geom_hline(yintercept=0.1, linetype="dashed", color = colores[2])+ 
+  geom_hline(yintercept=0.05, linetype="dashed", color = colores[2])+ 
+  geom_hline(yintercept=0.01, linetype="dashed", color = colores[2]) + 
+  ggtitle("Análisis de sensibilidad - Vicentin")
+
+sensibility_maradona <- sensibility(AR_maradona)
+
+ggplot(aes(x = obsahead, y = ttest), data = sensibility_maradona) + 
+  geom_line(aes(x = obsahead, y = ttest)) + 
+  geom_line(aes(x = obsahead, y = wilcox), color = colores[1]) + 
+  theme_minimal() + 
+  xlab("Observaciones adelante") + 
+  ylab("p-valor") + 
+  ylim(0,1) + 
+  geom_hline(yintercept=0.1, linetype="dashed", color = colores[2])+ 
+  geom_hline(yintercept=0.05, linetype="dashed", color = colores[2])+ 
+  geom_hline(yintercept=0.01, linetype="dashed", color = colores[2]) + 
+  ggtitle("Análisis de sensibilidad - Maradona")
+
+sensibility_vacunas<- sensibility(AR_vacunas)
+
+ggplot(aes(x = obsahead, y = ttest), data = sensibility_vacunas) + 
+  geom_line(aes(x = obsahead, y = ttest)) + 
+  geom_line(aes(x = obsahead, y = wilcox), color = colores[1]) + 
+  theme_minimal() + 
+  xlab("Observaciones adelante") + 
+  ylab("p-valor") + 
+  ylim(0,1) + 
+  geom_hline(yintercept=0.1, linetype="dashed", color = colores[2])+ 
+  geom_hline(yintercept=0.05, linetype="dashed", color = colores[2])+ 
+  geom_hline(yintercept=0.01, linetype="dashed", color = colores[2]) + 
+  ggtitle("Análisis de sensibilidad - Llegada vacunas")
 
 
 # Calculamos los CARS
