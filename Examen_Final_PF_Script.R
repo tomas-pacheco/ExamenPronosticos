@@ -828,6 +828,18 @@ autoplot(ts.union(out.of.sample[,3], pr.rol.h1[,1], pr.rol.h1[,2],pr.rol.h1[,3],
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
 
+
+#### h = 7
+
+
+
+#### h = 12
+
+
+
+
+########### BAGGING 
+
 # Realizamos bagging con los modelos arima, ets, var, adl con esquema fijo y h=1
 
 # ARIMA 
