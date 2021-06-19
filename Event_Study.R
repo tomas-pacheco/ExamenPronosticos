@@ -135,6 +135,7 @@ sensibility <- function(list){
   }
   pv <- as.data.frame(pv)
   colnames(pv) <- c("obsahead", "ttest", "wilcox")
+  pv <- na.omit(pv)
   return(pv)
 }
 
@@ -145,14 +146,19 @@ sensibility_anuncio <- sensibility(AR_anuncio)
 ggplot(aes(x = obsahead, y = ttest), data = sensibility_anuncio) + 
   geom_line(aes(x = obsahead, y = ttest)) + 
   geom_line(aes(x = obsahead, y = wilcox), color = colores[1]) + 
-  theme_minimal() + 
+  theme_bw() + 
   xlab("Observaciones adelante") + 
   ylab("p-valor") + 
   ylim(0,0.35) + 
   geom_hline(yintercept=0.1, linetype="dashed", color = colores[2])+ 
   geom_hline(yintercept=0.05, linetype="dashed", color = colores[2])+ 
   geom_hline(yintercept=0.01, linetype="dashed", color = colores[2]) + 
-  ggtitle("Análisis de sensibilidad - Anuncio cuarentena")
+  ggtitle("Análisis de sensibilidad - Anuncio cuarentena") + 
+  scale_x_continuous(n.breaks = 20) + 
+  annotate("text", x = 400, y = 0.03, label = "p<0.01")+
+  annotate("text", x = 400, y = 0.07, label = "p<0.05")+
+  annotate("text", x = 400, y = 0.12, label = "p<0.10")
+
 
 sensibility_vicentin <- sensibility(AR_vicentin)
 
