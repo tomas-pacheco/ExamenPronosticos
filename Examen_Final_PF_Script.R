@@ -7,25 +7,6 @@ library(ggfortify)
 library(dplyr)
 
 
-######################
-
-# cosas para agregar 
-
-#hacer los test de raiz unitaria para ver 
-#que las reservas y el dolar son  
-# I (1) ya esta
-
-#ver de hacer 7 pasos adelante en vez de 6 
-
-# solapamiento de las series de alberto y del mercado (hacer)
-
-# Ver si al estimar el VAR season tiene que ser igual a 4 o a 12 (4 por las estaciones) sacar !
-
-# sacar las dummies del adl 
-
-######################
-
-
 ## Seteamos el directorio. Prueba.``
 
 dir <- "G:\\Mi unidad\\UdeSA\\Pronósticos\\Final\\Data\\dep"
