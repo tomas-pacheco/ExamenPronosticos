@@ -1510,10 +1510,47 @@ autoplot(ts.union(out.of.sample[7:58,2], pr.rol.h7[,1], pr.rol.h7[,2],pr.rol.h7[
 
 library(quantmod)
 
-a<-bld.mbb.bootstrap(data[,3], 10) %>% as.data.frame() %>% ts(start=c(2019,12), frequency=365)
+# Hago las series bootstrap de todas las variables
 
-fcst.boot.arima <- purrr::map(as.list(a),
-                                   function(x){forecast(auto.arima(x), h=1)[["mean"]]})
+var.bag <- ts(matrix(0, 500, 15000), frequency = 365, start=c(2020,11))
+
+
+# VER: quiero hacer que itere la matriz en la que se guarda, por ejemplo, si i=2 
+#que guarde en una matriz las series bootstrap del sentimiento de alberto 
+
+for (i in 2:15) {
+  a<-bld.mbb.bootstrap(data[,i], 100) %>% as.data.frame() %>% ts(start=c(2019,12), frequency=365)
+  var.bag.i<-ts(a, frequency = 365, start = c(2019,12))
+}
+
+data.bag <- ts(a, frequency = 365, start = c(2019,12))
+
+h<-1
+for(i in 1:58){
+  temp<-window(data.bag[,2], start = c(2019,12), end = 2020.195 + (i-1)/365)
+  temp2 <-window(data1[,3:15], start = c(2019,12), end = 2020.195 + (i-1)/365)
+  
+  # ARIMA 
+  f1 <- Arima(temp, model=arima.1)
+  forecast <- forecast(f1,h = h)
+  pr.f.h1[i,1] <- forecast$mean[h]
+  
+  #ARIMAX
+  f2 <- Arima(temp,model=arima.1,xreg=temp2)
+  forecast2 <- forecast(f2$fitted,h=h)
+  pr.f.h1[i,2] <- forecast2$mean[h]
+  
+  #ETS 
+  f1 <- ets(temp, model=ets.1, use.initial.values=TRUE)
+  pre <- forecast(f1, n.ahead=h)
+  pr.f.h1[i,3] <- pre$mean[h]
+  
+}
+
+
+
+
+
 
 fcst.boot.arima1 <- as.data.frame(fcst.boot.arima)
 
