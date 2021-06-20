@@ -818,7 +818,342 @@ autoplot(ts.union(out.of.sample[,2], pr.rol.h1[,1], pr.rol.h1[,2],pr.rol.h1[,3],
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
 
-#### h = 3
+#### h = 2
+
+
+#Esquema fijo 
+
+# h=2
+
+# con lo cual, pierdo 1 observación
+
+data1 <- ts(data, frequency = 365, start = c(2019,12))
+
+pr.f.h2 <- ts(matrix(0, 57, 5), frequency = 365, start=c(2020,11))
+colnames(pr.f.h2) <- c("ARIMA", "ARIMAX", "ADL", "ETS","VAR")
+h<-2
+for(i in 1:57){
+  temp<-window(data1[,2], start = c(2019,12), end = 2020.195 + (i-1)/365)
+  temp2 <-window(data1[,3:15], start = c(2019,12), end = 2020.195 + (i-1)/365)
+  
+  # ARIMA 
+  f1 <- Arima(temp, model=arima.1)
+  forecast <- forecast(f1,h = h)
+  pr.f.h2[i,1] <- forecast$mean[h]
+  
+  #ARIMAX
+  f2 <- Arima(temp,model=arima.1,xreg=temp2)
+  forecast2 <- forecast(f2$fitted,h=h)
+  pr.f.h2[i,2] <- forecast2$mean[h]
+  
+  #ETS 
+  f1 <- ets(temp, model=ets.1, use.initial.values=TRUE)
+  pre <- forecast(f1, n.ahead=h)
+  pr.f.h2[i,3] <- pre$mean[h]
+  
+}
+
+#ADL 
+
+#Seleccionamos el orden del ADL 
+
+data_1.1<-ts(data_1,frequency = 365, start = c(2019,12))
+
+data_dum.1<-data_1.1[1:425,-c(1,27)]
+
+order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
+                            casosarg + muertosarg + vacunasarg + maxtemp + 
+                            mintemp + muertes.arg.rel + casos.arg.rel|
+                            mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
+                            mes07 + mes08 + mes09 +  mes10 + mes11, 
+                          data = data_dum.1, max_order = 8)
+
+
+h<-2
+
+count <- 2
+for(i in 1:57){
+  temp2 <-window(data_1.1[,-c(1,27)],start = c(2019,12), end = 2020.195 + (i-1)/365)
+  colnames(temp2) <- c("sentsmooth","twfav", "twret", "reservasbcra", "tasaint", "basemon", "tcdolar", "casosarg",          
+                       "muertosarg", "vacunasarg", "maxtemp", "mintemp",
+                       "muertes.arg.rel", "casos.arg.rel",     
+                       "mes01", "mes02", "mes03", "mes04", "mes05", "mes06",
+                       "mes07", "mes08", "mes09", "mes10", "mes11")
+  
+  #el orden del ADL es el conseguido al aplicar el modelo al período in sample 
+  
+  adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
+                   casosarg + muertosarg + vacunasarg + maxtemp + 
+                   mintemp + muertes.arg.rel + casos.arg.rel|
+                   mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
+                   mes07 + mes08 + mes09 +  mes10 + mes11, 
+                 data = temp2, order = as.vector(order.adl.dl$best_order))
+  
+  # Estimamos el ADL pero con la función dynlm
+  
+  adl<-adl.dl$full_formula
+  adl.1 <- dynlm(adl, data = temp2)
+  forecast2 <- predict(adl.1$fitted.values,h=h)
+  pr.f.h2[i,4] <- forecast2$mean[h]
+  print(count) 
+  count = count + 1
+}
+
+library(forecast)
+
+library(vars)
+
+# Realizamos los pronósticos con el VAR 
+
+# Construimos la serie diferenciando las variables que son I(1)
+
+reservas.est <- diff(data1[,5])
+
+dolar.est <- diff(data1[,8])
+
+data.diff<-cbind(data1[-1,-c(1,5,8,16,17,18,19,20,21,22,23,24,25,26,27,28)], reservas.est, dolar.est)
+
+h<-2
+
+for(i in 1:57){ 
+  temp2<-window(data.diff, start = c(2019,12), end = 2020.195 + (i-1)/365)
+  f5 <- VAR(temp2, p = 6, type = "trend")
+  forecast1<- forecast(f5)
+  pr.f.h2[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
+}
+
+
+# Grafico de los pronosticos con esquema fijo y h=2
+
+# VER: los colores no se si quedan muuy bien 
+
+colores <- c("#00ABC5","#cfb0b4" ,"#ff3c84","#f7941c", "#edf71c")
+
+# eliminamos las primeras 6 observaciones del período out of sample debido a que la cantidad 
+# de pasos adelante que hicimos los pronósticos 
+
+autoplot(ts.union(out.of.sample[2:58,2], pr.f.h2[,1], pr.f.h2[,2],pr.f.h2[,3],pr.f.h2[,4],pr.f.h2[,5]), size = 1) +
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR"), 
+                     values = c("#4b4b4b", colores[1], colores[2],colores[3], colores[4], colores[5]))+
+  ggtitle("Pronósticos fijos con h = 2") +
+  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+  theme_minimal() +  
+  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+
+
+# ESQUEMA RECURSIVO 
+
+data1 <- ts(data, frequency = 365, start = c(2019,12))
+
+pr.rec.h2 <- ts(matrix(0, 57, 5), frequency = 365, start=c(2020,11))
+colnames(pr.rec.h2) <- c("ARIMA", "ARIMAX", "ADL", "ETS","VAR")
+h<-2
+for(i in 1:57){
+  temp<-window(data1[,2], start = c(2019,12), end = 2020.195 + (i-1)/365)
+  temp2 <-window(data1[,3:15], start = c(2019,12), end = 2020.195 + (i-1)/365)
+  
+  # ARIMA 
+  f1 <- auto.arima(temp)
+  forecast <- forecast(f1,h = h)
+  pr.rec.h2[i,1] <- forecast$mean[h]
+  
+  #ARIMAX
+  f2 <- Arima(temp,model=f1, newxreg=temp2)
+  forecast2 <- forecast(f2$fitted,h=h)
+  pr.rec.h2[i,2] <- forecast2$mean[h]
+  
+  #ETS 
+  f3 <- ets(temp)
+  pre <- forecast(f1, n.ahead=h)
+  pr.rec.h2[i,3] <- pre$mean[h]
+  
+}
+
+
+#ADL 
+
+data_1.1<-ts(data_1,frequency = 365, start = c(2019,12))
+
+data_dum.1<-data_1.1[1:425,-c(1,27)]
+
+h<-2
+count <- 2
+for(i in 1:57){
+  temp2 <-window(data_1.1[,-c(1,27)], start = c(2019,12), end = 2020.195 + (i-1)/365)
+  colnames(temp2) <- c("sentsmooth","twfav", "twret", "reservasbcra", "tasaint", "basemon", "tcdolar", "casosarg",          
+                       "muertosarg", "vacunasarg", "maxtemp", "mintemp","muertes.arg.rel", "casos.arg.rel",     
+                       "mes01", "mes02", "mes03", "mes04", "mes05", "mes06",
+                       "mes07", "mes08", "mes09", "mes10", "mes11")
+  
+  # Actualizamos el orden del ADL
+  
+  order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
+                              casosarg + muertosarg + vacunasarg + maxtemp + 
+                              mintemp + sent_trends + muertes.arg.rel + casos.arg.rel|
+                              mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
+                              mes07 + mes08 + mes09 +  mes10 + mes11, 
+                            data = temp2, max_order = 5)
+  
+  adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
+                   casosarg + muertosarg + vacunasarg + maxtemp + 
+                   mintemp + sent_trends + muertes.arg.rel + casos.arg.rel|
+                   mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
+                   mes07 + mes08 + mes09 +  mes10 + mes11, 
+                 data = temp2, order = as.vector(order.adl.dl$best_order))
+  
+  # Estimamos el ADL pero con la función dynlm
+  
+  adl<-adl.dl$full_formula
+  adl.1 <- dynlm(adl, data = adl.dl$data)
+  forecast2 <- predict(adl.1$fitted.values,h=1)
+  pr.rec.h2[i,4] <- forecast2$mean[h]
+  print(count) 
+  count = count + 1
+}
+
+
+# Realizamos los pronósticos con el VAR 
+
+# Construimos la serie diferenciando las variables que son I(1)
+
+reservas.est <- diff(data1[,5])
+
+dolar.est <- diff(data1[,8])
+
+data.diff<-cbind(data1[-1,-c(1,5,8,16,17,18,19,20,21,22,23,24,25,26,27,28)], reservas.est, dolar.est)
+
+h<-2
+
+for(i in 1:57){ 
+  temp2<-window(data.diff, start = c(2019,12), end = 2020.195 + (i-1)/365)
+  a<-VARselect(data.diff, lag.max = 13, type = "const")
+  b<-a$selection
+  c<-b[1]
+  f5 <- VAR(temp2, p = c, type = "trend")
+  forecast1<- forecast(f5)
+  pr.rec.h2[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
+}
+
+
+# Gráfico con los pronósticos recursivos y h=1 
+
+autoplot(ts.union(out.of.sample[2:58,2], pr.rec.h2[,1], pr.rec.h2[,2],pr.rec.h2[,3],pr.rec.h2[,4],pr.rec.h2[,5]), size = 1.1) + 
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR"),
+                     values = c("black", "sienna2", "palegreen3","#00AFBB", colores[2], colores[1])) +
+  ggtitle("Pronósticos recursivos con h = 2") + 
+  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+  theme_minimal() +  
+  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+
+
+# ESQUEMA ROLLING 
+
+
+data1 <- ts(data, frequency = 365, start = c(2019,12))
+
+pr.rol.h2 <- ts(matrix(0, 57, 5), frequency = 365, start=c(2020,11))
+colnames(pr.rol.h2) <- c("ARIMA", "ARIMAX", "ADL", "ETS","VAR")
+h<-2
+for(i in 1:57){
+  temp<-window(data1[,2], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+  temp2 <-window(data1[,3:15], start = c(2019,12), end = 2020.195 + (i-1)/365)
+  
+  # ARIMA 
+  f1 <- auto.arima(temp)
+  forecast <- forecast(f1,h = h)
+  pr.rol.h2[i,1] <- forecast$mean[h]
+  
+  #ARIMAX
+  f2 <- Arima(temp,model=f1, newxreg=temp2)
+  forecast2 <- forecast(f2$fitted,h=h)
+  pr.rol.h2[i,2] <- forecast2$mean[h]
+  
+  #ETS 
+  f3 <- ets(temp)
+  pre <- forecast(f1, n.ahead=h)
+  pr.rol.h2[i,3] <- pre$mean[h]
+  
+}
+
+#ADL 
+
+data_1.1<-ts(data_1,frequency = 365, start = c(2019,12))
+
+data_dum.1<-data_1.1[1:425,-c(1,27)]
+
+h<-2
+count <- 2
+for(i in 1:57){
+  temp2 <-window(data_1.1[,-c(1,27)], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+  colnames(temp2) <- c("sentsmooth","twfav", "twret", "reservasbcra", "tasaint", "basemon", "tcdolar", "casosarg",          
+                       "muertosarg", "vacunasarg", "maxtemp", "mintemp", "muertes.arg.rel", "casos.arg.rel",     
+                       "mes01", "mes02", "mes03", "mes04", "mes05", "mes06",
+                       "mes07", "mes08", "mes09", "mes10", "mes11")
+  
+  # Actualizamos el orden del ADL
+  
+  order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
+                              casosarg + muertosarg + vacunasarg + maxtemp + 
+                              mintemp + sent_trends + muertes.arg.rel + casos.arg.rel|
+                              mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
+                              mes07 + mes08 + mes09 +  mes10 + mes11, 
+                            data = temp2, max_order = 5)
+  
+  adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
+                   casosarg + muertosarg + vacunasarg + maxtemp + 
+                   mintemp + sent_trends + muertes.arg.rel + casos.arg.rel|
+                   mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
+                   mes07 + mes08 + mes09 +  mes10 + mes11, 
+                 data = temp2, order = as.vector(order.adl.dl$best_order))
+  
+  # Estimamos el ADL pero con la función dynlm
+  
+  adl<-adl.dl$full_formula
+  adl.1 <- dynlm(adl, data = adl.dl$data)
+  forecast2 <- predict(adl.1$fitted.values,h=1)
+  pr.rol.h2[i,4] <- forecast2$mean[h]
+  print(count) 
+  count = count + 1
+}
+
+
+# Realizamos los pronósticos con el VAR 
+
+# Construimos la serie diferenciando las variables que son I(1)
+
+reservas.est <- diff(data1[,5])
+
+dolar.est <- diff(data1[,8])
+
+data.diff<-cbind(data1[-1,-c(1,5,8,16,17,18,19,20,21,22,23,24,25,26,27,28)], reservas.est, dolar.est)
+
+h<-2
+
+for(i in 1:57){ 
+  temp2<-window(data.diff, start = 2019.033 + (i-1)/365, end = 2020.195 + (i-1)/365)
+  a<-VARselect(data.diff, lag.max = 13, type = "const")
+  b<-a$selection
+  c<-b[1]
+  f5 <- VAR(temp2, p = c, type = "trend")
+  forecast1<- forecast(f5)
+  pr.rol.h2[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
+}
+
+
+# Gráfico con los pronósticos rolling y h=1 
+
+autoplot(ts.union(out.of.sample[2:58,2], pr.rol.h2[,1], pr.rol.h2[,2],pr.rol.h2[,3],pr.rol.h2[,4],pr.rol.h2[,5]), size = 1.3) + 
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR"),
+                     values = c("black", "blue", "palegreen3","#00AFBB", colores[2], colores[1])) +
+  ggtitle("Pronósticos rolling con h = 1") + 
+  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+  theme_minimal() +  
+  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+
+
+
+
+
 
 
 
@@ -1167,7 +1502,7 @@ autoplot(ts.union(out.of.sample[7:58,2], pr.rol.h7[,1], pr.rol.h7[,2],pr.rol.h7[
 
 # VER: creo que van a quedar horribles, porque los que son 7 pasos adelante son horribles
 
-########### BAGGING 
+########### BAGGING ########################
 
 # Realizamos bagging con los modelos arima, ets, var, adl con esquema fijo y h=1
 
