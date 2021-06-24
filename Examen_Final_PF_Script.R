@@ -2383,9 +2383,394 @@ autoplot(ts.union(out.of.sample[7:58,2], pr.rol.h7.b[,1], pr.rol.h7.b[,2], pr.ro
 
 ### MEDIDAS DE ACCURACY 
 
-AC<-matrix(NA,46,6)
+AC<-matrix(NA,33,6)
 colnames(AC) <- c("Modelo", "MAPE", "MAE", "RMSE", "Estadístico","P-valor")
-AC2<-matrix(NA,46,1)
+AC2<-matrix(NA,33,1)
+
+
+# TABLA 1
+
+#medidas de accuracy y test de DM de los pronosticos con esquema fijo y h=1
+
+AC[1,1]<-"ARIMA fijo" 
+AC2[1,1]<-"1"
+AC[1,2:4]<-round(accuracy(pr.f.h1[,1], out.of.sample[,2])[c(2:3,5)],4)
+AC[2,1]<-"ARIMAX fijo" 
+AC2[2,1]<-"1"
+AC[2,2:4]<-round(accuracy(pr.f.h1[,2], out.of.sample[,2])[c(2:3,5)],4)
+AC[3,1]<-"ETS fijo" 
+AC2[3,1]<-"1"
+AC[3,2:4]<-round(accuracy(pr.f.h1[,3], out.of.sample[,2])[c(2:3,5)],4)
+AC[4,1]<- "ADL fijo" 
+AC2[4,1]<-"1"
+AC[4,2:4]<-round(accuracy(pr.f.h1[,4], out.of.sample[,2])[c(2:3,5)],4)
+AC[5,1]<- "VAR fijo"
+AC2[5,1]<-"1"
+AC[5,2:4]<-round(accuracy(pr.f.h1[,5], out.of.sample[,2])[c(2:3,5)],4)
+AC[6,1]<- "FAVAR fijo" 
+AC2[6,1]<-"1"
+AC[6,2:4]<-round(accuracy(pr.f.h1[,6], out.of.sample[,2])[c(2:3,5)],4)
+
+# medidas de accuracy de los pronósticos con esquema rolling y h=1
+
+AC[7,1]<-"ARIMA rolling" 
+AC2[7,1]<-"1"
+AC[7,2:4]<-round(accuracy(pr.rol.h1[,1], out.of.sample[,2])[c(2:3,5)],4)
+AC[8,1]<-"ARIMAX rolling" 
+AC2[8,1]<-"1"
+AC[8,2:4]<-round(accuracy(pr.rol.h1[,2], out.of.sample[,2])[c(2:3,5)],4)
+AC[9,1]<-"ETS rolling" 
+AC2[9,1]<-"1"
+AC[9,2:4]<-round(accuracy(pr.rol.h1[,3], out.of.sample[,2])[c(2:3,5)],4)
+AC[10,1]<- "ADL rolling" 
+AC2[10,1]<-"1"
+AC[10,2:4]<-round(accuracy(pr.rol.h1[,4], out.of.sample[,2])[c(2:3,5)],4)
+AC[11,1]<- "VAR rolling"
+AC2[11,1]<-"1"
+AC[11,2:4]<-round(accuracy(pr.rol.h1[,5], out.of.sample[,2])[c(2:3,5)],4)
+AC[12,1]<- "FAVAR rolling" 
+AC2[12,1]<-"1"
+AC[12,2:4]<-round(accuracy(pr.rol.h1[,6], out.of.sample[,2])[c(2:3,5)],4)
+
+
+#  medidas de accuracy de los pronósticos con esquema recursivo y h=1
+
+
+AC[13,1]<-"ARIMA recursivo" 
+AC2[13,1]<-"1"
+AC[13,2:4]<-round(accuracy(pr.rec.h1[,1], out.of.sample[,2])[c(2:3,5)],4)
+AC[14,1]<-"ARIMAX recursivo" 
+AC2[14,1]<-"1"
+AC[14,2:4]<-round(accuracy(pr.rec.h1[,2], out.of.sample[,2])[c(2:3,5)],4)
+AC[15,1]<-"ETS recursivo" 
+AC2[15,1]<-"1"
+AC[15,2:4]<-round(accuracy(pr.rec.h1[,3], out.of.sample[,2])[c(2:3,5)],4)
+AC[16,1]<- "ADL recursivo" 
+AC2[16,1]<-"1"
+AC[16,2:4]<-round(accuracy(pr.rec.h1[,4], out.of.sample[,2])[c(2:3,5)],4)
+AC[17,1]<- "VAR recursivo"
+AC2[17,1]<-"1"
+AC[17,2:4]<-round(accuracy(pr.rec.h1[,5], out.of.sample[,2])[c(2:3,5)],4)
+AC[18,1]<- "FAVAR recursivo" 
+AC2[18,1]<-"1"
+AC[18,2:4]<-round(accuracy(pr.rec.h1[,6], out.of.sample[,2])[c(2:3,5)],4)
+
+
+# medidas de accuracy de los pronósticos con esquema fijo, h = 1 y series boots
+
+
+AC[19,1]<-"ARIMA fijo bagged" 
+AC2[19,1]<-"1"
+AC[19,2:4]<-round(accuracy(pr.f.h1.b[,1], out.of.sample[,2])[c(2:3,5)],4)
+AC[20,1]<-"ARIMAX fijo bagged" 
+AC2[20,1]<-"1"
+AC[20,2:4]<-round(accuracy(pr.f.h1.b[,2], out.of.sample[,2])[c(2:3,5)],4)
+AC[21,1]<-"ETS fijo bagged" 
+AC2[21,1]<-"1"
+AC[21,2:4]<-round(accuracy(pr.f.h1.b[,3], out.of.sample[,2])[c(2:3,5)],4)
+AC[22,1]<- "VAR fijo bagged" 
+AC2[22,1]<-"1"
+AC[22,2:4]<-round(accuracy(pr.f.h1.b[,4], out.of.sample[,2])[c(2:3,5)],4)
+AC[23,1]<- "FAVAR fijo bagged"
+AC2[23,1]<-"1"
+AC[23,2:4]<-round(accuracy(pr.rec.h1.b[,5], out.of.sample[,2])[c(2:3,5)],4)
+
+# medidas de accuracy de los pronósticos con esquema rec, h = 1 y series boots
+
+AC[24,1]<-"ARIMA recursivo bagged" 
+AC2[24,1]<-"1"
+AC[24,2:4]<-round(accuracy(pr.rec.h1.b[,1], out.of.sample[,2])[c(2:3,5)],4)
+AC[25,1]<-"ARIMAX recursivo bagged" 
+AC2[25,1]<-"1"
+AC[25,2:4]<-round(accuracy(pr.rec.h1.b[,2], out.of.sample[,2])[c(2:3,5)],4)
+AC[26,1]<-"ETS recursivo bagged" 
+AC2[26,1]<-"1"
+AC[26,2:4]<-round(accuracy(pr.rec.h1.b[,3], out.of.sample[,2])[c(2:3,5)],4)
+AC[27,1]<- "VAR recursivo bagged" 
+AC2[27,1]<-"1"
+AC[27,2:4]<-round(accuracy(pr.rec.h1.b[,4], out.of.sample[,2])[c(2:3,5)],4)
+AC[28,1]<- "FAVAR recursivo bagged"
+AC2[28,1]<-"1"
+AC[28,2:4]<-round(accuracy(pr.rec.h1.b[,5], out.of.sample[,2])[c(2:3,5)],4)
+
+# medidas de accuracy de los pronósticos con esquema rolling, h = 1 y series boots
+
+
+AC[29,1]<-"ARIMA rolling bagged" 
+AC2[29,1]<-"1"
+AC[29,2:4]<-round(accuracy(pr.rol.h1.b[,1], out.of.sample[,2])[c(2:3,5)],4)
+AC[30,1]<-"ARIMAX rolling bagged" 
+AC2[30,1]<-"1"
+AC[30,2:4]<-round(accuracy(pr.rol.h1.b[,2], out.of.sample[,2])[c(2:3,5)],4)
+AC[31,1]<-"ETS rollingbagged" 
+AC2[31,1]<-"1"
+AC[31,2:4]<-round(accuracy(pr.rol.h1.b[,3], out.of.sample[,2])[c(2:3,5)],4)
+AC[32,1]<- "VAR rolling bagged" 
+AC2[32,1]<-"1"
+AC[32,2:4]<-round(accuracy(pr.rol.h1.b[,4], out.of.sample[,2])[c(2:3,5)],4)
+AC[33,1]<- "FAVAR rolling bagged"
+AC2[33,1]<-"1"
+AC[33,2:4]<-round(accuracy(pr.rol.h1.b[,5], out.of.sample[,2])[c(2:3,5)],4)
+
+
+# TABLA 2 
+
+#medidas de accuracy y test de DM de los pronosticos con esquema fijo y h=2
+
+AC1<-matrix(NA,33,6)
+colnames(AC) <- c("Modelo", "MAPE", "MAE", "RMSE", "Estadístico","P-valor")
+AC3<-matrix(NA,33,1)
+
+AC1[1,1]<-"ARIMA fijo" 
+AC3[1,1]<-"2"
+AC1[1,2:4]<-round(accuracy(pr.f.h2[,1], out.of.sample[2:58,2])[c(2:3,5)],4)
+AC1[2,1]<-"ARIMAX fijo" 
+AC3[2,1]<-"2"
+AC1[2,2:4]<-round(accuracy(pr.f.h2[,2], out.of.sample[2:58,2])[c(2:3,5)],4)
+AC1[3,1]<-"ETS fijo" 
+AC3[3,1]<-"2"
+AC1[3,2:4]<-round(accuracy(pr.f.h2[,3], out.of.sample[2:58,2])[c(2:3,5)],4)
+AC1[4,1]<- "ADL fijo" 
+AC3[4,1]<-"2"
+AC1[4,2:4]<-round(accuracy(pr.f.h2[,4], out.of.sample[2:58,2])[c(2:3,5)],4)
+AC1[5,1]<- "VAR fijo"
+AC3[5,1]<-"2"
+AC1[5,2:4]<-round(accuracy(pr.f.h2[,5], out.of.sample[2:58,2])[c(2:3,5)],4)
+AC1[6,1]<- "FAVAR fijo" 
+AC3[6,1]<-"2"
+AC1[6,2:4]<-round(accuracy(pr.f.h2[,6], out.of.sample[2:58,2])[c(2:3,5)],4)
+
+# medidas de accuracy de los pronósticos con esquema rolling y h=2
+
+AC1[7,1]<-"ARIMA rolling" 
+AC3[7,1]<-"2"
+AC1[7,2:4]<-round(accuracy(pr.rol.h2[,1], out.of.sample[2:58,2])[c(2:3,5)],4)
+AC1[8,1]<-"ARIMAX rolling" 
+AC3[8,1]<-"2"
+AC1[8,2:4]<-round(accuracy(pr.rol.h2[,2], out.of.sample[2:58,2])[c(2:3,5)],4)
+AC1[9,1]<-"ETS rolling" 
+AC3[9,1]<-"2"
+AC1[9,2:4]<-round(accuracy(pr.rol.h2[,3], out.of.sample[2:58,2])[c(2:3,5)],4)
+AC1[10,1]<- "ADL rolling" 
+AC3[10,1]<-"2"
+AC1[10,2:4]<-round(accuracy(pr.rol.h2[,4], out.of.sample[2:58,2])[c(2:3,5)],4)
+AC1[11,1]<- "VAR rolling"
+AC3[11,1]<-"2"
+AC1[11,2:4]<-round(accuracy(pr.rol.h2[,5], out.of.sample[2:58,2])[c(2:3,5)],4)
+AC1[12,1]<- "FAVAR rolling" 
+AC3[12,1]<-"2"
+AC1[12,2:4]<-round(accuracy(pr.rol.h2[,6], out.of.sample[2:58,2])[c(2:3,5)],4)
+
+
+#  medidas de accuracy de los pronósticos con esquema recursivo y h=2
+
+
+AC1[13,1]<-"ARIMA recursivo" 
+AC3[13,1]<-"2"
+AC1[13,2:4]<-round(accuracy(pr.rec.h2[,1], out.of.sample[2:58,2])[c(2:3,5)],4)
+AC1[14,1]<-"ARIMAX recursivo" 
+AC3[14,1]<-"2"
+AC1[14,2:4]<-round(accuracy(pr.rec.h2[,2], out.of.sample[2:58,2])[c(2:3,5)],4)
+AC1[15,1]<-"ETS recursivo" 
+AC3[15,1]<-"2"
+AC1[15,2:4]<-round(accuracy(pr.rec.h2[,3], out.of.sample[2:58,2])[c(2:3,5)],4)
+AC1[16,1]<- "ADL recursivo" 
+AC3[16,1]<-"2"
+AC1[16,2:4]<-round(accuracy(pr.rec.h2[,4], out.of.sample[2:58,2])[c(2:3,5)],4)
+AC1[17,1]<- "VAR recursivo"
+AC3[17,1]<-"2"
+AC1[17,2:4]<-round(accuracy(pr.rec.h2[,5], out.of.sample[2:58,2])[c(2:3,5)],4)
+AC1[18,1]<- "FAVAR recursivo" 
+AC3[18,1]<-"2"
+AC1[18,2:4]<-round(accuracy(pr.rec.h2[,6], out.of.sample[2:58,2])[c(2:3,5)],4)
+
+
+# medidas de accuracy de los pronósticos con esquema fijo, h = 2 y series boots
+
+
+AC1[19,1]<-"ARIMA fijo bagged" 
+AC3[19,1]<-"2"
+AC1[19,2:4]<-round(accuracy(pr.f.h2.b[,1], out.of.sample[2:58,2])[c(2:3,5)],4)
+AC1[20,1]<-"ARIMAX fijo bagged" 
+AC3[20,1]<-"2"
+AC1[20,2:4]<-round(accuracy(pr.f.h2.b[,2], out.of.sample[2:58,2])[c(2:3,5)],4)
+AC1[21,1]<-"ETS fijo bagged" 
+AC3[21,1]<-"2"
+AC1[21,2:4]<-round(accuracy(pr.f.h2.b[,3], out.of.sample[2:58,2])[c(2:3,5)],4)
+AC1[22,1]<- "VAR fijo bagged" 
+AC3[22,1]<-"2"
+AC1[22,2:4]<-round(accuracy(pr.f.h2.b[,4], out.of.sample[2:58,2])[c(2:3,5)],4)
+AC1[23,1]<- "FAVAR fijo bagged"
+AC3[23,1]<-"2"
+AC1[23,2:4]<-round(accuracy(pr.rec.h2.b[,5], out.of.sample[2:58,2])[c(2:3,5)],4)
+
+# medidas de accuracy de los pronósticos con esquema rec, h = 1 y series boots
+
+AC1[24,1]<-"ARIMA recursivo bagged" 
+AC3[24,1]<-"2"
+AC1[24,2:4]<-round(accuracy(pr.rec.h2.b[,1], out.of.sample[2:58,2])[c(2:3,5)],4)
+AC1[25,1]<-"ARIMAX recursivo bagged" 
+AC3[25,1]<-"2"
+AC1[25,2:4]<-round(accuracy(pr.rec.h2.b[,2], out.of.sample[2:58,2])[c(2:3,5)],4)
+AC1[26,1]<-"ETS recursivo bagged" 
+AC3[26,1]<-"2"
+AC1[26,2:4]<-round(accuracy(pr.rec.h2.b[,3], out.of.sample[2:58,2])[c(2:3,5)],4)
+AC1[27,1]<- "VAR recursivo bagged" 
+AC3[27,1]<-"2"
+AC1[27,2:4]<-round(accuracy(pr.rec.h2.b[,4], out.of.sample[2:58,2])[c(2:3,5)],4)
+AC1[28,1]<- "FAVAR recursivo bagged"
+AC3[28,1]<-"2"
+AC1[28,2:4]<-round(accuracy(pr.rec.h2.b[,5], out.of.sample[2:58,2])[c(2:3,5)],4)
+
+# medidas de accuracy de los pronósticos con esquema rolling, h = 2 y series boots
+
+
+AC1[29,1]<-"ARIMA rolling bagged" 
+AC3[29,1]<-"2"
+AC1[29,2:4]<-round(accuracy(pr.rol.h2.b[,1], out.of.sample[2:58,2])[c(2:3,5)],4)
+AC1[30,1]<-"ARIMAX rolling bagged" 
+AC3[30,1]<-"2"
+AC1[30,2:4]<-round(accuracy(pr.rol.h2.b[,2], out.of.sample[2:58,2])[c(2:3,5)],4)
+AC1[31,1]<-"ETS rollingbagged" 
+AC3[31,1]<-"2"
+AC1[31,2:4]<-round(accuracy(pr.rol.h2.b[,3], out.of.sample[2:58,2])[c(2:3,5)],4)
+AC1[32,1]<- "VAR rolling bagged" 
+AC3[32,1]<-"2"
+AC1[32,2:4]<-round(accuracy(pr.rol.h2.b[,4], out.of.sample[2:58,2])[c(2:3,5)],4)
+AC1[33,1]<- "FAVAR rolling bagged"
+AC3[33,1]<-"2"
+AC1[33,2:4]<-round(accuracy(pr.rol.h2.b[,5], out.of.sample[2:58,2])[c(2:3,5)],4)
+
+
+
+# TABLA 3
+
+#medidas de accuracy y test de DM de los pronosticos con esquema fijo y h=7
+
+AC4<-matrix(NA,33,6)
+colnames(AC) <- c("Modelo", "MAPE", "MAE", "RMSE", "Estadístico","P-valor")
+AC5<-matrix(NA,33,1)
+
+AC4[1,1]<-"ARIMA fijo" 
+AC5[1,1]<-"2"
+AC4[1,2:4]<-round(accuracy(pr.f.h7[,1], out.of.sample[7:58,2])[c(2:3,5)],4)
+AC4[2,1]<-"ARIMAX fijo" 
+AC5[2,1]<-"2"
+AC4[2,2:4]<-round(accuracy(pr.f.h7[,2], out.of.sample[7:58,2])[c(2:3,5)],4)
+AC4[3,1]<-"ETS fijo" 
+AC5[3,1]<-"2"
+AC4[3,2:4]<-round(accuracy(pr.f.h7[,3], out.of.sample[7:58,2])[c(2:3,5)],4)
+AC4[4,1]<- "ADL fijo" 
+AC5[4,1]<-"2"
+AC4[4,2:4]<-round(accuracy(pr.f.h7[,4], out.of.sample[7:58,2])[c(2:3,5)],4)
+AC4[5,1]<- "VAR fijo"
+AC5[5,1]<-"2"
+AC4[5,2:4]<-round(accuracy(pr.f.h7[,5], out.of.sample[7:58,2])[c(2:3,5)],4)
+AC4[6,1]<- "FAVAR fijo" 
+AC5[6,1]<-"2"
+AC4[6,2:4]<-round(accuracy(pr.f.h7[,6], out.of.sample[7:58,2])[c(2:3,5)],4)
+
+# medidas de accuracy de los pronósticos con esquema rolling y h=2
+
+AC4[7,1]<-"ARIMA rolling" 
+AC5[7,1]<-"2"
+AC4[7,2:4]<-round(accuracy(pr.rol.h7[,1], out.of.sample[7:58,2])[c(2:3,5)],4)
+AC4[8,1]<-"ARIMAX rolling" 
+AC5[8,1]<-"2"
+AC4[8,2:4]<-round(accuracy(pr.rol.h7[,2], out.of.sample[7:58,2])[c(2:3,5)],4)
+AC4[9,1]<-"ETS rolling" 
+AC5[9,1]<-"2"
+AC4[9,2:4]<-round(accuracy(pr.rol.h7[,3], out.of.sample[7:58,2])[c(2:3,5)],4)
+AC4[10,1]<- "ADL rolling" 
+AC5[10,1]<-"2"
+AC4[10,2:4]<-round(accuracy(pr.rol.h7[,4], out.of.sample[7:58,2])[c(2:3,5)],4)
+AC4[11,1]<- "VAR rolling"
+AC5[11,1]<-"2"
+AC4[11,2:4]<-round(accuracy(pr.rol.h7[,5], out.of.sample[7:58,2])[c(2:3,5)],4)
+AC4[12,1]<- "FAVAR rolling" 
+AC5[12,1]<-"2"
+AC4[12,2:4]<-round(accuracy(pr.rol.h7[,6], out.of.sample[7:58,2])[c(2:3,5)],4)
+
+
+#  medidas de accuracy de los pronósticos con esquema recursivo y h=2
+
+
+AC4[13,1]<-"ARIMA recursivo" 
+AC5[13,1]<-"2"
+AC4[13,2:4]<-round(accuracy(pr.rec.h7[,1], out.of.sample[7:58,2])[c(2:3,5)],4)
+AC4[14,1]<-"ARIMAX recursivo" 
+AC5[14,1]<-"2"
+AC4[14,2:4]<-round(accuracy(pr.rec.h7[,2], out.of.sample[7:58,2])[c(2:3,5)],4)
+AC4[15,1]<-"ETS recursivo" 
+AC5[15,1]<-"2"
+AC4[15,2:4]<-round(accuracy(pr.rec.h7[,3], out.of.sample[7:58,2])[c(2:3,5)],4)
+AC4[16,1]<- "ADL recursivo" 
+AC5[16,1]<-"2"
+AC4[16,2:4]<-round(accuracy(pr.rec.h7[,4], out.of.sample[7:58,2])[c(2:3,5)],4)
+AC4[17,1]<- "VAR recursivo"
+AC5[17,1]<-"2"
+AC4[17,2:4]<-round(accuracy(pr.rec.h7[,5], out.of.sample[7:58,2])[c(2:3,5)],4)
+AC4[18,1]<- "FAVAR recursivo" 
+AC5[18,1]<-"2"
+AC4[18,2:4]<-round(accuracy(pr.rec.h7[,6], out.of.sample[7:58,2])[c(2:3,5)],4)
+
+
+# medidas de accuracy de los pronósticos con esquema fijo, h = 2 y series boots
+
+
+AC4[19,1]<-"ARIMA fijo bagged" 
+AC5[19,1]<-"2"
+AC4[19,2:4]<-round(accuracy(pr.f.h7.b[,1], out.of.sample[7:58,2])[c(2:3,5)],4)
+AC4[20,1]<-"ARIMAX fijo bagged" 
+AC5[20,1]<-"2"
+AC4[20,2:4]<-round(accuracy(pr.f.h7.b[,2], out.of.sample[7:58,2])[c(2:3,5)],4)
+AC4[21,1]<-"ETS fijo bagged" 
+AC5[21,1]<-"2"
+AC4[21,2:4]<-round(accuracy(pr.f.h7.b[,3], out.of.sample[7:58,2])[c(2:3,5)],4)
+AC4[22,1]<- "VAR fijo bagged" 
+AC5[22,1]<-"2"
+AC4[22,2:4]<-round(accuracy(pr.f.h7.b[,4], out.of.sample[7:58,2])[c(2:3,5)],4)
+AC4[23,1]<- "FAVAR fijo bagged"
+AC5[23,1]<-"2"
+AC4[23,2:4]<-round(accuracy(pr.rec.h7.b[,5], out.of.sample[7:58,2])[c(2:3,5)],4)
+
+# medidas de accuracy de los pronósticos con esquema rec, h = 1 y series boots
+
+AC4[24,1]<-"ARIMA recursivo bagged" 
+AC5[24,1]<-"2"
+AC4[24,2:4]<-round(accuracy(pr.rec.h7.b[,1], out.of.sample[7:58,2])[c(2:3,5)],4)
+AC4[25,1]<-"ARIMAX recursivo bagged" 
+AC5[25,1]<-"2"
+AC4[25,2:4]<-round(accuracy(pr.rec.h7.b[,2], out.of.sample[7:58,2])[c(2:3,5)],4)
+AC4[26,1]<-"ETS recursivo bagged" 
+AC5[26,1]<-"2"
+AC4[26,2:4]<-round(accuracy(pr.rec.h7.b[,3], out.of.sample[7:58,2])[c(2:3,5)],4)
+AC4[27,1]<- "VAR recursivo bagged" 
+AC5[27,1]<-"2"
+AC4[27,2:4]<-round(accuracy(pr.rec.h7.b[,4], out.of.sample[7:58,2])[c(2:3,5)],4)
+AC4[28,1]<- "FAVAR recursivo bagged"
+AC5[28,1]<-"2"
+AC4[28,2:4]<-round(accuracy(pr.rec.h7.b[,5], out.of.sample[7:58,2])[c(2:3,5)],4)
+
+# medidas de accuracy de los pronósticos con esquema rolling, h = 2 y series boots
+
+
+AC4[29,1]<-"ARIMA rolling bagged" 
+AC5[29,1]<-"2"
+AC4[29,2:4]<-round(accuracy(pr.rol.h7.b[,1], out.of.sample[7:58,2])[c(2:3,5)],4)
+AC4[30,1]<-"ARIMAX rolling bagged" 
+AC5[30,1]<-"2"
+AC4[30,2:4]<-round(accuracy(pr.rol.h7.b[,2], out.of.sample[7:58,2])[c(2:3,5)],4)
+AC4[31,1]<-"ETS rollingbagged" 
+AC5[31,1]<-"2"
+AC4[31,2:4]<-round(accuracy(pr.rol.h7.b[,3], out.of.sample[7:58,2])[c(2:3,5)],4)
+AC4[32,1]<- "VAR rolling bagged" 
+AC5[32,1]<-"2"
+AC4[32,2:4]<-round(accuracy(pr.rol.h7.b[,4], out.of.sample[7:58,2])[c(2:3,5)],4)
+AC4[33,1]<- "FAVAR rolling bagged"
+AC5[33,1]<-"2"
+AC4[33,2:4]<-round(accuracy(pr.rol.h7.b[,5], out.of.sample[7:58,2])[c(2:3,5)],4)
+
 
 
 
