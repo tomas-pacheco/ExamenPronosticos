@@ -11,7 +11,7 @@ library(dplyr)
 
 # PREGUNTA M: ¿Tenemos que diferenciar las reservas? 
 
-
+# buscar VER
 
 ###############################################################################
 
@@ -62,7 +62,7 @@ data$casos.arg.rel <- data$casosarg/data$casosmundo
 data$casos.arg.rel<-ifelse(is.na(data$casos.arg.rel),0,data$casos.arg.rel)
 
 
-# Borramos las variables 'nominales' del resto del mundo, el sentimiento de alberto fernandez sin 
+# Borramos las variables 'nominales' del resto del mundo, el sentimiento de Alberto Fernandez sin 
 # el suavizado, y las variables del sentimiento de mercado de Twitter 
 
 data <- data[, -c(2,15,16,17,18)]
@@ -459,6 +459,12 @@ PCA1$sdev^2
 
 PC <- scale(in.sample[,3:15])%*%PCA1$rotation
 
+
+### prueba 
+
+PC <- scale(data[,3:15])%*%PCA1$rotation
+
+
 # Ahora estimamos el modelo FAVAR.
 
 favar.data <- cbind(in.sample[,2], PC[,1:4])
@@ -487,40 +493,46 @@ stargazer(var.dl$varresult$sentsmooth, favar$varresult$X,
 
 
 
-
 ## PRONOSTICOS 
 
 #Esquema fijo 
 
+
 # h=1 
 
 data1 <- ts(data, frequency = 365, start = c(2019,12))
+PC<-ts(PC[,1:4], frequency = 365, start = c(2019,12))
 
-pr.f.h1 <- ts(matrix(0, 58, 5), frequency = 365, start=c(2020,11))
-colnames(pr.f.h1) <- c("ARIMA", "ARIMAX", "ADL", "ETS","VAR")
+pr.f.h1 <- ts(matrix(0, 58, 6), frequency = 365, start=c(2020,11))
+colnames(pr.f.h1) <- c("ARIMA", "ARIMAX", "ETS", "ADL","VAR", "FAVAR")
 h<-1
 for(i in 1:58){
-  temp<-window(data1[,2], start = c(2019,12), end = 2020.195 + (i-1)/365)
-  temp2 <-window(data1[,3:15], start = c(2019,12), end = 2020.195 + (i-1)/365)
+  temp <- window(data1[,2], start = c(2019,12), end = 2020.195 + (i-1)/365)
+  temp2 <- window(data1[,3:15], start = c(2019,12), end = 2020.195 + (i-1)/365)
+  temp3 <- window(PC, start = c(2019,12), end = 2020.195 + (i-1)/365)
   
   # ARIMA 
   f1 <- Arima(temp, model=arima.1)
   forecast <- forecast(f1,h = h)
   pr.f.h1[i,1] <- forecast$mean[h]
   
-  #ARIMAX
+  # ARIMAX
   f2 <- Arima(temp,model=arima.1,xreg=temp2)
   forecast2 <- forecast(f2$fitted,h=h)
   pr.f.h1[i,2] <- forecast2$mean[h]
   
-  #ETS 
-  f1 <- ets(temp, model=ets.1, use.initial.values=TRUE)
-  pre <- forecast(f1, n.ahead=h)
+  # ETS 
+  f3 <- ets(temp, model=ets.1, use.initial.values=TRUE)
+  pre <- forecast(f3, n.ahead=h)
   pr.f.h1[i,3] <- pre$mean[h]
   
+  # FAVAR
+  f4 <- VAR(cbind(temp, temp3), p = 6, type= "trend")
+  forecast4<-forecast(f4, h=h)
+  pr.f.h1[i,6] <- forecast4$forecast$temp$mean[h]
 }
 
-#ADL 
+# ADL 
 
 #Seleccionamos el orden del ADL 
 
@@ -585,37 +597,50 @@ h<-1
 for(i in 1:58){ 
   temp2<-window(data.diff, start = c(2019,12), end = 2020.195 + (i-1)/365)
   f5 <- VAR(temp2, p = 6, type = "trend")
-  forecast1<- forecast(f5)
+  forecast1<- forecast(f5, h=h)
   pr.f.h1[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
 }
 
+write.csv(cbind(out.of.sample[,1:2], pr.f.h1), "pr.f.h1.csv")
 
 # Grafico de los pronosticos con esquema fijo y h=1 
 
-# VER: los colores no se si quedan muuy bien 
+# VER: los colores no se si quedan muuy bien #941cf7
 
-colores <- c("#00ABC5","#cfb0b4" ,"#ff3c84","#f7941c", "#edf71c")
+colores <- c("#00ABC5","#cfb0b4" ,"#ff3c84","#FF7F32", "#edf71c", "#941cf7")
 
 
-autoplot(ts.union(out.of.sample[,2], pr.f.h1[,1], pr.f.h1[,2],pr.f.h1[,3],pr.f.h1[,4],pr.f.h1[,5]), size = 1) +
-  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR"), 
-                     values = c("#4b4b4b", colores[1], colores[2],colores[3], colores[4], colores[5]))+
+autoplot(ts.union(out.of.sample[,2], pr.f.h1[,1], pr.f.h1[,2],pr.f.h1[,3],pr.f.h1[,4],pr.f.h1[,5], pr.f.h1[,6]), size = 0.7) +
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"), 
+                     values = c("#4b4b4b", colores[1], colores[2],colores[3], colores[4], colores[5], colores[6]), 
+                     ncol(2))+
   ggtitle("Pronósticos fijos con h = 1") +
   xlab("Tiempo") + ylab("Sentimiento Alberto")+
   theme_minimal() +  
-  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+  theme(legend.position = c(0.85,0.80), plot.title = element_text(hjust = 0.5))
 
+# VER prueba de graficos 
+
+out.of.sample.prueba <- ts(out.of.sample[,2], frequency = 365, start = c(2020,11))
+
+autoplot(out.of.sample.prueba, size=1)+
+  autolayer(pr.f.h1[,1])
+
+# fin de prueba 
 
 # ESQUEMA RECURSIVO 
 
 data1 <- ts(data, frequency = 365, start = c(2019,12))
 
-pr.rec.h1 <- ts(matrix(0, 58, 5), frequency = 365, start=c(2020,11))
-colnames(pr.rec.h1) <- c("ARIMA", "ARIMAX", "ADL", "ETS","VAR")
+PC<-ts(PC[,1:4], frequency = 365, start = c(2019,12))
+
+pr.rec.h1 <- ts(matrix(0, 58, 6), frequency = 365, start=c(2020,11))
+colnames(pr.rec.h1) <- c("ARIMA", "ARIMAX", "ETS", "ADL","VAR","FAVAR")
 h<-1
 for(i in 1:58){
   temp<-window(data1[,2], start = c(2019,12), end = 2020.195 + (i-1)/365)
   temp2 <-window(data1[,3:15], start = c(2019,12), end = 2020.195 + (i-1)/365)
+  temp3 <- window(PC, start = c(2019,12), end = 2020.195 + (i-1)/365)
   
   # ARIMA 
   f1 <- auto.arima(temp)
@@ -623,17 +648,21 @@ for(i in 1:58){
   pr.rec.h1[i,1] <- forecast$mean[h]
   
   #ARIMAX
-  f2 <- Arima(temp,model=f1, newxreg=temp2)
+  f2 <- Arima(temp,model=auto.arima(temp), newxreg=temp2)
   forecast2 <- forecast(f2$fitted,h=h)
   pr.rec.h1[i,2] <- forecast2$mean[h]
   
   #ETS 
   f3 <- ets(temp)
-  pre <- forecast(f1, n.ahead=h)
+  pre <- forecast(f3, n.ahead=h)
   pr.rec.h1[i,3] <- pre$mean[h]
   
+  # FAVAR
+  a<-VARselect(cbind(temp, temp3), lag.max = 13, type = "const")$selection[1]
+  f4 <- VAR(cbind(temp, temp3), p = a, type= "trend")
+  forecast4<-forecast(f4, h=h)
+  pr.rec.h1[i,6] <- forecast4$forecast$temp$mean[h] 
 }
-
 
 #ADL 
 
@@ -654,14 +683,14 @@ for(i in 1:58){
   
   order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                               casosarg + muertosarg + vacunasarg + maxtemp + 
-                              mintemp + sent_trends + muertes.arg.rel + casos.arg.rel|
+                              mintemp + muertes.arg.rel + casos.arg.rel|
                               mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
                               mes07 + mes08 + mes09 +  mes10 + mes11, 
                             data = temp2, max_order = 5)
   
   adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                    casosarg + muertosarg + vacunasarg + maxtemp + 
-                   mintemp + sent_trends + muertes.arg.rel + casos.arg.rel|
+                   mintemp + muertes.arg.rel + casos.arg.rel|
                    mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
                    mes07 + mes08 + mes09 +  mes10 + mes11, 
                  data = temp2, order = as.vector(order.adl.dl$best_order))
@@ -691,20 +720,18 @@ h<-1
 
 for(i in 1:58){ 
   temp2<-window(data.diff, start = c(2019,12), end = 2020.195 + (i-1)/365)
-  a<-VARselect(data.diff, lag.max = 13, type = "const")
-  b<-a$selection
-  c<-b[1]
-  f5 <- VAR(temp2, p = c, type = "trend")
-  forecast1<- forecast(f5)
+  a<-VARselect(data.diff, lag.max = 13, type = "const")$selection[1]
+  f5 <- VAR(temp2, p = a, type = "trend")
+  forecast1<- forecast(f5, h=h)
   pr.rec.h1[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
 }
 
 
 # Gráfico con los pronósticos recursivos y h=1 
 
-autoplot(ts.union(out.of.sample[,2], pr.rec.h1[,1], pr.rec.h1[,2],pr.rec.h1[,3],pr.rec.h1[,4],pr.rec.h1[,5]), size = 1.1) + 
-  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR"),
-                     values = c("black", "sienna2", "palegreen3","#00AFBB", colores[2], colores[1])) +
+autoplot(ts.union(out.of.sample[,2], pr.rec.h1[,1], pr.rec.h1[,2],pr.rec.h1[,3],pr.rec.h1[,4],pr.rec.h1[,5], pr.rec.h1[,6]), size = 0.7) + 
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"),
+                     values = c("#4b4b4b", colores[1], colores[2],colores[3], colores[4], colores[5], colores[6])) +
   ggtitle("Pronósticos recursivos con h = 1") + 
   xlab("Tiempo") + ylab("Sentimiento Alberto")+
   theme_minimal() +  
@@ -716,13 +743,15 @@ autoplot(ts.union(out.of.sample[,2], pr.rec.h1[,1], pr.rec.h1[,2],pr.rec.h1[,3],
 
 
 data1 <- ts(data, frequency = 365, start = c(2019,12))
+PC<-ts(PC[,1:4], frequency = 365, start = c(2019,12))
 
-pr.rol.h1 <- ts(matrix(0, 58, 5), frequency = 365, start=c(2020,11))
-colnames(pr.rec.h1) <- c("ARIMA", "ARIMAX", "ADL", "ETS","VAR")
+pr.rol.h1 <- ts(matrix(0, 58, 6), frequency = 365, start=c(2020,11))
+colnames(pr.rec.h1) <- c("ARIMA", "ARIMAX", "ETS", "ADL","VAR","FAVAR")
 h<-1
 for(i in 1:58){
   temp<-window(data1[,2], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
-  temp2 <-window(data1[,3:15], start = c(2019,12), end = 2020.195 + (i-1)/365)
+  temp2 <-window(data1[,3:15], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+  temp3 <- window(PC, start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
   
   # ARIMA 
   f1 <- auto.arima(temp)
@@ -730,15 +759,20 @@ for(i in 1:58){
   pr.rol.h1[i,1] <- forecast$mean[h]
   
   #ARIMAX
-  f2 <- Arima(temp,model=f1, newxreg=temp2)
+  f2 <- Arima(temp,model=auto.arima(temp), newxreg=temp2)
   forecast2 <- forecast(f2$fitted,h=h)
   pr.rol.h1[i,2] <- forecast2$mean[h]
   
   #ETS 
   f3 <- ets(temp)
-  pre <- forecast(f1, n.ahead=h)
+  pre <- forecast(f3, n.ahead=h)
   pr.rol.h1[i,3] <- pre$mean[h]
   
+  # FAVAR
+  a<-VARselect(cbind(temp, temp3), lag.max = 13, type = "const")$selection[1]
+  f4 <- VAR(cbind(temp, temp3), p = a, type= "trend")
+  forecast4<-forecast(f4, h=h)
+  pr.rol.h1[i,6] <- forecast4$forecast$temp$mean[h] 
 }
 
 
@@ -798,20 +832,18 @@ h<-1
 
 for(i in 1:58){ 
   temp2<-window(data.diff, start = 2019.033 + (i-1)/365, end = 2020.195 + (i-1)/365)
-  a<-VARselect(data.diff, lag.max = 13, type = "const")
-  b<-a$selection
-  c<-b[1]
-  f5 <- VAR(temp2, p = c, type = "trend")
-  forecast1<- forecast(f5)
+  a<-VARselect(data.diff, lag.max = 13, type = "const")$selection[1]
+  f5 <- VAR(temp2, p = a, type = "trend")
+  forecast1<- forecast(f5, h=h)
   pr.rol.h1[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
 }
 
 
 # Gráfico con los pronósticos rolling y h=1 
 
-autoplot(ts.union(out.of.sample[,2], pr.rol.h1[,1], pr.rol.h1[,2],pr.rol.h1[,3],pr.rol.h1[,4],pr.rol.h1[,5]), size = 1.3) + 
-  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR"),
-                     values = c("black", "sienna2", "palegreen3","#00AFBB", colores[2], colores[1])) +
+autoplot(ts.union(out.of.sample[,2], pr.rol.h1[,1], pr.rol.h1[,2],pr.rol.h1[,3],pr.rol.h1[,4],pr.rol.h1[,5], pr.rol.h1[,6]), size = 0.7) + 
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"),
+                     values = c("black", colores[1], colores[2],colores[3], colores[4], colores[5], colores[6])) +
   ggtitle("Pronósticos rolling con h = 1") + 
   xlab("Tiempo") + ylab("Sentimiento Alberto")+
   theme_minimal() +  
@@ -828,14 +860,16 @@ autoplot(ts.union(out.of.sample[,2], pr.rol.h1[,1], pr.rol.h1[,2],pr.rol.h1[,3],
 # con lo cual, pierdo 1 observación
 
 data1 <- ts(data, frequency = 365, start = c(2019,12))
+PC<-ts(PC[,1:4], frequency = 365, start = c(2019,12))
 
-pr.f.h2 <- ts(matrix(0, 57, 5), frequency = 365, start=c(2020,11))
-colnames(pr.f.h2) <- c("ARIMA", "ARIMAX", "ADL", "ETS","VAR")
+pr.f.h2 <- ts(matrix(0, 57, 6), frequency = 365, start=c(2020,11))
+colnames(pr.f.h2) <- c("ARIMA", "ARIMAX", "ETS", "ADL","VAR","FAVAR")
 h<-2
 for(i in 1:57){
   temp<-window(data1[,2], start = c(2019,12), end = 2020.195 + (i-1)/365)
   temp2 <-window(data1[,3:15], start = c(2019,12), end = 2020.195 + (i-1)/365)
-  
+  temp3 <- window(PC, start = c(2019,12), end = 2020.195 + (i-1)/365)
+
   # ARIMA 
   f1 <- Arima(temp, model=arima.1)
   forecast <- forecast(f1,h = h)
@@ -847,9 +881,15 @@ for(i in 1:57){
   pr.f.h2[i,2] <- forecast2$mean[h]
   
   #ETS 
-  f1 <- ets(temp, model=ets.1, use.initial.values=TRUE)
-  pre <- forecast(f1, n.ahead=h)
+  f3 <- ets(temp, model=ets.1, use.initial.values=TRUE)
+  pre <- forecast(f3, n.ahead=h)
   pr.f.h2[i,3] <- pre$mean[h]
+  
+  # FAVAR
+  a<-VARselect(cbind(temp, temp3), lag.max = 13, type = "const")$selection[1]
+  f4 <- VAR(cbind(temp, temp3), p = a, type= "trend")
+  forecast4<-forecast(f4, h=h)
+  pr.f.h2[i,6] <- forecast4$forecast$temp$mean[h]
   
 }
 
@@ -918,23 +958,20 @@ h<-2
 for(i in 1:57){ 
   temp2<-window(data.diff, start = c(2019,12), end = 2020.195 + (i-1)/365)
   f5 <- VAR(temp2, p = 6, type = "trend")
-  forecast1<- forecast(f5)
+  forecast1<- forecast(f5, h=h)
   pr.f.h2[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
 }
 
 
 # Grafico de los pronosticos con esquema fijo y h=2
 
-# VER: los colores no se si quedan muuy bien 
-
-colores <- c("#00ABC5","#cfb0b4" ,"#ff3c84","#f7941c", "#edf71c")
 
 # eliminamos las primeras 6 observaciones del período out of sample debido a que la cantidad 
 # de pasos adelante que hicimos los pronósticos 
 
-autoplot(ts.union(out.of.sample[2:58,2], pr.f.h2[,1], pr.f.h2[,2],pr.f.h2[,3],pr.f.h2[,4],pr.f.h2[,5]), size = 1) +
-  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR"), 
-                     values = c("#4b4b4b", colores[1], colores[2],colores[3], colores[4], colores[5]))+
+autoplot(ts.union(out.of.sample[2:58,2], pr.f.h2[,1], pr.f.h2[,2],pr.f.h2[,3],pr.f.h2[,4],pr.f.h2[,5], pr.f.h2[,6]), size = 0.7) +
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"), 
+                     values = c("#4b4b4b", colores[1], colores[2],colores[3], colores[4], colores[5], colores[6]))+
   ggtitle("Pronósticos fijos con h = 2") +
   xlab("Tiempo") + ylab("Sentimiento Alberto")+
   theme_minimal() +  
@@ -944,14 +981,16 @@ autoplot(ts.union(out.of.sample[2:58,2], pr.f.h2[,1], pr.f.h2[,2],pr.f.h2[,3],pr
 # ESQUEMA RECURSIVO 
 
 data1 <- ts(data, frequency = 365, start = c(2019,12))
+PC<-ts(PC[,1:4], frequency = 365, start = c(2019,12))
 
-pr.rec.h2 <- ts(matrix(0, 57, 5), frequency = 365, start=c(2020,11))
-colnames(pr.rec.h2) <- c("ARIMA", "ARIMAX", "ADL", "ETS","VAR")
+pr.rec.h2 <- ts(matrix(0, 57, 6), frequency = 365, start=c(2020,11))
+colnames(pr.rec.h2) <- c("ARIMA", "ARIMAX", "ETS", "ADL","VAR", "FAVAR")
 h<-2
 for(i in 1:57){
   temp<-window(data1[,2], start = c(2019,12), end = 2020.195 + (i-1)/365)
   temp2 <-window(data1[,3:15], start = c(2019,12), end = 2020.195 + (i-1)/365)
-  
+  temp3 <- window(PC, start = c(2019,12), end = 2020.195 + (i-1)/365)
+
   # ARIMA 
   f1 <- auto.arima(temp)
   forecast <- forecast(f1,h = h)
@@ -964,8 +1003,15 @@ for(i in 1:57){
   
   #ETS 
   f3 <- ets(temp)
-  pre <- forecast(f1, n.ahead=h)
+  pre <- forecast(f3, n.ahead=h)
   pr.rec.h2[i,3] <- pre$mean[h]
+  
+  # FAVAR
+  a<-VARselect(cbind(temp, temp3), lag.max = 13, type = "const")$selection[1]
+  f4 <- VAR(cbind(temp, temp3), p = a, type= "trend")
+  forecast4<-forecast(f4, h=h)
+  pr.rec.h2[i,6] <- forecast4$forecast$temp$mean[h]
+  
   
 }
 
@@ -1030,16 +1076,16 @@ for(i in 1:57){
   b<-a$selection
   c<-b[1]
   f5 <- VAR(temp2, p = c, type = "trend")
-  forecast1<- forecast(f5)
+  forecast1<- forecast(f5, h=h)
   pr.rec.h2[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
 }
 
 
-# Gráfico con los pronósticos recursivos y h=1 
+# Gráfico con los pronósticos recursivos y h=2
 
-autoplot(ts.union(out.of.sample[2:58,2], pr.rec.h2[,1], pr.rec.h2[,2],pr.rec.h2[,3],pr.rec.h2[,4],pr.rec.h2[,5]), size = 1.1) + 
-  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR"),
-                     values = c("black", "sienna2", "palegreen3","#00AFBB", colores[2], colores[1])) +
+autoplot(ts.union(out.of.sample[2:58,2], pr.rec.h2[,1], pr.rec.h2[,2],pr.rec.h2[,3],pr.rec.h2[,4],pr.rec.h2[,5], pr.rec.h2[,6]), size = 0.7) + 
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"),
+                     values =  c("#4b4b4b", colores[1], colores[2],colores[3], colores[4], colores[5], colores[6])) +
   ggtitle("Pronósticos recursivos con h = 2") + 
   xlab("Tiempo") + ylab("Sentimiento Alberto")+
   theme_minimal() +  
@@ -1050,28 +1096,36 @@ autoplot(ts.union(out.of.sample[2:58,2], pr.rec.h2[,1], pr.rec.h2[,2],pr.rec.h2[
 
 
 data1 <- ts(data, frequency = 365, start = c(2019,12))
+PC<-ts(PC[,1:4], frequency = 365, start = c(2019,12))
 
-pr.rol.h2 <- ts(matrix(0, 57, 5), frequency = 365, start=c(2020,11))
-colnames(pr.rol.h2) <- c("ARIMA", "ARIMAX", "ADL", "ETS","VAR")
+pr.rol.h2 <- ts(matrix(0, 57, 6), frequency = 365, start=c(2020,11))
+colnames(pr.rol.h2) <- c("ARIMA", "ARIMAX", "ETS", "ADL","VAR","FAVAR")
 h<-2
 for(i in 1:57){
   temp<-window(data1[,2], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
-  temp2 <-window(data1[,3:15], start = c(2019,12), end = 2020.195 + (i-1)/365)
-  
+  temp2 <-window(data1[,3:15], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+  temp3 <- window(PC, start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+
   # ARIMA 
   f1 <- auto.arima(temp)
   forecast <- forecast(f1,h = h)
   pr.rol.h2[i,1] <- forecast$mean[h]
   
   #ARIMAX
-  f2 <- Arima(temp,model=f1, newxreg=temp2)
+  f2 <- Arima(temp,model=auto.arima(temp), newxreg=temp2)
   forecast2 <- forecast(f2$fitted,h=h)
   pr.rol.h2[i,2] <- forecast2$mean[h]
   
   #ETS 
   f3 <- ets(temp)
-  pre <- forecast(f1, n.ahead=h)
+  pre <- forecast(f3, n.ahead=h)
   pr.rol.h2[i,3] <- pre$mean[h]
+  
+  # FAVAR
+  a<-VARselect(cbind(temp, temp3), lag.max = 13, type = "const")$selection[1]
+  f4 <- VAR(cbind(temp, temp3), p = a, type= "trend")
+  forecast4<-forecast(f4, h=h)
+  pr.rol.h2[i,6] <- forecast4$forecast$temp$mean[h]
   
 }
 
@@ -1135,47 +1189,39 @@ for(i in 1:57){
   b<-a$selection
   c<-b[1]
   f5 <- VAR(temp2, p = c, type = "trend")
-  forecast1<- forecast(f5)
+  forecast1<- forecast(f5, h=h)
   pr.rol.h2[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
 }
 
 
-# Gráfico con los pronósticos rolling y h=1 
+# Gráfico con los pronósticos rolling y h=2
 
-autoplot(ts.union(out.of.sample[2:58,2], pr.rol.h2[,1], pr.rol.h2[,2],pr.rol.h2[,3],pr.rol.h2[,4],pr.rol.h2[,5]), size = 1.3) + 
-  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR"),
-                     values = c("black", "blue", "palegreen3","#00AFBB", colores[2], colores[1])) +
+autoplot(ts.union(out.of.sample[2:58,2], pr.rol.h2[,1], pr.rol.h2[,2],pr.rol.h2[,3],pr.rol.h2[,4],pr.rol.h2[,5], pr.rol.h2[,6]), size = 0.7) + 
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"),
+                     values = c("#4b4b4b", colores[1], colores[2],colores[3], colores[4], colores[5], colores[6])) +
   ggtitle("Pronósticos rolling con h = 1") + 
   xlab("Tiempo") + ylab("Sentimiento Alberto")+
   theme_minimal() +  
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
 
-
-
-
-
-
-
-
 #### h = 7
 
-
 #Esquema fijo 
-
-# h=7 
 
 # con lo cual, pierdo 6 observaciones 
 
 data1 <- ts(data, frequency = 365, start = c(2019,12))
+PC<-ts(PC[,1:4], frequency = 365, start = c(2019,12))
 
-pr.f.h7 <- ts(matrix(0, 52, 5), frequency = 365, start=c(2020,11))
-colnames(pr.f.h7) <- c("ARIMA", "ARIMAX", "ADL", "ETS","VAR")
+pr.f.h7 <- ts(matrix(0, 52, 6), frequency = 365, start=c(2020,11))
+colnames(pr.f.h7) <- c("ARIMA", "ARIMAX", "ETS", "ADL","VAR","FAVAR")
 h<-7
 for(i in 1:52){
   temp<-window(data1[,2], start = c(2019,12), end = 2020.195 + (i-1)/365)
   temp2 <-window(data1[,3:15], start = c(2019,12), end = 2020.195 + (i-1)/365)
-  
+  temp3 <- window(PC, start = c(2019,12), end = 2020.195 + (i-1)/365)
+
   # ARIMA 
   f1 <- Arima(temp, model=arima.1)
   forecast <- forecast(f1,h = 7)
@@ -1187,10 +1233,15 @@ for(i in 1:52){
   pr.f.h7[i,2] <- forecast2$mean[h]
   
   #ETS 
-  f1 <- ets(temp, model=ets.1, use.initial.values=TRUE)
-  pre <- forecast(f1, n.ahead=h)
+  f3 <- ets(temp, model=ets.1, use.initial.values=TRUE)
+  pre <- forecast(f3, n.ahead=h)
   pr.f.h7[i,3] <- pre$mean[h]
   
+  # FAVAR
+  a<-VARselect(cbind(temp, temp3), lag.max = 13, type = "const")$selection[1]
+  f4 <- VAR(cbind(temp, temp3), p = a, type= "trend")
+  forecast4<-forecast(f4, h=h)
+  pr.f.h7[i,6] <- forecast4$forecast$temp$mean[h]
 }
 
 
@@ -1263,23 +1314,20 @@ h<-7
 for(i in 1:52){ 
   temp2<-window(data.diff, start = c(2019,12), end = 2020.195 + (i-1)/365)
   f5 <- VAR(temp2, p = 6, type = "trend")
-  forecast1<- forecast(f5)
+  forecast1<- forecast(f5, h=h)
   pr.f.h7[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
 }
 
 
-# Grafico de los pronosticos con esquema fijo y h=1 
+# Grafico de los pronosticos con esquema fijo y h=7
 
-# VER: los colores no se si quedan muuy bien 
-
-colores <- c("#00ABC5","#cfb0b4" ,"#ff3c84","#f7941c", "#edf71c")
 
 # eliminamos las primeras 6 observaciones del período out of sample debido a que la cantidad 
 # de pasos adelante que hicimos los pronósticos 
 
-autoplot(ts.union(out.of.sample[7:58,2], pr.f.h7[,1], pr.f.h7[,2],pr.f.h7[,3],pr.f.h7[,4],pr.f.h7[,5]), size = 1) +
-  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR"), 
-                     values = c("#4b4b4b", colores[1], colores[2],colores[3], colores[4], colores[5]))+
+autoplot(ts.union(out.of.sample[7:58,2], pr.f.h7[,1], pr.f.h7[,2], pr.f.h7[,3], pr.f.h7[,4], pr.f.h7[,5], pr.f.h7[,6]), size = 0.7) +
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"), 
+                     values = c("#4b4b4b", colores[1], colores[2],colores[3], colores[4], colores[5], colores[6]))+
   ggtitle("Pronósticos fijos con h = 7") +
   xlab("Tiempo") + ylab("Sentimiento Alberto")+
   theme_minimal() +  
@@ -1289,14 +1337,16 @@ autoplot(ts.union(out.of.sample[7:58,2], pr.f.h7[,1], pr.f.h7[,2],pr.f.h7[,3],pr
 # ESQUEMA RECURSIVO 
 
 data1 <- ts(data, frequency = 365, start = c(2019,12))
+PC<-ts(PC[,1:4], frequency = 365, start = c(2019,12))
 
-pr.rec.h7 <- ts(matrix(0, 52, 5), frequency = 365, start=c(2020,11))
-colnames(pr.rec.h7) <- c("ARIMA", "ARIMAX", "ADL", "ETS","VAR")
+pr.rec.h7 <- ts(matrix(0, 52, 6), frequency = 365, start=c(2020,11))
+colnames(pr.rec.h7) <- c("ARIMA", "ARIMAX", "ETS", "ADL","VAR","FAVAR")
 h<-7
 for(i in 1:52){
   temp<-window(data1[,2], start = c(2019,12), end = 2020.195 + (i-1)/365)
   temp2 <-window(data1[,3:15], start = c(2019,12), end = 2020.195 + (i-1)/365)
-  
+  temp3 <- window(PC, start = c(2019,12), end = 2020.195 + (i-1)/365)
+
   # ARIMA 
   f1 <- auto.arima(temp)
   forecast <- forecast(f1,h = h)
@@ -1309,8 +1359,14 @@ for(i in 1:52){
   
   #ETS 
   f3 <- ets(temp)
-  pre <- forecast(f1, n.ahead=h)
+  pre <- forecast(f3, n.ahead=h)
   pr.rec.h7[i,3] <- pre$mean[h]
+  
+  # FAVAR
+  a<-VARselect(cbind(temp, temp3), lag.max = 13, type = "const")$selection[1]
+  f4 <- VAR(cbind(temp, temp3), p = a, type= "trend")
+  forecast4<-forecast(f4, h=h)
+  pr.rec.h7[i,6] <- forecast4$forecast$temp$mean[h]
   
 }
 
@@ -1375,18 +1431,18 @@ for(i in 1:52){
   b<-a$selection
   c<-b[1]
   f5 <- VAR(temp2, p = c, type = "trend")
-  forecast1<- forecast(f5)
+  forecast1<- forecast(f5, h=h)
   pr.rec.h7[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
 }
 
 
-# Gráfico con los pronósticos recursivos y h=1 
+# Gráfico con los pronósticos recursivos y h=7
 
-autoplot(ts.union(out.of.sample[7:58,2], pr.rec.h7[,1], pr.rec.h7[,2],pr.rec.h7[,3],pr.rec.h7[,4],pr.rec.h7[,5]), size = 1.1) + 
-  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR"),
-                     values = c("black", "sienna2", "palegreen3","#00AFBB", colores[2], colores[1])) +
+autoplot(ts.union(out.of.sample[7:58,2], pr.rec.h7[,1], pr.rec.h7[,2],pr.rec.h7[,3],pr.rec.h7[,4],pr.rec.h7[,5], pr.rec.h7[,6]), size = 0.7) + 
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"),
+                     values = c("#4b4b4b", colores[1], colores[2],colores[3], colores[4], colores[5], colores[6])) +
   ggtitle("Pronósticos recursivos con h = 7") + 
-  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+  xlab("Tiempo") + ylab("Sentimiento Alberto") +
   theme_minimal() +  
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
@@ -1395,14 +1451,16 @@ autoplot(ts.union(out.of.sample[7:58,2], pr.rec.h7[,1], pr.rec.h7[,2],pr.rec.h7[
 
 
 data1 <- ts(data, frequency = 365, start = c(2019,12))
+PC<-ts(PC[,1:4], frequency = 365, start = c(2019,12))
 
-pr.rol.h7 <- ts(matrix(0, 52, 5), frequency = 365, start=c(2020,11))
-colnames(pr.rol.h7) <- c("ARIMA", "ARIMAX", "ADL", "ETS","VAR")
+pr.rol.h7 <- ts(matrix(0, 52, 6), frequency = 365, start=c(2020,11))
+colnames(pr.rol.h7) <- c("ARIMA", "ARIMAX", "ETS", "ADL","VAR", "FAVAR")
 h<-7
 for(i in 1:52){
   temp<-window(data1[,2], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
-  temp2 <-window(data1[,3:15], start = c(2019,12), end = 2020.195 + (i-1)/365)
-  
+  temp2 <-window(data1[,3:15], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+  temp3 <- window(PC, start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+
   # ARIMA 
   f1 <- auto.arima(temp)
   forecast <- forecast(f1,h = h)
@@ -1415,9 +1473,14 @@ for(i in 1:52){
   
   #ETS 
   f3 <- ets(temp)
-  pre <- forecast(f1, n.ahead=h)
+  pre <- forecast(f3, n.ahead=h)
   pr.rol.h7[i,3] <- pre$mean[h]
   
+  # FAVAR
+  a<-VARselect(cbind(temp, temp3), lag.max = 13, type = "const")$selection[1]
+  f4 <- VAR(cbind(temp, temp3), p = a, type= "trend")
+  forecast4<-forecast(f4, h=h)
+  pr.rol.h7[i,6] <- forecast4$forecast$temp$mean[h]
 }
 
 
@@ -1481,89 +1544,848 @@ for(i in 1:52){
   b<-a$selection
   c<-b[1]
   f5 <- VAR(temp2, p = c, type = "trend")
-  forecast1<- forecast(f5)
+  forecast1<- forecast(f5, h=h)
   pr.rol.h7[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
 }
 
 
-# Gráfico con los pronósticos rolling y h=1 
+# Gráfico con los pronósticos rolling y h=7
 
-autoplot(ts.union(out.of.sample[7:58,2], pr.rol.h7[,1], pr.rol.h7[,2],pr.rol.h7[,3],pr.rol.h7[,4],pr.rol.h7[,5]), size = 1.3) + 
+autoplot(ts.union(out.of.sample[7:58,2], pr.rol.h7[,1], pr.rol.h7[,2],pr.rol.h7[,3],pr.rol.h7[,4],pr.rol.h7[,5], pr.rol.h7[,6]), size = 0.7) + 
   scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR"),
-                     values = c("black", "sienna2", "palegreen3","#00AFBB", colores[2], colores[1])) +
-  ggtitle("Pronósticos rolling con h = 1") + 
+                     values = c("#4b4b4b", colores[1], colores[2],colores[3], colores[4], colores[5], colores[6])) +
+  ggtitle("Pronósticos rolling con h = 7") + 
+  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+  theme_minimal() +  
+  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+
+
+########### BAGGING ########################
+
+# Realizamos bagging con los modelos arima, ets, var, adl con esquema fijo 
+
+# h = 1
+
+# ARIMA 
+
+library(forecast)
+
+library(quantmod)
+
+set.seed(444)
+
+
+for (i in 2:15) {
+  a <- bld.mbb.bootstrap(data[,i], 1000) %>% as.data.frame() %>% ts(start=c(2019,12), frequency=365)
+  assign(paste("data.bag.",i,sep = ""),ts(a, frequency = 365, start = c(2019,12)))
+}
+
+
+
+for (i in 1:4) {
+  b <- bld.mbb.bootstrap(PC[,i], 1000) %>% as.data.frame() %>% ts(start=c(2019,12), frequency=365)
+  assign(paste("PC.bag.",i,sep = ""),ts(b, frequency = 365, start = c(2019,12)))
+}
+
+
+
+pr.f.h1.b <- matrix(nrow=58,ncol=5, NA)
+
+h<-1
+for(i in 1:58){
+  pr.arima <- matrix(nrow=1,ncol=1000,NA)
+  pr.arimax <- matrix(nrow=1,ncol=1000,NA)
+  pr.ets <- matrix(nrow=1,ncol=1000,NA)
+  pr.favar <- matrix(nrow=1,ncol=1000,NA)
+  
+  
+  for (j in 1:1000) {
+  if (j == 500){print(j)}
+  temp <-window(data.bag.2[,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
+  data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j])
+  temp2 <- window(data.var.bag.ex, start = c(2019,12), end = 2020.195 + (i-1)/365)
+  temp3 <- window(cbind(PC.bag.1,PC.bag.2,PC.bag.3,PC.bag.4), start = c(2019,12), end = 2020.195 + (i-1)/365)
+  # ARIMA 
+  f1 <- Arima(temp, model=arima.1)
+  forecast <- forecast(f1,h = h)
+  pr.arima[1,j] <- forecast$mean[h]
+  
+  # ARIMAX
+  f2 <- Arima(temp,model=arima.1,xreg=temp2)
+  forecast2 <- forecast(f2$fitted,h=h)
+  pr.arimax[1,j] <- forecast2$mean[h]
+  
+  # ETS 
+  f1 <- ets(temp, model=ets.1, use.initial.values=TRUE)
+  pre <- forecast(f1, n.ahead=h)
+  pr.ets[1,j] <- pre$mean[h]
+  
+  # FAVAR
+  f4 <- VAR(cbind(temp, temp3), p = 6, type= "trend")
+  forecast4<-forecast(f4, h=h)
+  pr.favar[1,j] <- forecast4$forecast$temp$mean[h]
+  } 
+  
+  pr.f.h1.b[i,1] <- mean(pr.arima)
+  pr.f.h1.b[i,2] <- mean(pr.arimax)
+  pr.f.h1.b[i,3] <- mean(pr.ets)
+  pr.f.h1.b[i,4] <- mean(pr.favar)
+  print(i)
+}
+
+pr.f.h1.b <- ts(pr.f.h1.b, frequency = 365, start = c(2019,12))
+
+
+# Realizamos los pronósticos con el VAR 
+
+# Construimos la serie diferenciando las variables que son I(1)
+
+
+h<-1
+
+for(i in 1:58){
+  for (j in 1:1000) {
+  temp<-window(data.bag.2[-1,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
+  data.var.bag <- cbind(data.bag.2[-1,j],data.bag.3[-1,j],diff(data.bag.4[,j]),data.bag.5[-1,j],data.bag.6[-1,j],data.bag.7[-1,j],diff(data.bag.8[,j]),data.bag.9[-1,j],data.bag.10[-1,j],data.bag.11[-1,j],data.bag.12[-1,j],data.bag.13[-1,j],data.bag.14[-1,j],data.bag.15[-1,j])
+  temp2 <-window(data.var.bag.ex, start = c(2019,12), end = 2020.195 + (i-1)/365)
+  f5 <- VAR(data.var.bag, p = 6, type = "trend")
+  forecast1<- forecast(f5)
+  pr.f.h1.b[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
+  }
+}
+
+
+
+autoplot(ts.union(out.of.sample[,2], pr.f.h1.b[,1], pr.f.h1.b[,2], pr.f.h1.b[,3], pr.f.h1[,4], pr.f.h1[,5]), size = 0.7) + 
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS", "FAVAR, VAR"),
+                     values = c("black", colores[1], colores[2], colores[3], colores[4])) +
+  ggtitle("Pronósticos bagging h=1, esquema fijo") + 
+  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+  theme_minimal() +  
+  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+
+# gráficos que comparen ets bagged contra ets 
+
+
+# h = 2 
+
+pr.f.h2.b <- matrix(nrow=57,ncol=5, NA)
+
+h<-2
+for(i in 1:57){
+  pr.arima <- matrix(nrow=1,ncol=1000,NA)
+  pr.arimax <- matrix(nrow=1,ncol=1000,NA)
+  pr.ets <- matrix(nrow=1,ncol=1000,NA)
+  pr.favar <-  matrix(nrow=1,ncol=1000,NA)
+  
+  for (j in 1:1000) {
+    if (j == 500){print(j)}
+    temp<-window(data.bag.2[,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
+    data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j])
+    temp2 <-window(data.var.bag.ex, start = c(2019,12), end = 2020.195 + (i-1)/365)
+    temp3 <- window(cbind(PC.bag.1,PC.bag.2,PC.bag.3,PC.bag.4), start = c(2019,12), end = 2020.195 + (i-1)/365)
+    
+    # ARIMA 
+    f1 <- Arima(temp, model=arima.1)
+    forecast <- forecast(f1,h = h)
+    pr.arima[1,j] <- forecast$mean[h]
+    
+    #ARIMAX
+    f2 <- Arima(temp,model=arima.1,xreg=temp2)
+    forecast2 <- forecast(f2$fitted,h=h)
+    pr.arimax[1,j] <- forecast2$mean[h]
+    
+    #ETS 
+    f1 <- ets(temp, model=ets.1, use.initial.values=TRUE)
+    pre <- forecast(f1, n.ahead=h)
+    pr.ets[1,j] <- pre$mean[h]
+    
+    # FAVAR
+    f4 <- VAR(cbind(temp, temp3), p = 6, type= "trend")
+    forecast4<-forecast(f4, h=h)
+    pr.favar[1,j] <- forecast4$forecast$temp$mean[h]
+    
+  } 
+  
+  pr.f.h2.b[i,1] <- mean(pr.arima)
+  pr.f.h2.b[i,2] <- mean(pr.arimax)
+  pr.f.h2.b[i,3] <- mean(pr.ets)
+  pr.f.h2.b[i,4] <- mean(pr.favar)
+  print(i)
+}
+
+pr.f.h2.b <- ts(pr.f.h2.b, frequency = 365, start = c(2019,12))
+
+
+# Realizamos los pronósticos con el VAR 
+
+# Construimos la serie diferenciando las variables que son I(1)
+
+h<-2
+
+for(i in 1:57){
+  for (j in 1:1000) {
+    temp<-window(data.bag.2[-1,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
+    data.var.bag <- cbind(data.bag.2[-1,j],data.bag.3[-1,j],diff(data.bag.4[,j]),data.bag.5[-1,j],data.bag.6[-1,j],data.bag.7[-1,j],diff(data.bag.8[,j]),data.bag.9[-1,j],data.bag.10[-1,j],data.bag.11[-1,j],data.bag.12[-1,j],data.bag.13[-1,j],data.bag.14[-1,j],data.bag.15[-1,j])
+    temp2 <-window(data.var.bag.ex, start = c(2019,12), end = 2020.195 + (i-1)/365)
+    f5 <- VAR(data.var.bag, p = 6, type = "trend")
+    forecast1<- forecast(f5)
+    pr.f.h2.b[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
+  }
+}
+
+# Realizamos el gráfico de los pronósticos 
+
+
+autoplot(ts.union(out.of.sample[2:58,2], pr.f.h2.b[,1], pr.f.h2.b[,2], pr.f.h2.b[,3], pr.f.h2.b[,4], pr.f.h2.b[,5]), size = 0.7) + 
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS", "FAVAR", "VAR"),
+                     values = c("black", colores[1], colores[2], colores[3], colores[4])) +
+  ggtitle("Pronósticos baggind h=2, esquema fijo") + 
+  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+  theme_minimal() +  
+  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+
+
+# h = 7 
+
+for (i in 2:15) {
+  a <- bld.mbb.bootstrap(data[,i], 1000) %>% as.data.frame() %>% ts(start=c(2019,12), frequency=365)
+  assign(paste("data.bag.",i,sep = ""),ts(a, frequency = 365, start = c(2019,12)))
+}
+
+
+pr.f.h7.b <- matrix(nrow=52,ncol=5, NA)
+
+h<-1
+for(i in 1:52){
+  pr.arima <- matrix(nrow=1,ncol=1000,NA)
+  pr.arimax <- matrix(nrow=1,ncol=1000,NA)
+  pr.ets <- matrix(nrow=1,ncol=1000,NA)
+  pr.favar <- matrix(nrow=1,ncol=1000,NA)
+  
+  for (j in 1:1000) {
+    if (j == 500){print(j)}
+    temp<-window(data.bag.2[,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
+    data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j])
+    temp2 <-window(data.var.bag.ex, start = c(2019,12), end = 2020.195 + (i-1)/365)
+    temp3 <- window(cbind(PC.bag.1,PC.bag.2,PC.bag.3,PC.bag.4), start = c(2019,12), end = 2020.195 + (i-1)/365)
+    
+    # ARIMA 
+    f1 <- Arima(temp, model=arima.1)
+    forecast <- forecast(f1,h = h)
+    pr.arima[1,j] <- forecast$mean[h]
+    
+    #ARIMAX
+    f2 <- Arima(temp,model=auto.arima(temp),xreg=temp2)
+    forecast2 <- forecast(f2$fitted,h=h)
+    pr.arimax[1,j] <- forecast2$mean[h]
+    
+    #ETS 
+    f1 <- ets(temp, model=ets.1, use.initial.values=TRUE)
+    pre <- forecast(f1, n.ahead=h)
+    pr.ets[1,j] <- pre$mean[h]
+    
+    # FAVAR
+    f4 <- VAR(cbind(temp, temp3), p = 6, type= "trend")
+    forecast4<-forecast(f4, h=h)
+    pr.favar[1,j] <- forecast4$forecast$temp$mean[h]
+  } 
+  
+  pr.f.h7.b[i,1] <- mean(pr.arima)
+  pr.f.h7.b[i,2] <- mean(pr.arimax)
+  pr.f.h7.b[i,3] <- mean(pr.ets)
+  pr.f.h7.b[i,4] <- mean(pr.favar)
+  print(i)
+}
+
+pr.f.h7.b <- ts(pr.f.h7.b, frequency = 365, start = c(2019,12))
+
+
+# Realizamos los pronósticos con el VAR 
+
+# Construimos la serie diferenciando las variables que son I(1)
+
+
+h <- 7
+
+for(i in 1:52){
+  for (j in 1:1000) {
+    temp<-window(data.bag.2[-1,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
+    data.var.bag <- cbind(data.bag.2[-1,j],data.bag.3[-1,j],diff(data.bag.4[,j]),data.bag.5[-1,j],data.bag.6[-1,j],data.bag.7[-1,j],diff(data.bag.8[,j]),data.bag.9[-1,j],data.bag.10[-1,j],data.bag.11[-1,j],data.bag.12[-1,j],data.bag.13[-1,j],data.bag.14[-1,j],data.bag.15[-1,j])
+    temp2 <-window(data.var.bag.ex, start = c(2019,12), end = 2020.195 + (i-1)/365)
+    f5 <- VAR(data.var.bag, p = 6, type = "trend")
+    forecast1<- forecast(f5)
+    pr.f.h7.b[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
+  }
+}
+
+# Realizamos el gráfico de los pronósticos 
+
+autoplot(ts.union(out.of.sample[7:58,2], pr.f.h7.b[,1], pr.f.h7.b[,2], pr.f.h7.b[,3], pr.f.h7.b[,4], pr.f.h7.b[,5]), size = 0.7) + 
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","FAVAR", "VAR"),
+                     values = c("black", colores[1], colores[2], colores[3], colores[4])) +
+  ggtitle("Pronósticos bagging h=7, esquema fijo") + 
   xlab("Tiempo") + ylab("Sentimiento Alberto")+
   theme_minimal() +  
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
 
 
-#### h = 14
+# Realizamos bagging con los modelos arima, ets, var, adl con esquema recursivo 
 
-# VER: creo que van a quedar horribles, porque los que son 7 pasos adelante son horribles
-
-########### BAGGING ########################
-
-# Realizamos bagging con los modelos arima, ets, var, adl con esquema fijo y h=1
+# h = 1
 
 # ARIMA 
 
+library(forecast)
+
 library(quantmod)
 
-# Hago las series bootstrap de todas las variables
+set.seed(444)
 
-var.bag <- ts(matrix(0, 500, 15000), frequency = 365, start=c(2020,11))
-
-
-# VER: quiero hacer que itere la matriz en la que se guarda, por ejemplo, si i=2 
-#que guarde en una matriz las series bootstrap del sentimiento de alberto 
 
 for (i in 2:15) {
-  a<-bld.mbb.bootstrap(data[,i], 100) %>% as.data.frame() %>% ts(start=c(2019,12), frequency=365)
-  var.bag.i<-ts(a, frequency = 365, start = c(2019,12))
+  a <- bld.mbb.bootstrap(data[,i], 1000) %>% as.data.frame() %>% ts(start=c(2019,12), frequency=365)
+  assign(paste("data.bag.",i,sep = ""),ts(a, frequency = 365, start = c(2019,12)))
 }
 
-data.bag <- ts(a, frequency = 365, start = c(2019,12))
+
+
+for (i in 1:4) {
+  b <- bld.mbb.bootstrap(PC[,i], 1000) %>% as.data.frame() %>% ts(start=c(2019,12), frequency=365)
+  assign(paste("PC.bag.",i,sep = ""),ts(b, frequency = 365, start = c(2019,12)))
+}
+
+
+
+pr.rec.h1.b <- matrix(nrow=58,ncol=5, NA)
 
 h<-1
 for(i in 1:58){
-  temp<-window(data.bag[,2], start = c(2019,12), end = 2020.195 + (i-1)/365)
-  temp2 <-window(data1[,3:15], start = c(2019,12), end = 2020.195 + (i-1)/365)
+  pr.arima <- matrix(nrow=1,ncol=1000,NA)
+  pr.arimax <- matrix(nrow=1,ncol=1000,NA)
+  pr.ets <- matrix(nrow=1,ncol=1000,NA)
+  pr.favar <- matrix(nrow=1,ncol=1000,NA)
   
-  # ARIMA 
-  f1 <- Arima(temp, model=arima.1)
-  forecast <- forecast(f1,h = h)
-  pr.f.h1[i,1] <- forecast$mean[h]
   
-  #ARIMAX
-  f2 <- Arima(temp,model=arima.1,xreg=temp2)
-  forecast2 <- forecast(f2$fitted,h=h)
-  pr.f.h1[i,2] <- forecast2$mean[h]
+  for (j in 1:1000) {
+    if (j == 500){print(j)}
+    temp <-window(data.bag.2[,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
+    data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j])
+    temp2 <- window(data.var.bag.ex, start = c(2019,12), end = 2020.195 + (i-1)/365)
+    temp3 <- window(cbind(PC.bag.1,PC.bag.2,PC.bag.3,PC.bag.4), start = c(2019,12), end = 2020.195 + (i-1)/365)
+    # ARIMA 
+    f1 <- auto.arima(temp)
+    forecast <- forecast(f1,h = h)
+    pr.arima[1,j] <- forecast$mean[h]
+    
+    # ARIMAX
+    f2 <- Arima(temp,model=auto.arima(temp),xreg=temp2)
+    forecast2 <- forecast(f2$fitted,h=h)
+    pr.arimax[1,j] <- forecast2$mean[h]
+    
+    # ETS 
+    f1 <- ets(temp)
+    pre <- forecast(f1, n.ahead=h)
+    pr.ets[1,j] <- pre$mean[h]
+    
+    # FAVAR
+    a <- VARselect(cbind(temp, temp3), lag.max = 13, type = "trend")$selection[1]
+    f4 <- VAR(cbind(temp, temp3), p = a, type= "trend")
+    forecast4<-forecast(f4, h=h)
+    pr.favar[1,j] <- forecast4$forecast$temp$mean[h]
+  } 
   
-  #ETS 
-  f1 <- ets(temp, model=ets.1, use.initial.values=TRUE)
-  pre <- forecast(f1, n.ahead=h)
-  pr.f.h1[i,3] <- pre$mean[h]
-  
+  pr.rec.h1.b[i,1] <- mean(pr.arima)
+  pr.rec.h1.b[i,2] <- mean(pr.arimax)
+  pr.rec.h1.b[i,3] <- mean(pr.ets)
+  pr.rec.h1.b[i,4] <- mean(pr.favar)
+  print(i)
+}
+
+pr.rec.h1.b <- ts(pr.rec.h1.b, frequency = 365, start = c(2019,12))
+
+
+# Realizamos los pronósticos con el VAR 
+
+# Construimos la serie diferenciando las variables que son I(1)
+
+
+h<-1
+
+for(i in 1:58){
+  for (j in 1:1000) {
+    temp<-window(data.bag.2[-1,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
+    data.var.bag <- cbind(data.bag.2[-1,j],data.bag.3[-1,j],diff(data.bag.4[,j]),data.bag.5[-1,j],data.bag.6[-1,j],data.bag.7[-1,j],diff(data.bag.8[,j]),data.bag.9[-1,j],data.bag.10[-1,j],data.bag.11[-1,j],data.bag.12[-1,j],data.bag.13[-1,j],data.bag.14[-1,j],data.bag.15[-1,j])
+    temp2 <-window(data.var.bag.ex, start = c(2019,12), end = 2020.195 + (i-1)/365)
+    a <- VARselect(cbind(temp, temp2), lag.max = 13, type = "const")$selection[1]
+    f5 <- VAR(data.var.bag, p = a, type = "trend")
+    forecast1<- forecast(f5)
+    pr.rec.h1.b[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
+  }
 }
 
 
 
+autoplot(ts.union(out.of.sample[,2], pr.rec.h1.b[,1], pr.rec.h1.b[,2], pr.rec.h1.b[,3], pr.rec.h1[,4], pr.rec.h1[,5]), size = 0.7) + 
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS", "FAVAR, VAR"),
+                     values = c("black", colores[1], colores[2], colores[3], colores[4])) +
+  ggtitle("Pronósticos bagging h=1, esquema recursivo") + 
+  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+  theme_minimal() +  
+  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+
+# gráficos que comparen ets bagged contra ets 
+
+
+# h = 2 
+
+pr.rec.h2.b <- matrix(nrow=57,ncol=5, NA)
+
+h<-2
+for(i in 1:57){
+  pr.arima <- matrix(nrow=1,ncol=1000,NA)
+  pr.arimax <- matrix(nrow=1,ncol=1000,NA)
+  pr.ets <- matrix(nrow=1,ncol=1000,NA)
+  pr.favar <-  matrix(nrow=1,ncol=1000,NA)
+  
+  for (j in 1:1000) {
+    if (j == 500){print(j)}
+    temp<-window(data.bag.2[,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
+    data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j])
+    temp2 <-window(data.var.bag.ex, start = c(2019,12), end = 2020.195 + (i-1)/365)
+    temp3 <- window(cbind(PC.bag.1,PC.bag.2,PC.bag.3,PC.bag.4), start = c(2019,12), end = 2020.195 + (i-1)/365)
+    
+    # ARIMA 
+    f1 <- auto.arima(temp)
+    forecast <- forecast(f1,h = h)
+    pr.arima[1,j] <- forecast$mean[h]
+    
+    #ARIMAX
+    f2 <- Arima(temp,model=auto.arima(temp),xreg=temp2)
+    forecast2 <- forecast(f2$fitted,h=h)
+    pr.arimax[1,j] <- forecast2$mean[h]
+    
+    #ETS 
+    f1 <- ets(temp)
+    pre <- forecast(f1, n.ahead=h)
+    pr.ets[1,j] <- pre$mean[h]
+    
+    # FAVAR
+    a <- VARselect(cbind(temp, temp3), lag.max = 13, type = "trend")$selection[1]
+    f4 <- VAR(cbind(temp, temp3), p = a, type= "trend")
+    forecast4<-forecast(f4, h=h)
+    pr.favar[1,j] <- forecast4$forecast$temp$mean[h]
+    
+  } 
+  
+  pr.rec.h2.b[i,1] <- mean(pr.arima)
+  pr.rec.h2.b[i,2] <- mean(pr.arimax)
+  pr.rec.h2.b[i,3] <- mean(pr.ets)
+  pr.rec.h2.b[i,4] <- mean(pr.favar)
+  print(i)
+}
+
+pr.rec.h2.b <- ts(pr.rec.h2.b, frequency = 365, start = c(2019,12))
+
+
+# Realizamos los pronósticos con el VAR 
+
+# Construimos la serie diferenciando las variables que son I(1)
+
+h<-2
+
+for(i in 1:57){
+  for (j in 1:1000) {
+    temp<-window(data.bag.2[-1,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
+    data.var.bag <- cbind(data.bag.2[-1,j],data.bag.3[-1,j],diff(data.bag.4[,j]),data.bag.5[-1,j],data.bag.6[-1,j],data.bag.7[-1,j],diff(data.bag.8[,j]),data.bag.9[-1,j],data.bag.10[-1,j],data.bag.11[-1,j],data.bag.12[-1,j],data.bag.13[-1,j],data.bag.14[-1,j],data.bag.15[-1,j])
+    temp2 <-window(data.var.bag.ex, start = c(2019,12), end = 2020.195 + (i-1)/365)
+    a <- VARselect(cbind(temp, temp2),lag.max = 13, type = "trend")$selection[1]
+    f5 <- VAR(data.var.bag, p = a, type = "trend")
+    forecast1<- forecast(f5)
+    pr.rec.h2.b[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
+  }
+}
+
+# Realizamos el gráfico de los pronósticos 
+
+
+autoplot(ts.union(out.of.sample[2:58,2], pr.rec.h2.b[,1], pr.rec.h2.b[,2], pr.rec.h2.b[,3], pr.rec.h2.b[,4], pr.rec.h2.b[,5]), size = 0.7) + 
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS", "FAVAR", "VAR"),
+                     values = c("black", colores[1], colores[2], colores[3], colores[4])) +
+  ggtitle("Pronósticos bagging h=2, esquema recursivo") + 
+  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+  theme_minimal() +  
+  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+
+
+# h = 7 
+
+for (i in 2:15) {
+  a <- bld.mbb.bootstrap(data[,i], 1000) %>% as.data.frame() %>% ts(start=c(2019,12), frequency=365)
+  assign(paste("data.bag.",i,sep = ""),ts(a, frequency = 365, start = c(2019,12)))
+}
+
+
+pr.rec.h7.b <- matrix(nrow=52,ncol=5, NA)
+
+h<-1
+for(i in 1:52){
+  pr.arima <- matrix(nrow=1,ncol=1000,NA)
+  pr.arimax <- matrix(nrow=1,ncol=1000,NA)
+  pr.ets <- matrix(nrow=1,ncol=1000,NA)
+  pr.favar <- matrix(nrow=1,ncol=1000,NA)
+  
+  for (j in 1:1000) {
+    if (j == 500){print(j)}
+    temp<-window(data.bag.2[,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
+    data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j])
+    temp2 <-window(data.var.bag.ex, start = c(2019,12), end = 2020.195 + (i-1)/365)
+    temp3 <- window(cbind(PC.bag.1,PC.bag.2,PC.bag.3,PC.bag.4), start = c(2019,12), end = 2020.195 + (i-1)/365)
+    
+    # ARIMA 
+    f1 <- auto.arima(temp)
+    forecast <- forecast(f1,h = h)
+    pr.arima[1,j] <- forecast$mean[h]
+    
+    #ARIMAX
+    f2 <- Arima(temp,model=auto.arima(temp),xreg=temp2)
+    forecast2 <- forecast(f2$fitted,h=h)
+    pr.arimax[1,j] <- forecast2$mean[h]
+    
+    #ETS 
+    f1 <- ets(tem)
+    pre <- forecast(f1, n.ahead=h)
+    pr.ets[1,j] <- pre$mean[h]
+    
+    # FAVAR
+    a <- VARselect(cbind(temp, temp3), lag.max = 13, type = "trend")$selection[1]
+    f4 <- VAR(cbind(temp, temp3), p = a, type= "trend")
+    forecast4<-forecast(f4, h=h)
+    pr.favar[1,j] <- forecast4$forecast$temp$mean[h]
+  } 
+  
+  pr.rec.h7.b[i,1] <- mean(pr.arima)
+  pr.rec.h7.b[i,2] <- mean(pr.arimax)
+  pr.rec.h7.b[i,3] <- mean(pr.ets)
+  pr.rec.h7.b[i,4] <- mean(pr.favar)
+  print(i)
+}
+
+pr.rec.h7.b <- ts(pr.rec.h7.b, frequency = 365, start = c(2019,12))
+
+
+# Realizamos los pronósticos con el VAR 
+
+# Construimos la serie diferenciando las variables que son I(1)
+
+
+h <- 7
+
+for(i in 1:52){
+  for (j in 1:1000) {
+    temp<-window(data.bag.2[-1,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
+    data.var.bag <- cbind(data.bag.2[-1,j],data.bag.3[-1,j],diff(data.bag.4[,j]),data.bag.5[-1,j],data.bag.6[-1,j],data.bag.7[-1,j],diff(data.bag.8[,j]),data.bag.9[-1,j],data.bag.10[-1,j],data.bag.11[-1,j],data.bag.12[-1,j],data.bag.13[-1,j],data.bag.14[-1,j],data.bag.15[-1,j])
+    temp2 <-window(data.var.bag.ex, start = c(2019,12), end = 2020.195 + (i-1)/365)
+    a <- VARselect(cbind(temp, temp2), lag.max = 13, type = "trand")$selection[1]
+    f5 <- VAR(data.var.bag, p = 6, type = "trend")
+    forecast1<- forecast(f5)
+    pr.rec.h7.b[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
+  }
+}
+
+# Realizamos el gráfico de los pronósticos 
+
+autoplot(ts.union(out.of.sample[7:58,2], pr.rec.h7.b[,1], pr.rec.h7.b[,2], pr.rec.h7.b[,3], pr.rec.h7.b[,4], pr.rec.h7.b[,5]), size = 0.7) + 
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","FAVAR", "VAR"),
+                     values = c("black", colores[1], colores[2], colores[3], colores[4])) +
+  ggtitle("Pronósticos bagging h=7, esquema recursivo") + 
+  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+  theme_minimal() +  
+  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
 
 
-fcst.boot.arima1 <- as.data.frame(fcst.boot.arima)
+# Realizamos bagging con los modelos arima, ets, var, adl con esquema rolling
 
-plot(fcst.boot.arima1[,1])
+# h = 1
 
-fcst.bagged.arima2 <- rowMeans(fcst.boot.arima1)%>% ts(start=c(2019,12), frequency = 365) 
+# ARIMA 
+
+library(forecast)
+
+library(quantmod)
+
+set.seed(444)
+
+
+for (i in 2:15) {
+  a <- bld.mbb.bootstrap(data[,i], 1000) %>% as.data.frame() %>% ts(start=c(2019,12), frequency=365)
+  assign(paste("data.bag.",i,sep = ""),ts(a, frequency = 365, start = c(2019,12)))
+}
 
 
 
+for (i in 1:4) {
+  b <- bld.mbb.bootstrap(PC[,i], 1000) %>% as.data.frame() %>% ts(start=c(2019,12), frequency=365)
+  assign(paste("PC.bag.",i,sep = ""),ts(b, frequency = 365, start = c(2019,12)))
+}
 
 
 
+pr.rol.h1.b <- matrix(nrow=58,ncol=5, NA)
 
+h<-1
+for(i in 1:58){
+  pr.arima <- matrix(nrow=1,ncol=1000,NA)
+  pr.arimax <- matrix(nrow=1,ncol=1000,NA)
+  pr.ets <- matrix(nrow=1,ncol=1000,NA)
+  pr.favar <- matrix(nrow=1,ncol=1000,NA)
+  
+  
+  for (j in 1:1000) {
+    if (j == 500){print(j)}
+    temp <-window(data.bag.2[,j], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+    data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j])
+    temp2 <- window(data.var.bag.ex, start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+    temp3 <- window(cbind(PC.bag.1,PC.bag.2,PC.bag.3,PC.bag.4), start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+    # ARIMA 
+    f1 <- auto.arima(temp)
+    forecast <- forecast(f1,h = h)
+    pr.arima[1,j] <- forecast$mean[h]
+    
+    # ARIMAX
+    f2 <- Arima(temp,model=auto.arima(temp),xreg=temp2)
+    forecast2 <- forecast(f2$fitted,h=h)
+    pr.arimax[1,j] <- forecast2$mean[h]
+    
+    # ETS 
+    f1 <- ets(temp)
+    pre <- forecast(f1, n.ahead=h)
+    pr.ets[1,j] <- pre$mean[h]
+    
+    # FAVAR
+    a <- VARselect(cbind(temp, temp3), lag.max = 13, type = "trend")$selection[1]
+    f4 <- VAR(cbind(temp, temp3), p = a, type= "trend")
+    forecast4<-forecast(f4, h=h)
+    pr.favar[1,j] <- forecast4$forecast$temp$mean[h]
+  } 
+  
+  pr.rol.h1.b[i,1] <- mean(pr.arima)
+  pr.rol.h1.b[i,2] <- mean(pr.arimax)
+  pr.rol.h1.b[i,3] <- mean(pr.ets)
+  pr.rol.h1.b[i,4] <- mean(pr.favar)
+  print(i)
+}
+
+pr.rol.h1.b <- ts(pr.rol.h1.b, frequency = 365, start = c(2019,12))
+
+
+# Realizamos los pronósticos con el VAR 
+
+# Construimos la serie diferenciando las variables que son I(1)
+
+
+h<-1
+
+for(i in 1:58){
+  for (j in 1:1000) {
+    temp<-window(data.bag.2[-1,j], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+    data.var.bag <- cbind(data.bag.2[-1,j],data.bag.3[-1,j],diff(data.bag.4[,j]),data.bag.5[-1,j],data.bag.6[-1,j],data.bag.7[-1,j],diff(data.bag.8[,j]),data.bag.9[-1,j],data.bag.10[-1,j],data.bag.11[-1,j],data.bag.12[-1,j],data.bag.13[-1,j],data.bag.14[-1,j],data.bag.15[-1,j])
+    temp2 <-window(data.var.bag.ex, start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+    a <- VARselect(cbind(temp, temp2), lag.max = 13, type = "const")$selection[1]
+    f5 <- VAR(data.var.bag, p = a, type = "trend")
+    forecast1<- forecast(f5)
+    pr.rol.h1.b[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
+  }
+}
+
+
+
+autoplot(ts.union(out.of.sample[,2], pr.rol.h1.b[,1], pr.rol.h1.b[,2], pr.rol.h1.b[,3], pr.rol.h1[,4], pr.rol.h1[,5]), size = 0.7) + 
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS", "FAVAR, VAR"),
+                     values = c("black", colores[1], colores[2], colores[3], colores[4])) +
+  ggtitle("Pronósticos bagging h=1, esquema rolling") + 
+  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+  theme_minimal() +  
+  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+
+# gráficos que comparen ets bagged contra ets 
+
+
+# h = 2 
+
+pr.rol.h2.b <- matrix(nrow=57,ncol=5, NA)
+
+h<-2
+for(i in 1:57){
+  pr.arima <- matrix(nrow=1,ncol=1000,NA)
+  pr.arimax <- matrix(nrow=1,ncol=1000,NA)
+  pr.ets <- matrix(nrow=1,ncol=1000,NA)
+  pr.favar <-  matrix(nrow=1,ncol=1000,NA)
+  
+  for (j in 1:1000) {
+    if (j == 500){print(j)}
+    temp<-window(data.bag.2[,j], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+    data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j])
+    temp2 <-window(data.var.bag.ex, start = c(2019,12), end = 2020.195 + (i-1)/365)
+    temp3 <- window(cbind(PC.bag.1,PC.bag.2,PC.bag.3,PC.bag.4), start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+    
+    # ARIMA 
+    f1 <- auto.arima(temp)
+    forecast <- forecast(f1,h = h)
+    pr.arima[1,j] <- forecast$mean[h]
+    
+    #ARIMAX
+    f2 <- Arima(temp,model=auto.arima(temp),xreg=temp2)
+    forecast2 <- forecast(f2$fitted,h=h)
+    pr.arimax[1,j] <- forecast2$mean[h]
+    
+    #ETS 
+    f1 <- ets(temp)
+    pre <- forecast(f1, n.ahead=h)
+    pr.ets[1,j] <- pre$mean[h]
+    
+    # FAVAR
+    a <- VARselect(cbind(temp, temp3), lag.max = 13, type = "trend")$selection[1]
+    f4 <- VAR(cbind(temp, temp3), p = a, type= "trend")
+    forecast4<-forecast(f4, h=h)
+    pr.favar[1,j] <- forecast4$forecast$temp$mean[h]
+    
+  } 
+  
+  pr.rol.h2.b[i,1] <- mean(pr.arima)
+  pr.rol.h2.b[i,2] <- mean(pr.arimax)
+  pr.rol.h2.b[i,3] <- mean(pr.ets)
+  pr.rol.h2.b[i,4] <- mean(pr.favar)
+  print(i)
+}
+
+pr.rol.h2.b <- ts(pr.rol.h2.b, frequency = 365, start = c(2019,12))
+
+
+# Realizamos los pronósticos con el VAR 
+
+# Construimos la serie diferenciando las variables que son I(1)
+
+h<-2
+
+for(i in 1:57){
+  for (j in 1:1000) {
+    temp<-window(data.bag.2[-1,j], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+    data.var.bag <- cbind(data.bag.2[-1,j],data.bag.3[-1,j],diff(data.bag.4[,j]),data.bag.5[-1,j],data.bag.6[-1,j],data.bag.7[-1,j],diff(data.bag.8[,j]),data.bag.9[-1,j],data.bag.10[-1,j],data.bag.11[-1,j],data.bag.12[-1,j],data.bag.13[-1,j],data.bag.14[-1,j],data.bag.15[-1,j])
+    temp2 <-window(data.var.bag.ex, start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+    a <- VARselect(cbind(temp, temp2),lag.max = 13, type = "trend")$selection[1]
+    f5 <- VAR(data.var.bag, p = a, type = "trend")
+    forecast1<- forecast(f5)
+    pr.rol.h2.b[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
+  }
+}
+
+# Realizamos el gráfico de los pronósticos 
+
+
+autoplot(ts.union(out.of.sample[2:58,2], pr.rol.h2.b[,1], pr.rol.h2.b[,2], pr.rol.h2.b[,3], pr.rol.h2.b[,4], pr.rol.h2.b[,5]), size = 0.7) + 
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS", "FAVAR", "VAR"),
+                     values = c("black", colores[1], colores[2], colores[3], colores[4])) +
+  ggtitle("Pronósticos bagging h=2, esquema rolling") + 
+  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+  theme_minimal() +  
+  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+
+
+# h = 7 
+
+for (i in 2:15) {
+  a <- bld.mbb.bootstrap(data[,i], 1000) %>% as.data.frame() %>% ts(start=c(2019,12), frequency=365)
+  assign(paste("data.bag.",i,sep = ""),ts(a, frequency = 365, start = c(2019,12)))
+}
+
+
+pr.rol.h7.b <- matrix(nrow=52,ncol=5, NA)
+
+h<-1
+for(i in 1:52){
+  pr.arima <- matrix(nrow=1,ncol=1000,NA)
+  pr.arimax <- matrix(nrow=1,ncol=1000,NA)
+  pr.ets <- matrix(nrow=1,ncol=1000,NA)
+  pr.favar <- matrix(nrow=1,ncol=1000,NA)
+  
+  for (j in 1:1000) {
+    if (j == 500){print(j)}
+    temp<-window(data.bag.2[,j], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+    data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j])
+    temp2 <-window(data.var.bag.ex, start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+    temp3 <- window(cbind(PC.bag.1,PC.bag.2,PC.bag.3,PC.bag.4), start = c(2019,12), end = 2020.195 + (i-1)/365)
+    
+    # ARIMA 
+    f1 <- auto.arima(temp)
+    forecast <- forecast(f1,h = h)
+    pr.arima[1,j] <- forecast$mean[h]
+    
+    #ARIMAX
+    f2 <- Arima(temp,model=auto.arima(temp),xreg=temp2)
+    forecast2 <- forecast(f2$fitted,h=h)
+    pr.arimax[1,j] <- forecast2$mean[h]
+    
+    #ETS 
+    f1 <- ets(tem)
+    pre <- forecast(f1, n.ahead=h)
+    pr.ets[1,j] <- pre$mean[h]
+    
+    # FAVAR
+    a <- VARselect(cbind(temp, temp3), lag.max = 13, type = "trend")$selection[1]
+    f4 <- VAR(cbind(temp, temp3), p = a, type= "trend")
+    forecast4<-forecast(f4, h=h)
+    pr.favar[1,j] <- forecast4$forecast$temp$mean[h]
+  } 
+  
+  pr.rol.h7.b[i,1] <- mean(pr.arima)
+  pr.rol.h7.b[i,2] <- mean(pr.arimax)
+  pr.rol.h7.b[i,3] <- mean(pr.ets)
+  pr.rol.h7.b[i,4] <- mean(pr.favar)
+  print(i)
+}
+
+pr.rol.h7.b <- ts(pr.rol.h7.b, frequency = 365, start = c(2019,12))
+
+
+# Realizamos los pronósticos con el VAR 
+
+# Construimos la serie diferenciando las variables que son I(1)
+
+
+h <- 7
+
+for(i in 1:52){
+  for (j in 1:1000) {
+    temp<-window(data.bag.2[-1,j], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+    data.var.bag <- cbind(data.bag.2[-1,j],data.bag.3[-1,j],diff(data.bag.4[,j]),data.bag.5[-1,j],data.bag.6[-1,j],data.bag.7[-1,j],diff(data.bag.8[,j]),data.bag.9[-1,j],data.bag.10[-1,j],data.bag.11[-1,j],data.bag.12[-1,j],data.bag.13[-1,j],data.bag.14[-1,j],data.bag.15[-1,j])
+    temp2 <-window(data.var.bag.ex, start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+    a <- VARselect(cbind(temp, temp2), lag.max = 13, type = "trand")$selection[1]
+    f5 <- VAR(data.var.bag, p = 6, type = "trend")
+    forecast1<- forecast(f5)
+    pr.rol.h7.b[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
+  }
+}
+
+# Realizamos el gráfico de los pronósticos 
+
+autoplot(ts.union(out.of.sample[7:58,2], pr.rol.h7.b[,1], pr.rol.h7.b[,2], pr.rol.h7.b[,3], pr.rol.h7.b[,4], pr.rol.h7.b[,5]), size = 0.7) + 
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","FAVAR", "VAR"),
+                     values = c("black", colores[1], colores[2], colores[3], colores[4])) +
+  ggtitle("Pronósticos bagging h=7, esquema rolling") + 
+  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+  theme_minimal() +  
+  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+
+
+
+### MEDIDAS DE ACCURACY 
+
+AC<-matrix(NA,46,6)
+colnames(AC) <- c("Modelo", "MAPE", "MAE", "RMSE", "Estadístico","P-valor")
+AC2<-matrix(NA,46,1)
 
 
 
