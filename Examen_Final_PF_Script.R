@@ -1735,14 +1735,21 @@ pr.f.h2.b <- ts(pr.f.h2.b, frequency = 365, start = c(2019,12))
 h<-2
 
 for(i in 1:57){
-  for (j in 1:1000) {
-    temp<-window(data.bag.2[-1,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
-    data.var.bag <- cbind(data.bag.2[-1,j],data.bag.3[-1,j],diff(data.bag.4[,j]),data.bag.5[-1,j],data.bag.6[-1,j],data.bag.7[-1,j],diff(data.bag.8[,j]),data.bag.9[-1,j],data.bag.10[-1,j],data.bag.11[-1,j],data.bag.12[-1,j],data.bag.13[-1,j],data.bag.14[-1,j],data.bag.15[-1,j])
-    temp2 <-window(data.var.bag.ex, start = c(2019,12), end = 2020.195 + (i-1)/365)
-    f5 <- VAR(data.var.bag, p = 6, type = "trend")
-    forecast1<- forecast(f5)
-    pr.f.h2.b[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
+  pr.var <- matrix(nrow=1,ncol=1000,NA)
+  for (j in 1:1000){
+    data.var.bag.ex <- window(cbind(data.bag.2[,j],data.bag.3[,j],data.bag.5[,j],
+                                    data.bag.6[,j],data.bag.7[,j], data.bag.9[,j],
+                                    data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],
+                                    data.bag.13[,j],data.bag.14[,j],data.bag.15[,j]),
+                              start = c(2019,12), end = 2020.195 + (i-1)/365)
+    var.bag.ex.diff<- window(cbind(diff(data.bag.4[,j]), diff(data.bag.8[,j])),
+                             start = c(2019,12), end = 2020.195 + (i-1)/365)
+    f5 <- VAR(cbind(data.var.bag.ex[-1,], var.bag.ex.diff), p = 6, type = "trend")
+    pr.var[1,j] <- forecast(f5)$forecast$data.var.bag.ex..1....data.bag.2...j.$mean[h]
+    print(j)
   }
+  pr.f.h2.b[i,5] <- mean(pr.var)
+  print(paste("VAMOS:", i, "PERIODOS"))
 }
 
 # Realizamos el gráfico de los pronósticos 
