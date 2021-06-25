@@ -25,6 +25,7 @@ dir <- "C:\\Users\\Abi\\Downloads"
 
 setwd(dir)
 
+
 # Definimos la paleta de colores.
 
 colores <- c("#00ABC5", "#f7941c", "#edf71c", "#ff3c84","#f75144")
@@ -457,7 +458,7 @@ PCA1$sdev^2
 
 # Como hay 4 componentes cuyo autovalor es superior a 1, los usaremos.
 
-PC <- scale(in.sample[,3:15])%*%PCA1$rotation
+PC.is <- scale(in.sample[,3:15])%*%PCA1$rotation
 
 
 ### prueba 
@@ -467,7 +468,7 @@ PC <- scale(data[,3:15])%*%PCA1$rotation
 
 # Ahora estimamos el modelo FAVAR.
 
-favar.data <- cbind(in.sample[,2], PC[,1:4])
+favar.data <- cbind(in.sample[,2], PC.is[,1:4])
 
 VARselect(favar.data, lag.max = 10, type = c("both"))
 
@@ -1588,7 +1589,6 @@ for (i in 1:4) {
 }
 
 
-
 pr.f.h1.b <- matrix(nrow=58,ncol=5, NA)
 
 h<-1
@@ -1596,16 +1596,14 @@ for(i in 1:58){
   pr.arima <- matrix(nrow=1,ncol=1000,NA)
   pr.arimax <- matrix(nrow=1,ncol=1000,NA)
   pr.ets <- matrix(nrow=1,ncol=1000,NA)
-  pr.favar <- matrix(nrow=1,ncol=1000,NA)
-  
   
   for (j in 1:1000) {
   if (j == 500){print(j)}
   temp <-window(data.bag.2[,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
   data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j])
   temp2 <- window(data.var.bag.ex, start = c(2019,12), end = 2020.195 + (i-1)/365)
-  temp3 <- window(cbind(PC.bag.1,PC.bag.2,PC.bag.3,PC.bag.4), start = c(2019,12), end = 2020.195 + (i-1)/365)
-  # ARIMA 
+
+    # ARIMA 
   f1 <- Arima(temp, model=arima.1)
   forecast <- forecast(f1,h = h)
   pr.arima[1,j] <- forecast$mean[h]
@@ -1620,21 +1618,16 @@ for(i in 1:58){
   pre <- forecast(f1, n.ahead=h)
   pr.ets[1,j] <- pre$mean[h]
   
-  # FAVAR
-  f4 <- VAR(cbind(temp, temp3), p = 6, type= "trend")
-  forecast4<-forecast(f4, h=h)
-  pr.favar[1,j] <- forecast4$forecast$temp$mean[h]
+
   } 
   
   pr.f.h1.b[i,1] <- mean(pr.arima)
   pr.f.h1.b[i,2] <- mean(pr.arimax)
   pr.f.h1.b[i,3] <- mean(pr.ets)
-  pr.f.h1.b[i,4] <- mean(pr.favar)
   print(i)
 }
 
 pr.f.h1.b <- ts(pr.f.h1.b, frequency = 365, start = c(2019,12))
-
 
 # Realizamos los pronósticos con el VAR 
 
@@ -1655,6 +1648,25 @@ for(i in 1:58){
 }
 
 
+# Realizamos los pronósticos para el FAVAR 
+
+h<-1
+for(i in 1:58){
+    pr.favar <- matrix(nrow=1,ncol=50,NA)
+  for (j in 1:50){
+    if (j == 500){print(j)}
+    temp <-window(data.bag.2[,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
+    temp3 <- window(cbind(PC.bag.1,PC.bag.2,PC.bag.3,PC.bag.4), start = c(2019,12), end = 2020.195 + (i-1)/365)
+    
+    # FAVAR
+    f4 <- VAR(cbind(temp, temp3[,1]), p = 6, type= "trend")
+    forecast4<-forecast(f4, h=h)
+    pr.favar[1,j] <- forecast4$forecast$temp$mean[h]
+  } 
+  
+  pr.f.h1.b[i,4] <- mean(pr.favar,na.rm = TRUE)
+  print(i)
+}
 
 autoplot(ts.union(out.of.sample[,2], pr.f.h1.b[,1], pr.f.h1.b[,2], pr.f.h1.b[,3], pr.f.h1[,4], pr.f.h1[,5]), size = 0.7) + 
   scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS", "FAVAR, VAR"),
@@ -1710,7 +1722,7 @@ for(i in 1:57){
   pr.f.h2.b[i,1] <- mean(pr.arima)
   pr.f.h2.b[i,2] <- mean(pr.arimax)
   pr.f.h2.b[i,3] <- mean(pr.ets)
-  pr.f.h2.b[i,4] <- mean(pr.favar)
+  pr.f.h2.b[i,4] <- mean(pr.favar, na.rm = TRUE) ### ver si funciona 
   print(i)
 }
 
@@ -1794,7 +1806,7 @@ for(i in 1:52){
   pr.f.h7.b[i,1] <- mean(pr.arima)
   pr.f.h7.b[i,2] <- mean(pr.arimax)
   pr.f.h7.b[i,3] <- mean(pr.ets)
-  pr.f.h7.b[i,4] <- mean(pr.favar)
+  pr.f.h7.b[i,4] <- mean(pr.favar, na.rm = TRUE)
   print(i)
 }
 
@@ -1899,7 +1911,7 @@ for(i in 1:58){
   pr.rec.h1.b[i,1] <- mean(pr.arima)
   pr.rec.h1.b[i,2] <- mean(pr.arimax)
   pr.rec.h1.b[i,3] <- mean(pr.ets)
-  pr.rec.h1.b[i,4] <- mean(pr.favar)
+  pr.rec.h1.b[i,4] <- mean(pr.favar, na.rm = TRUE)
   print(i)
 }
 
@@ -1982,7 +1994,7 @@ for(i in 1:57){
   pr.rec.h2.b[i,1] <- mean(pr.arima)
   pr.rec.h2.b[i,2] <- mean(pr.arimax)
   pr.rec.h2.b[i,3] <- mean(pr.ets)
-  pr.rec.h2.b[i,4] <- mean(pr.favar)
+  pr.rec.h2.b[i,4] <- mean(pr.favar, na.rm = TRUE)
   print(i)
 }
 
@@ -2068,7 +2080,7 @@ for(i in 1:52){
   pr.rec.h7.b[i,1] <- mean(pr.arima)
   pr.rec.h7.b[i,2] <- mean(pr.arimax)
   pr.rec.h7.b[i,3] <- mean(pr.ets)
-  pr.rec.h7.b[i,4] <- mean(pr.favar)
+  pr.rec.h7.b[i,4] <- mean(pr.favar, na.rm = TRUE)
   print(i)
 }
 
@@ -2174,7 +2186,7 @@ for(i in 1:58){
   pr.rol.h1.b[i,1] <- mean(pr.arima)
   pr.rol.h1.b[i,2] <- mean(pr.arimax)
   pr.rol.h1.b[i,3] <- mean(pr.ets)
-  pr.rol.h1.b[i,4] <- mean(pr.favar)
+  pr.rol.h1.b[i,4] <- mean(pr.favar, na.rm = TRUE)
   print(i)
 }
 
@@ -2257,7 +2269,7 @@ for(i in 1:57){
   pr.rol.h2.b[i,1] <- mean(pr.arima)
   pr.rol.h2.b[i,2] <- mean(pr.arimax)
   pr.rol.h2.b[i,3] <- mean(pr.ets)
-  pr.rol.h2.b[i,4] <- mean(pr.favar)
+  pr.rol.h2.b[i,4] <- mean(pr.favar, na.rm = TRUE)
   print(i)
 }
 
@@ -2343,7 +2355,7 @@ for(i in 1:52){
   pr.rol.h7.b[i,1] <- mean(pr.arima)
   pr.rol.h7.b[i,2] <- mean(pr.arimax)
   pr.rol.h7.b[i,3] <- mean(pr.ets)
-  pr.rol.h7.b[i,4] <- mean(pr.favar)
+  pr.rol.h7.b[i,4] <- mean(pr.favar, na.rm = TRUE)
   print(i)
 }
 
