@@ -742,7 +742,6 @@ autoplot(ts.union(out.of.sample[,2], pr.rec.h1[,1], pr.rec.h1[,2],pr.rec.h1[,3],
 
 # ESQUEMA ROLLING 
 
-
 data1 <- ts(data, frequency = 365, start = c(2019,12))
 PC<-ts(PC[,1:4], frequency = 365, start = c(2019,12))
 
@@ -1581,8 +1580,6 @@ for (i in 2:15) {
   assign(paste("data.bag.",i,sep = ""),ts(a, frequency = 365, start = c(2019,12)))
 }
 
-
-
 for (i in 1:4) {
   b <- bld.mbb.bootstrap(PC[,i], 1000) %>% as.data.frame() %>% ts(start=c(2019,12), frequency=365)
   assign(paste("PC.bag.",i,sep = ""),ts(b, frequency = 365, start = c(2019,12)))
@@ -1693,21 +1690,25 @@ for(i in 1:57){
   for (j in 1:1000) {
     if (j == 500){print(j)}
     temp<-window(data.bag.2[,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
-    data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j])
+    data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],
+                             data.bag.6[,j],data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],
+                             data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],
+                             data.bag.13[,j],data.bag.14[,j],data.bag.15[,j])
     temp2 <-window(data.var.bag.ex, start = c(2019,12), end = 2020.195 + (i-1)/365)
-    temp3 <- window(cbind(PC.bag.1,PC.bag.2,PC.bag.3,PC.bag.4), start = c(2019,12), end = 2020.195 + (i-1)/365)
+    temp3 <- window(cbind(PC.bag.1[,j],PC.bag.2[,j],PC.bag.3[,j],PC.bag.4[,j]),
+                    start = c(2019,12), end = 2020.195 + (i-1)/365)
     
     # ARIMA 
     f1 <- Arima(temp, model=arima.1)
     forecast <- forecast(f1,h = h)
     pr.arima[1,j] <- forecast$mean[h]
     
-    #ARIMAX
+    # ARIMAX
     f2 <- Arima(temp,model=arima.1,xreg=temp2)
     forecast2 <- forecast(f2$fitted,h=h)
     pr.arimax[1,j] <- forecast2$mean[h]
     
-    #ETS 
+    # ETS 
     f1 <- ets(temp, model=ets.1, use.initial.values=TRUE)
     pre <- forecast(f1, n.ahead=h)
     pr.ets[1,j] <- pre$mean[h]
@@ -1718,16 +1719,14 @@ for(i in 1:57){
     pr.favar[1,j] <- forecast4$forecast$temp$mean[h]
     
   } 
-  
   pr.f.h2.b[i,1] <- mean(pr.arima)
   pr.f.h2.b[i,2] <- mean(pr.arimax)
   pr.f.h2.b[i,3] <- mean(pr.ets)
-  pr.f.h2.b[i,4] <- mean(pr.favar, na.rm = TRUE) ### ver si funciona 
+  pr.f.h2.b[i,4] <- mean(pr.favar)
   print(i)
 }
 
 pr.f.h2.b <- ts(pr.f.h2.b, frequency = 365, start = c(2019,12))
-
 
 # Realizamos los pronósticos con el VAR 
 
@@ -1747,7 +1746,6 @@ for(i in 1:57){
 }
 
 # Realizamos el gráfico de los pronósticos 
-
 
 autoplot(ts.union(out.of.sample[2:58,2], pr.f.h2.b[,1], pr.f.h2.b[,2], pr.f.h2.b[,3], pr.f.h2.b[,4], pr.f.h2.b[,5]), size = 0.7) + 
   scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS", "FAVAR", "VAR"),
@@ -1778,21 +1776,26 @@ for(i in 1:52){
   for (j in 1:1000) {
     if (j == 500){print(j)}
     temp<-window(data.bag.2[,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
-    data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j])
+    data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],
+                             data.bag.6[,j],data.bag.7[,j],data.bag.8[,j],
+                             data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],
+                             data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],
+                             data.bag.15[,j])
     temp2 <-window(data.var.bag.ex, start = c(2019,12), end = 2020.195 + (i-1)/365)
-    temp3 <- window(cbind(PC.bag.1,PC.bag.2,PC.bag.3,PC.bag.4), start = c(2019,12), end = 2020.195 + (i-1)/365)
+    temp3 <- window(cbind(PC.bag.1[,j],PC.bag.2[,j],PC.bag.3[,j],PC.bag.4[,j]),
+                    start = c(2019,12), end = 2020.195 + (i-1)/365)
     
     # ARIMA 
     f1 <- Arima(temp, model=arima.1)
     forecast <- forecast(f1,h = h)
     pr.arima[1,j] <- forecast$mean[h]
     
-    #ARIMAX
+    # ARIMAX
     f2 <- Arima(temp,model=auto.arima(temp),xreg=temp2)
     forecast2 <- forecast(f2$fitted,h=h)
     pr.arimax[1,j] <- forecast2$mean[h]
     
-    #ETS 
+    # ETS 
     f1 <- ets(temp, model=ets.1, use.initial.values=TRUE)
     pre <- forecast(f1, n.ahead=h)
     pr.ets[1,j] <- pre$mean[h]
@@ -1802,7 +1805,6 @@ for(i in 1:52){
     forecast4<-forecast(f4, h=h)
     pr.favar[1,j] <- forecast4$forecast$temp$mean[h]
   } 
-  
   pr.f.h7.b[i,1] <- mean(pr.arima)
   pr.f.h7.b[i,2] <- mean(pr.arimax)
   pr.f.h7.b[i,3] <- mean(pr.ets)
@@ -2125,25 +2127,19 @@ autoplot(ts.union(out.of.sample[7:58,2], pr.rec.h7.b[,1], pr.rec.h7.b[,2], pr.re
 # ARIMA 
 
 library(forecast)
-
 library(quantmod)
 
 set.seed(444)
-
 
 for (i in 2:15) {
   a <- bld.mbb.bootstrap(data[,i], 1000) %>% as.data.frame() %>% ts(start=c(2019,12), frequency=365)
   assign(paste("data.bag.",i,sep = ""),ts(a, frequency = 365, start = c(2019,12)))
 }
 
-
-
 for (i in 1:4) {
   b <- bld.mbb.bootstrap(PC[,i], 1000) %>% as.data.frame() %>% ts(start=c(2019,12), frequency=365)
   assign(paste("PC.bag.",i,sep = ""),ts(b, frequency = 365, start = c(2019,12)))
 }
-
-
 
 pr.rol.h1.b <- matrix(nrow=58,ncol=5, NA)
 
@@ -2160,7 +2156,8 @@ for(i in 1:58){
     temp <-window(data.bag.2[,j], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
     data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j])
     temp2 <- window(data.var.bag.ex, start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
-    temp3 <- window(cbind(PC.bag.1,PC.bag.2,PC.bag.3,PC.bag.4), start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+    temp3 <- window(cbind(PC.bag.1[,j],PC.bag.2[,j],PC.bag.3[,j],PC.bag.4[,j]),
+                    start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
     # ARIMA 
     f1 <- auto.arima(temp)
     forecast <- forecast(f1,h = h)
