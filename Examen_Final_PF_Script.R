@@ -1585,8 +1585,19 @@ for (i in 1:4) {
   assign(paste("PC.bag.",i,sep = ""),ts(b, frequency = 365, start = c(2019,12)))
 }
 
-
+########## NO CORRERRRRR
 pr.f.h1.b <- matrix(nrow=58,ncol=5, NA)
+
+
+
+
+########### CORRER A PARTIR DE ACAAA!!!!!!
+
+
+
+
+
+
 
 h<-1
 for(i in 1:58){
@@ -1673,8 +1684,9 @@ autoplot(ts.union(out.of.sample[,2], pr.f.h1.b[,1], pr.f.h1.b[,2], pr.f.h1.b[,3]
   theme_minimal() +  
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
-# gráficos que comparen ets bagged contra ets 
+# Exportamos los ponósticos 
 
+write.csv(pr.f.h1.b, "pr.f.h1.b.csv", row.names = FALSE)
 
 # h = 2 
 
@@ -1763,6 +1775,9 @@ autoplot(ts.union(out.of.sample[2:58,2], pr.f.h2.b[,1], pr.f.h2.b[,2], pr.f.h2.b
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
 
+write.csv(pr.f.h2.b, "pr.f.h2.b.csv", row.names = FALSE)
+
+
 # h = 7 
 
 for (i in 2:15) {
@@ -1830,14 +1845,20 @@ pr.f.h7.b <- ts(pr.f.h7.b, frequency = 365, start = c(2019,12))
 h <- 7
 
 for(i in 1:52){
+  pr.var <- matrix(nrow=1,ncol=1000,NA)
   for (j in 1:1000) {
-    temp<-window(data.bag.2[-1,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
-    data.var.bag <- cbind(data.bag.2[-1,j],data.bag.3[-1,j],diff(data.bag.4[,j]),data.bag.5[-1,j],data.bag.6[-1,j],data.bag.7[-1,j],diff(data.bag.8[,j]),data.bag.9[-1,j],data.bag.10[-1,j],data.bag.11[-1,j],data.bag.12[-1,j],data.bag.13[-1,j],data.bag.14[-1,j],data.bag.15[-1,j])
-    temp2 <-window(data.var.bag.ex, start = c(2019,12), end = 2020.195 + (i-1)/365)
-    f5 <- VAR(data.var.bag, p = 6, type = "trend")
-    forecast1<- forecast(f5)
-    pr.f.h7.b[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
+    data.var.bag.ex <- window(cbind(data.bag.2[,j],data.bag.3[,j],data.bag.5[,j],
+                                    data.bag.6[,j],data.bag.7[,j], data.bag.9[,j],
+                                    data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],
+                                    data.bag.13[,j],data.bag.14[,j],data.bag.15[,j]), 
+                              start = c(2019,12), end = 2020.195 + (i-1)/365)
+    var.bag.ex.diff<- window(cbind(diff(data.bag.4[,j]), diff(data.bag.8[,j])), start = c(2019,12), end = 2020.195 + (i-1)/365)
+    f5 <- VAR(cbind(data.var.bag.ex[-1,],var.bag.ex.diff), p = 6, type = "trend")
+    pr.var[1,j] <- forecast(f5)$forecast$data.var.bag.ex..1....data.bag.2...j.$mean[h]
+    print(j)
   }
+  pr.f.h7.b[i,5] <- mean(pr.var)
+  print(paste("VAMOS:", i, "PERIODOS"))
 }
 
 # Realizamos el gráfico de los pronósticos 
@@ -1850,7 +1871,7 @@ autoplot(ts.union(out.of.sample[7:58,2], pr.f.h7.b[,1], pr.f.h7.b[,2], pr.f.h7.b
   theme_minimal() +  
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
-
+write.csv(pr.f.h7.b, "pr.f.h7.b.csv", row.names = FALSE)
 
 # Realizamos bagging con los modelos arima, ets, var, adl con esquema recursivo 
 
@@ -1892,7 +1913,10 @@ for(i in 1:58){
   for (j in 1:1000) {
     if (j == 500){print(j)}
     temp <-window(data.bag.2[,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
-    data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j])
+    data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],
+                             data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],
+                             data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],
+                             data.bag.15[,j])
     temp2 <- window(data.var.bag.ex, start = c(2019,12), end = 2020.195 + (i-1)/365)
     temp3 <- window(cbind(PC.bag.1,PC.bag.2,PC.bag.3,PC.bag.4), start = c(2019,12), end = 2020.195 + (i-1)/365)
     # ARIMA 
@@ -1931,21 +1955,27 @@ pr.rec.h1.b <- ts(pr.rec.h1.b, frequency = 365, start = c(2019,12))
 
 # Construimos la serie diferenciando las variables que son I(1)
 
-
 h<-1
 
 for(i in 1:58){
+  pr.var <- matrix(nrow=1,ncol=1000,NA)
   for (j in 1:1000) {
-    temp<-window(data.bag.2[-1,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
-    data.var.bag <- cbind(data.bag.2[-1,j],data.bag.3[-1,j],diff(data.bag.4[,j]),data.bag.5[-1,j],data.bag.6[-1,j],data.bag.7[-1,j],diff(data.bag.8[,j]),data.bag.9[-1,j],data.bag.10[-1,j],data.bag.11[-1,j],data.bag.12[-1,j],data.bag.13[-1,j],data.bag.14[-1,j],data.bag.15[-1,j])
-    temp2 <-window(data.var.bag.ex, start = c(2019,12), end = 2020.195 + (i-1)/365)
-    a <- VARselect(cbind(temp, temp2), lag.max = 13, type = "const")$selection[1]
-    f5 <- VAR(data.var.bag, p = a, type = "trend")
-    forecast1<- forecast(f5)
-    pr.rec.h1.b[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
+    data.var.bag.ex <- window(cbind(data.bag.2[,j],data.bag.3[,j],data.bag.5[,j],data.bag.6[,j],
+                                    data.bag.7[,j], data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],
+                                    data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j]), 
+                              start = c(2019,12), end = 2020.195 + (i-1)/365)
+    var.bag.ex.diff<- window(cbind(diff(data.bag.4[,j]), diff(data.bag.8[,j])), start = c(2019,12), end = 2020.195 + (i-1)/365)
+    a <- VARselect(cbind(data.var.bag.ex[-1,],var.bag.ex.diff), lag.max = 13, type = "const")$selection[1]
+    f5 <- VAR(cbind(data.var.bag.ex[-1,],var.bag.ex.diff), p = a, type = "trend")
+    pr.var[1,j] <- forecast(f5)$forecast$data.var.bag.ex..1....data.bag.2...j.$mean[h]
+    print(j)
   }
+  pr.rec.h1.b[i,5] <- mean(pr.var)
+  print(paste("VAMOS:", i, "PERIODOS"))
 }
 
+
+write.csv(pr.rec.h1.b, "pr.rec.h1.b.csv", row.names = FALSE)
 
 
 autoplot(ts.union(out.of.sample[,2], pr.rec.h1.b[,1], pr.rec.h1.b[,2], pr.rec.h1.b[,3], pr.rec.h1[,4], pr.rec.h1[,5]), size = 0.7) + 
@@ -1973,7 +2003,9 @@ for(i in 1:57){
   for (j in 1:1000) {
     if (j == 500){print(j)}
     temp<-window(data.bag.2[,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
-    data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j])
+    data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j],
+                             data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],
+                             data.bag.13[,j],data.bag.14[,j],data.bag.15[,j])
     temp2 <-window(data.var.bag.ex, start = c(2019,12), end = 2020.195 + (i-1)/365)
     temp3 <- window(cbind(PC.bag.1,PC.bag.2,PC.bag.3,PC.bag.4), start = c(2019,12), end = 2020.195 + (i-1)/365)
     
@@ -2017,16 +2049,22 @@ pr.rec.h2.b <- ts(pr.rec.h2.b, frequency = 365, start = c(2019,12))
 h<-2
 
 for(i in 1:57){
+  pr.var <- matrix(nrow=1,ncol=1000,NA)
   for (j in 1:1000) {
-    temp<-window(data.bag.2[-1,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
-    data.var.bag <- cbind(data.bag.2[-1,j],data.bag.3[-1,j],diff(data.bag.4[,j]),data.bag.5[-1,j],data.bag.6[-1,j],data.bag.7[-1,j],diff(data.bag.8[,j]),data.bag.9[-1,j],data.bag.10[-1,j],data.bag.11[-1,j],data.bag.12[-1,j],data.bag.13[-1,j],data.bag.14[-1,j],data.bag.15[-1,j])
-    temp2 <-window(data.var.bag.ex, start = c(2019,12), end = 2020.195 + (i-1)/365)
-    a <- VARselect(cbind(temp, temp2),lag.max = 13, type = "trend")$selection[1]
-    f5 <- VAR(data.var.bag, p = a, type = "trend")
-    forecast1<- forecast(f5)
-    pr.rec.h2.b[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
+    data.var.bag.ex <- window(cbind(data.bag.2[,j],data.bag.3[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j], 
+                                    data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],
+                                    data.bag.14[,j],data.bag.15[,j]), start = c(2019,12), end = 2020.195 + (i-1)/365)
+    var.bag.ex.diff<- window(cbind(diff(data.bag.4[,j]), diff(data.bag.8[,j])), start = c(2019,12), end = 2020.195 + (i-1)/365)
+    a <- VARselect(cbind(data.var.bag.ex[-1,],var.bag.ex.diff),lag.max = 13, type = "trend")$selection[1]
+    f5 <- VAR(cbind(data.var.bag.ex[-1,],var.bag.ex.diff), p = a, type = "trend")
+    pr.var[1,j]<- forecast(f5)$forecast$data.var.bag.ex..1....data.bag.2...j.$mean[h]
+    print(j)
   }
+  pr.rec.h2.b[i,5] <- mean(pr.var)
+  print(paste("VAMOS:", i, "PERIODOS"))
 }
+
+write.csv(pr.rec.h2.b, "pr.rec.h2.b.csv", row.names = FALSE)
 
 # Realizamos el gráfico de los pronósticos 
 
@@ -2060,7 +2098,9 @@ for(i in 1:52){
   for (j in 1:1000) {
     if (j == 500){print(j)}
     temp<-window(data.bag.2[,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
-    data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j])
+    data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j],
+                             data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],
+                             data.bag.13[,j],data.bag.14[,j],data.bag.15[,j])
     temp2 <-window(data.var.bag.ex, start = c(2019,12), end = 2020.195 + (i-1)/365)
     temp3 <- window(cbind(PC.bag.1,PC.bag.2,PC.bag.3,PC.bag.4), start = c(2019,12), end = 2020.195 + (i-1)/365)
     
@@ -2105,15 +2145,23 @@ h <- 7
 
 for(i in 1:52){
   for (j in 1:1000) {
-    temp<-window(data.bag.2[-1,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
-    data.var.bag <- cbind(data.bag.2[-1,j],data.bag.3[-1,j],diff(data.bag.4[,j]),data.bag.5[-1,j],data.bag.6[-1,j],data.bag.7[-1,j],diff(data.bag.8[,j]),data.bag.9[-1,j],data.bag.10[-1,j],data.bag.11[-1,j],data.bag.12[-1,j],data.bag.13[-1,j],data.bag.14[-1,j],data.bag.15[-1,j])
-    temp2 <-window(data.var.bag.ex, start = c(2019,12), end = 2020.195 + (i-1)/365)
-    a <- VARselect(cbind(temp, temp2), lag.max = 13, type = "trand")$selection[1]
-    f5 <- VAR(data.var.bag, p = 6, type = "trend")
-    forecast1<- forecast(f5)
-    pr.rec.h7.b[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
+    data.var.bag.ex <- window(cbind(data.bag.2[,j],data.bag.3[,j],data.bag.5[,j],data.bag.6[,j],
+                                    data.bag.7[,j], data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],
+                                    data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j]), 
+                              start = c(2019,12), end = 2020.195 + (i-1)/365)
+    var.bag.ex.diff<- window(cbind(diff(data.bag.4[,j]), diff(data.bag.8[,j])), start = c(2019,12), end = 2020.195 + (i-1)/365)
+    a <- VARselect(cbind(diff(data.bag.4[,j]), diff(data.bag.8[,j])), lag.max = 13, type = "trand")$selection[1]
+    f5 <- VAR(cbind(diff(data.bag.4[,j]), diff(data.bag.8[,j])), p = a, type = "trend")
+    pr.var[1,j]<- forecast(f5)$forecast$data.var.bag.ex..1....data.bag.2...j.$mean[h]
+    print(j)
   }
+  pr.rec.h7.b[i,5]
+  print(paste("VAMOS:", i, "PERIODOS"))
+  
 }
+
+
+write.csv(pr.rec.h7.b, "pr.rec.h7.b.csv", row.names = FALSE)
 
 # Realizamos el gráfico de los pronósticos 
 
@@ -2161,7 +2209,10 @@ for(i in 1:58){
   for (j in 1:1000) {
     if (j == 500){print(j)}
     temp <-window(data.bag.2[,j], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
-    data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j])
+    data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],
+                             data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],
+                             data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],
+                             data.bag.15[,j])
     temp2 <- window(data.var.bag.ex, start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
     temp3 <- window(cbind(PC.bag.1[,j],PC.bag.2[,j],PC.bag.3[,j],PC.bag.4[,j]),
                     start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
@@ -2205,18 +2256,25 @@ pr.rol.h1.b <- ts(pr.rol.h1.b, frequency = 365, start = c(2019,12))
 h<-1
 
 for(i in 1:58){
+  pr.var <- matrix(nrow=1,ncol=1000,NA)
   for (j in 1:1000) {
-    temp<-window(data.bag.2[-1,j], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
-    data.var.bag <- cbind(data.bag.2[-1,j],data.bag.3[-1,j],diff(data.bag.4[,j]),data.bag.5[-1,j],data.bag.6[-1,j],data.bag.7[-1,j],diff(data.bag.8[,j]),data.bag.9[-1,j],data.bag.10[-1,j],data.bag.11[-1,j],data.bag.12[-1,j],data.bag.13[-1,j],data.bag.14[-1,j],data.bag.15[-1,j])
-    temp2 <-window(data.var.bag.ex, start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
-    a <- VARselect(cbind(temp, temp2), lag.max = 13, type = "const")$selection[1]
-    f5 <- VAR(data.var.bag, p = a, type = "trend")
-    forecast1<- forecast(f5)
-    pr.rol.h1.b[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
+    data.var.bag.ex <- window(cbind(data.bag.2[,j],data.bag.3[,j],data.bag.5[,j],
+                                    data.bag.6[,j],data.bag.7[,j], data.bag.9[,j],
+                                    data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],
+                                    data.bag.13[,j],data.bag.14[,j],data.bag.15[,j]), 
+                              start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+    var.bag.ex.diff<- window(cbind(diff(data.bag.4[,j]), diff(data.bag.8[,j])), start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+    a <- VARselect(cbind(data.var.bag.ex[-1,],var.bag.ex.diff), lag.max = 13, type = "const")$selection[1]
+    f5 <- VAR(cbind(data.var.bag.ex[-1,],var.bag.ex.diff), p = a, type = "trend")
+    pr.var[1,j] <- forecast(f5)$forecast$data.var.bag.ex..1....data.bag.2...j.$mean[h]
+    print(j)
   }
+  pr.rol.h1.b[i,5] <- mean(pr.var)
+  print(paste("VAMOS:", i, "PERIODOS"))
 }
 
 
+write.csv(pr.rol.h1.b, "pr.rol.h1.b.csv", row.names = FALSE)
 
 autoplot(ts.union(out.of.sample[,2], pr.rol.h1.b[,1], pr.rol.h1.b[,2], pr.rol.h1.b[,3], pr.rol.h1[,4], pr.rol.h1[,5]), size = 0.7) + 
   scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS", "FAVAR, VAR"),
@@ -2243,7 +2301,11 @@ for(i in 1:57){
   for (j in 1:1000) {
     if (j == 500){print(j)}
     temp<-window(data.bag.2[,j], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
-    data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j])
+    data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],
+                             data.bag.6[,j],data.bag.7[,j],data.bag.8[,j],
+                             data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],
+                             data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],
+                             data.bag.15[,j])
     temp2 <-window(data.var.bag.ex, start = c(2019,12), end = 2020.195 + (i-1)/365)
     temp3 <- window(cbind(PC.bag.1,PC.bag.2,PC.bag.3,PC.bag.4), start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
     
@@ -2287,16 +2349,25 @@ pr.rol.h2.b <- ts(pr.rol.h2.b, frequency = 365, start = c(2019,12))
 h<-2
 
 for(i in 1:57){
-  for (j in 1:1000) {
-    temp<-window(data.bag.2[-1,j], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
-    data.var.bag <- cbind(data.bag.2[-1,j],data.bag.3[-1,j],diff(data.bag.4[,j]),data.bag.5[-1,j],data.bag.6[-1,j],data.bag.7[-1,j],diff(data.bag.8[,j]),data.bag.9[-1,j],data.bag.10[-1,j],data.bag.11[-1,j],data.bag.12[-1,j],data.bag.13[-1,j],data.bag.14[-1,j],data.bag.15[-1,j])
-    temp2 <-window(data.var.bag.ex, start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
-    a <- VARselect(cbind(temp, temp2),lag.max = 13, type = "trend")$selection[1]
-    f5 <- VAR(data.var.bag, p = a, type = "trend")
-    forecast1<- forecast(f5)
-    pr.rol.h2.b[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
+  pr.var <- matrix(nrow=1,ncol=1000,NA)
+  for (j in 1:1000){
+    data.var.bag.ex <- window(cbind(data.bag.2[,j],data.bag.3[,j],data.bag.5[,j],data.bag.6[,j],
+                                    data.bag.7[,j], data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],
+                                    data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j]), 
+                              start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+    var.bag.ex.diff<- window(cbind(diff(data.bag.4[,j]), diff(data.bag.8[,j])), start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+    a <- VARselect(cbind(data.var.bag.ex[-1,],var.bag.ex.diff),lag.max = 13, type = "trend")$selection[1]
+    f5 <- VAR(cbind(data.var.bag.ex[-1,],var.bag.ex.diff), p = a, type = "trend")
+    pr.var[1,j] <- forecast(f5)$forecast$data.var.bag.ex..1....data.bag.2...j.$mean[h]
+    print(j)
   }
+  pr.rol.h2.b[i,5] <- mean(pr.var)
+  print(paste("VAMOS:", i, "PERIODOS"))
 }
+
+
+write.csv(pr.rol.h2.b, "pr.rol.h2.b.csv", row.names = FALSE)
+
 
 # Realizamos el gráfico de los pronósticos 
 
@@ -2330,7 +2401,10 @@ for(i in 1:52){
   for (j in 1:1000) {
     if (j == 500){print(j)}
     temp<-window(data.bag.2[,j], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
-    data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j])
+    data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],
+                             data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],
+                             data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],
+                             data.bag.15[,j])
     temp2 <-window(data.var.bag.ex, start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
     temp3 <- window(cbind(PC.bag.1,PC.bag.2,PC.bag.3,PC.bag.4), start = c(2019,12), end = 2020.195 + (i-1)/365)
     
@@ -2374,16 +2448,25 @@ pr.rol.h7.b <- ts(pr.rol.h7.b, frequency = 365, start = c(2019,12))
 h <- 7
 
 for(i in 1:52){
+  pr.var <- matrix(nrow=1,ncol=1000,NA)
   for (j in 1:1000) {
-    temp<-window(data.bag.2[-1,j], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
-    data.var.bag <- cbind(data.bag.2[-1,j],data.bag.3[-1,j],diff(data.bag.4[,j]),data.bag.5[-1,j],data.bag.6[-1,j],data.bag.7[-1,j],diff(data.bag.8[,j]),data.bag.9[-1,j],data.bag.10[-1,j],data.bag.11[-1,j],data.bag.12[-1,j],data.bag.13[-1,j],data.bag.14[-1,j],data.bag.15[-1,j])
-    temp2 <-window(data.var.bag.ex, start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
-    a <- VARselect(cbind(temp, temp2), lag.max = 13, type = "trand")$selection[1]
-    f5 <- VAR(data.var.bag, p = 6, type = "trend")
-    forecast1<- forecast(f5)
-    pr.rol.h7.b[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
+    data.var.bag.ex <- window(cbind(data.bag.2[,j],data.bag.3[,j],data.bag.5[,j],data.bag.6[,j],
+                                    data.bag.7[,j], data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],
+                                    data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j]), 
+                              start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+    var.bag.ex.diff<- window(cbind(diff(data.bag.4[,j]), diff(data.bag.8[,j])), start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+    a <- VARselect(cbind(data.var.bag.ex[-1,],var.bag.ex.diff), lag.max = 13, type = "trand")$selection[1]
+    f5 <- VAR(cbind(data.var.bag.ex[-1,],var.bag.ex.diff), p = 6, type = "trend")
+    pr.var[1,j] <- forecast(f5)$forecast$data.var.bag.ex..1....data.bag.2...j.$mean[h]
+    print(j)
   }
+  pr.rol.h7.b[i,5] <- mean(pr.var)
+  print(paste("VAMOS:", i, "PERIODOS"))
 }
+
+
+write.csv(pr.rol.h7.b, "pr.rol.h7.b.csv", row.names = FALSE)
+
 
 # Realizamos el gráfico de los pronósticos 
 
