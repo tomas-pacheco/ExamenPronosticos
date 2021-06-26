@@ -1574,37 +1574,24 @@ library(quantmod)
 
 set.seed(444)
 for (i in 2:15) {
-  a <- bld.mbb.bootstrap(data[,i], 1000) %>% as.data.frame() %>% ts(start=c(2019,12), frequency=365)
+  a <- bld.mbb.bootstrap(data[,i], 100) %>% as.data.frame() %>% ts(start=c(2019,12), frequency=365)
   assign(paste("data.bag.",i,sep = ""),ts(a, frequency = 365, start = c(2019,12)))
 }
 
 for (i in 1:4) {
-  b <- bld.mbb.bootstrap(PC[,i], 1000) %>% as.data.frame() %>% ts(start=c(2019,12), frequency=365)
+  b <- bld.mbb.bootstrap(PC[,i], 100) %>% as.data.frame() %>% ts(start=c(2019,12), frequency=365)
   assign(paste("PC.bag.",i,sep = ""),ts(b, frequency = 365, start = c(2019,12)))
 }
 
-########## NO CORRERRRRR
 pr.f.h1.b <- matrix(nrow=58,ncol=5, NA)
-
-
-
-
-########### CORRER A PARTIR DE ACAAA!!!!!!
-
-
-
-
-
-
 
 h<-1
 for(i in 1:58){
-  pr.arima <- matrix(nrow=1,ncol=1000,NA)
-  pr.arimax <- matrix(nrow=1,ncol=1000,NA)
-  pr.ets <- matrix(nrow=1,ncol=1000,NA)
+  pr.arima <- matrix(nrow=1,ncol=100,NA)
+  pr.arimax <- matrix(nrow=1,ncol=100,NA)
+  pr.ets <- matrix(nrow=1,ncol=100,NA)
   
-  for (j in 1:1000) {
-  if (j == 500){print(j)}
+  for (j in 1:100) {
   temp <-window(data.bag.2[,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
   data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j])
   temp2 <- window(data.var.bag.ex, start = c(2019,12), end = 2020.195 + (i-1)/365)
@@ -1623,10 +1610,7 @@ for(i in 1:58){
   f1 <- ets(temp, model=ets.1, use.initial.values=TRUE)
   pre <- forecast(f1, n.ahead=h)
   pr.ets[1,j] <- pre$mean[h]
-  
-
   } 
-  
   pr.f.h1.b[i,1] <- mean(pr.arima)
   pr.f.h1.b[i,2] <- mean(pr.arimax)
   pr.f.h1.b[i,3] <- mean(pr.ets)
@@ -1643,14 +1627,16 @@ pr.f.h1.b <- ts(pr.f.h1.b, frequency = 365, start = c(2019,12))
 h<-1
 
 for(i in 1:58){
-  for (j in 1:1000) {
-  temp<-window(data.bag.2[-1,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
-  data.var.bag <- cbind(data.bag.2[-1,j],data.bag.3[-1,j],diff(data.bag.4[,j]),data.bag.5[-1,j],data.bag.6[-1,j],data.bag.7[-1,j],diff(data.bag.8[,j]),data.bag.9[-1,j],data.bag.10[-1,j],data.bag.11[-1,j],data.bag.12[-1,j],data.bag.13[-1,j],data.bag.14[-1,j],data.bag.15[-1,j])
-  temp2 <-window(data.var.bag.ex, start = c(2019,12), end = 2020.195 + (i-1)/365)
-  f5 <- VAR(data.var.bag, p = 6, type = "trend")
-  forecast1<- forecast(f5)
-  pr.f.h1.b[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
+  pr.var <- matrix(nrow=1,ncol=100,NA)
+  for (j in 1:100) {
+  data.var.bag.ex <- window(cbind(data.bag.2[,j],data.bag.3[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j], data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j]), start = c(2019,12), end = 2020.195 + (i-1)/365)
+  var.bag.ex.diff<- window(cbind(diff(data.bag.4[,j]), diff(data.bag.8[,j])), start = c(2019,12), end = 2020.195 + (i-1)/365)
+  f5 <- VAR(cbind(data.var.bag.ex[-1,],var.bag.ex.diff), p = 6, type = "trend")
+  pr.var[1,j] <- forecast(f5)$forecast$data.var.bag.ex..1....data.bag.2...j.$mean[h]
+  print(j)
   }
+  pr.f.h1.b[i,5] <- mean(pr.var)
+  print(paste("VAMOS:", i, "PERIODOS"))
 }
 
 
@@ -1658,9 +1644,8 @@ for(i in 1:58){
 
 h<-1
 for(i in 1:58){
-    pr.favar <- matrix(nrow=1,ncol=50,NA)
-  for (j in 1:50){
-    if (j == 500){print(j)}
+    pr.favar <- matrix(nrow=1,ncol=100,NA)
+  for (j in 1:100){
     temp <-window(data.bag.2[,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
     temp3 <- window(cbind(PC.bag.1[,j],PC.bag.2[,j],PC.bag.3[,j],PC.bag.4[,j]),
                     start = c(2019,12), end = 2020.195 + (i-1)/365)
@@ -1695,13 +1680,12 @@ pr.f.h2.b <- matrix(nrow=57,ncol=5, NA)
 
 h<-2
 for(i in 1:57){
-  pr.arima <- matrix(nrow=1,ncol=1000,NA)
-  pr.arimax <- matrix(nrow=1,ncol=1000,NA)
-  pr.ets <- matrix(nrow=1,ncol=1000,NA)
-  pr.favar <-  matrix(nrow=1,ncol=1000,NA)
+  pr.arima <- matrix(nrow=1,ncol=100,NA)
+  pr.arimax <- matrix(nrow=1,ncol=100,NA)
+  pr.ets <- matrix(nrow=1,ncol=100,NA)
+  pr.favar <-  matrix(nrow=1,ncol=100,NA)
   
-  for (j in 1:1000) {
-    if (j == 500){print(j)}
+  for (j in 1:100) {
     temp<-window(data.bag.2[,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
     data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],
                              data.bag.6[,j],data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],
@@ -1748,8 +1732,8 @@ pr.f.h2.b <- ts(pr.f.h2.b, frequency = 365, start = c(2019,12))
 h<-2
 
 for(i in 1:57){
-  pr.var <- matrix(nrow=1,ncol=1000,NA)
-  for (j in 1:1000){
+  pr.var <- matrix(nrow=1,ncol=100,NA)
+  for (j in 1:100){
     data.var.bag.ex <- window(cbind(data.bag.2[,j],data.bag.3[,j],data.bag.5[,j],
                                     data.bag.6[,j],data.bag.7[,j], data.bag.9[,j],
                                     data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],
@@ -1785,12 +1769,12 @@ pr.f.h7.b <- matrix(nrow=52,ncol=5, NA)
 
 h<-7
 for(i in 1:52){
-  pr.arima <- matrix(nrow=1,ncol=1000,NA)
-  pr.arimax <- matrix(nrow=1,ncol=1000,NA)
-  pr.ets <- matrix(nrow=1,ncol=1000,NA)
-  pr.favar <- matrix(nrow=1,ncol=1000,NA)
+  pr.arima <- matrix(nrow=1,ncol=100,NA)
+  pr.arimax <- matrix(nrow=1,ncol=100,NA)
+  pr.ets <- matrix(nrow=1,ncol=100,NA)
+  pr.favar <- matrix(nrow=1,ncol=100,NA)
   
-  for (j in 1:1000) {
+  for (j in 1:100){
     temp<-window(data.bag.2[,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
     data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],
                              data.bag.6[,j],data.bag.7[,j],data.bag.8[,j],
@@ -1839,8 +1823,8 @@ for(i in 1:52){
 h <- 7
 
 for(i in 1:52){
-  pr.var <- matrix(nrow=1,ncol=1000,NA)
-  for (j in 1:1000) {
+  pr.var <- matrix(nrow=1,ncol=100,NA)
+  for (j in 1:100) {
     data.var.bag.ex <- window(cbind(data.bag.2[,j],data.bag.3[,j],data.bag.5[,j],
                                     data.bag.6[,j],data.bag.7[,j], data.bag.9[,j],
                                     data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],
@@ -1857,8 +1841,6 @@ for(i in 1:52){
 pr.f.h7.b <- ts(pr.f.h7.b, frequency = 365, start = c(2019,12))
 
 write.csv(pr.f.h7.b, "pr.f.h7.b.csv", row.names = FALSE)
-
-# aca termina tomi.
 
 
 # Realizamos el gráfico de los pronósticos 
@@ -1881,30 +1863,18 @@ autoplot(ts.union(out.of.sample[7:58,2], pr.f.h7.b[,1], pr.f.h7.b[,2], pr.f.h7.b
 library(forecast)
 library(quantmod)
 
-set.seed(444)
-for (i in 2:15) {
-  a <- bld.mbb.bootstrap(data[,i], 1000) %>% as.data.frame() %>% ts(start=c(2019,12), frequency=365)
-  assign(paste("data.bag.",i,sep = ""),ts(a, frequency = 365, start = c(2019,12)))
-}
-for (i in 1:4) {
-  b <- bld.mbb.bootstrap(PC[,i], 1000) %>% as.data.frame() %>% ts(start=c(2019,12), frequency=365)
-  assign(paste("PC.bag.",i,sep = ""),ts(b, frequency = 365, start = c(2019,12)))
-}
-
-
 
 pr.rec.h1.b <- matrix(nrow=58,ncol=5, NA)
 
 h<-1
 
 for(i in 1:58){
-  pr.arima <- matrix(nrow=1,ncol=1000,NA)
-  pr.arimax <- matrix(nrow=1,ncol=1000,NA)
-  pr.ets <- matrix(nrow=1,ncol=1000,NA)
-  pr.favar <- matrix(nrow=1,ncol=1000,NA)
+  pr.arima <- matrix(nrow=1,ncol=100,NA)
+  pr.arimax <- matrix(nrow=1,ncol=100,NA)
+  pr.ets <- matrix(nrow=1,ncol=100,NA)
+  pr.favar <- matrix(nrow=1,ncol=100,NA)
   
-  for (j in 1:1000) {
-    if (j == 500){print(j)}
+  for (j in 1:100) {
     temp <-window(data.bag.2[,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
     data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],
                              data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],
@@ -1952,8 +1922,8 @@ pr.rec.h1.b <- ts(pr.rec.h1.b, frequency = 365, start = c(2019,12))
 h<-1
 
 for(i in 1:58){
-  pr.var <- matrix(nrow=1,ncol=1000,NA)
-  for (j in 1:1000) {
+  pr.var <- matrix(nrow=1,ncol=100,NA)
+  for (j in 1:100){
     data.var.bag.ex <- window(cbind(data.bag.2[,j],data.bag.3[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j], data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j]), start = c(2019,12), end = 2020.195 + (i-1)/365)
     var.bag.ex.diff<- window(cbind(diff(data.bag.4[,j]), diff(data.bag.8[,j])), start = c(2019,12), end = 2020.195 + (i-1)/365)
     a <- VARselect(cbind(data.var.bag.ex[-1,],var.bag.ex.diff), lag.max = 13, type = "const")$selection[1]
@@ -1977,8 +1947,6 @@ autoplot(ts.union(out.of.sample[,2], pr.rec.h1.b[,1], pr.rec.h1.b[,2], pr.rec.h1
   theme_minimal() +  
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
-# gráficos que comparen ets bagged contra ets 
-
 
 # h = 2 
 
@@ -1986,12 +1954,12 @@ pr.rec.h2.b <- matrix(nrow=57,ncol=5, NA)
 
 h<-2
 for(i in 1:57){
-  pr.arima <- matrix(nrow=1,ncol=1000,NA)
-  pr.arimax <- matrix(nrow=1,ncol=1000,NA)
-  pr.ets <- matrix(nrow=1,ncol=1000,NA)
-  pr.favar <-  matrix(nrow=1,ncol=1000,NA)
+  pr.arima <- matrix(nrow=1,ncol=100,NA)
+  pr.arimax <- matrix(nrow=1,ncol=100,NA)
+  pr.ets <- matrix(nrow=1,ncol=100,NA)
+  pr.favar <-  matrix(nrow=1,ncol=100,NA)
   
-  for (j in 1:1000) {
+  for (j in 1:100){
     temp<-window(data.bag.2[,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
     data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j],
                              data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],
@@ -2006,7 +1974,7 @@ for(i in 1:57){
     pr.arima[1,j] <- forecast$mean[h]
     
     #ARIMAX
-    f2 <- Arima(temp,model=auto.arima(temp),xreg=temp2)
+    f2 <- Arima(temp,model=auto.arima(temp),newxreg=temp2)
     forecast2 <- forecast(f2$fitted,h=h)
     pr.arimax[1,j] <- forecast2$mean[h]
     
@@ -2041,8 +2009,8 @@ pr.rec.h2.b <- ts(pr.rec.h2.b, frequency = 365, start = c(2019,12))
 h<-2
 
 for(i in 1:57){
-  pr.var <- matrix(nrow=1,ncol=1000,NA)
-  for (j in 1:1000) {
+  pr.var <- matrix(nrow=1,ncol=100,NA)
+  for (j in 1:100) {
     data.var.bag.ex <- window(cbind(data.bag.2[,j],data.bag.3[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j], 
                                     data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],
                                     data.bag.14[,j],data.bag.15[,j]), start = c(2019,12), end = 2020.195 + (i-1)/365)
@@ -2076,12 +2044,12 @@ pr.rec.h7.b <- matrix(nrow=52,ncol=5, NA)
 
 h<-1
 for(i in 1:52){
-  pr.arima <- matrix(nrow=1,ncol=1000,NA)
-  pr.arimax <- matrix(nrow=1,ncol=1000,NA)
-  pr.ets <- matrix(nrow=1,ncol=1000,NA)
-  pr.favar <- matrix(nrow=1,ncol=1000,NA)
+  pr.arima <- matrix(nrow=1,ncol=100,NA)
+  pr.arimax <- matrix(nrow=1,ncol=100,NA)
+  pr.ets <- matrix(nrow=1,ncol=100,NA)
+  pr.favar <- matrix(nrow=1,ncol=100,NA)
   
-  for (j in 1:1000) {
+  for (j in 1:100) {
     temp<-window(data.bag.2[,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
     data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j],
                              data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],
@@ -2096,7 +2064,7 @@ for(i in 1:52){
     pr.arima[1,j] <- forecast$mean[h]
     
     #ARIMAX
-    f2 <- Arima(temp,model=auto.arima(temp),xreg=temp2)
+    f2 <- Arima(temp,model=auto.arima(temp),newxreg=temp2)
     forecast2 <- forecast(f2$fitted,h=h)
     pr.arimax[1,j] <- forecast2$mean[h]
     
@@ -2132,8 +2100,8 @@ pr.rec.h7.b <- ts(pr.rec.h7.b, frequency = 365, start = c(2019,12))
 h <- 7
 
 for(i in 1:52){
-  pr.var <- matrix(nrow=1,ncol=1000,NA)
-  for (j in 1:1000) {
+  pr.var <- matrix(nrow=1,ncol=100,NA)
+  for (j in 1:100) {
     data.var.bag.ex <- window(cbind(data.bag.2[,j],data.bag.3[,j],data.bag.5[,j],data.bag.6[,j],
                                     data.bag.7[,j], data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],
                                     data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j]), 
@@ -2175,27 +2143,17 @@ library(quantmod)
 
 set.seed(444)
 
-for (i in 2:15) {
-  a <- bld.mbb.bootstrap(data[,i], 1000) %>% as.data.frame() %>% ts(start=c(2019,12), frequency=365)
-  assign(paste("data.bag.",i,sep = ""),ts(a, frequency = 365, start = c(2019,12)))
-}
-
-for (i in 1:4) {
-  b <- bld.mbb.bootstrap(PC[,i], 1000) %>% as.data.frame() %>% ts(start=c(2019,12), frequency=365)
-  assign(paste("PC.bag.",i,sep = ""),ts(b, frequency = 365, start = c(2019,12)))
-}
-
 pr.rol.h1.b <- matrix(nrow=58,ncol=5, NA)
 
 h<-1
 for(i in 1:58){
-  pr.arima <- matrix(nrow=1,ncol=1000,NA)
-  pr.arimax <- matrix(nrow=1,ncol=1000,NA)
-  pr.ets <- matrix(nrow=1,ncol=1000,NA)
-  pr.favar <- matrix(nrow=1,ncol=1000,NA)
+  pr.arima <- matrix(nrow=1,ncol=100,NA)
+  pr.arimax <- matrix(nrow=1,ncol=100,NA)
+  pr.ets <- matrix(nrow=1,ncol=100,NA)
+  pr.favar <- matrix(nrow=1,ncol=100,NA)
   
   
-  for (j in 1:1000) {
+  for (j in 1:100) {
     temp <-window(data.bag.2[,j], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
     data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],
                              data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],
@@ -2210,7 +2168,7 @@ for(i in 1:58){
     pr.arima[1,j] <- forecast$mean[h]
     
     # ARIMAX
-    f2 <- Arima(temp,model=auto.arima(temp),xreg=temp2)
+    f2 <- Arima(temp,model=auto.arima(temp),newxreg=temp2)
     forecast2 <- forecast(f2$fitted,h=h)
     pr.arimax[1,j] <- forecast2$mean[h]
     
@@ -2246,8 +2204,8 @@ pr.rol.h1.b <- ts(pr.rol.h1.b, frequency = 365, start = c(2019,12))
 h<-1
 
 for(i in 1:58){
-  pr.var <- matrix(nrow=1,ncol=1000,NA)
-  for (j in 1:1000) {
+  pr.var <- matrix(nrow=1,ncol=100,NA)
+  for (j in 1:100) {
     data.var.bag.ex <- window(cbind(data.bag.2[,j],data.bag.3[,j],data.bag.5[,j],
                                     data.bag.6[,j],data.bag.7[,j], data.bag.9[,j],
                                     data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],
@@ -2283,12 +2241,12 @@ pr.rol.h2.b <- matrix(nrow=57,ncol=5, NA)
 
 h<-2
 for(i in 1:57){
-  pr.arima <- matrix(nrow=1,ncol=1000,NA)
-  pr.arimax <- matrix(nrow=1,ncol=1000,NA)
-  pr.ets <- matrix(nrow=1,ncol=1000,NA)
-  pr.favar <-  matrix(nrow=1,ncol=1000,NA)
+  pr.arima <- matrix(nrow=1,ncol=100,NA)
+  pr.arimax <- matrix(nrow=1,ncol=100,NA)
+  pr.ets <- matrix(nrow=1,ncol=100,NA)
+  pr.favar <-  matrix(nrow=1,ncol=100,NA)
   
-  for (j in 1:1000) {
+  for (j in 1:100) {
 
         temp<-window(data.bag.2[,j], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
     data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],
@@ -2306,7 +2264,7 @@ for(i in 1:57){
     pr.arima[1,j] <- forecast$mean[h]
     
     #ARIMAX
-    f2 <- Arima(temp,model=auto.arima(temp),xreg=temp2)
+    f2 <- Arima(temp,model=auto.arima(temp),newxreg=temp2)
     forecast2 <- forecast(f2$fitted,h=h)
     pr.arimax[1,j] <- forecast2$mean[h]
     
@@ -2341,8 +2299,8 @@ pr.rol.h2.b <- ts(pr.rol.h2.b, frequency = 365, start = c(2019,12))
 h<-2
 
 for(i in 1:57){
-  pr.var <- matrix(nrow=1,ncol=1000,NA)
-  for (j in 1:1000){
+  pr.var <- matrix(nrow=1,ncol=100,NA)
+  for (j in 1:100){
     data.var.bag.ex <- window(cbind(data.bag.2[,j],data.bag.3[,j],data.bag.5[,j],data.bag.6[,j],
                                     data.bag.7[,j], data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],
                                     data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j]), 
@@ -2375,22 +2333,16 @@ autoplot(ts.union(out.of.sample[2:58,2], pr.rol.h2.b[,1], pr.rol.h2.b[,2], pr.ro
 
 # h = 7 
 
-for (i in 2:15) {
-  a <- bld.mbb.bootstrap(data[,i], 1000) %>% as.data.frame() %>% ts(start=c(2019,12), frequency=365)
-  assign(paste("data.bag.",i,sep = ""),ts(a, frequency = 365, start = c(2019,12)))
-}
-
-
 pr.rol.h7.b <- matrix(nrow=52,ncol=5, NA)
 
 h<-1
 for(i in 1:52){
-  pr.arima <- matrix(nrow=1,ncol=1000,NA)
-  pr.arimax <- matrix(nrow=1,ncol=1000,NA)
-  pr.ets <- matrix(nrow=1,ncol=1000,NA)
-  pr.favar <- matrix(nrow=1,ncol=1000,NA)
+  pr.arima <- matrix(nrow=1,ncol=100,NA)
+  pr.arimax <- matrix(nrow=1,ncol=100,NA)
+  pr.ets <- matrix(nrow=1,ncol=100,NA)
+  pr.favar <- matrix(nrow=1,ncol=100,NA)
   
-  for (j in 1:1000) {
+  for (j in 1:100) {
     temp<-window(data.bag.2[,j], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
     data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],
                              data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],
@@ -2405,7 +2357,7 @@ for(i in 1:52){
     pr.arima[1,j] <- forecast$mean[h]
     
     #ARIMAX
-    f2 <- Arima(temp,model=auto.arima(temp),xreg=temp2)
+    f2 <- Arima(temp,model=auto.arima(temp),newxreg=temp2)
     forecast2 <- forecast(f2$fitted,h=h)
     pr.arimax[1,j] <- forecast2$mean[h]
     
@@ -2441,8 +2393,8 @@ pr.rol.h7.b <- ts(pr.rol.h7.b, frequency = 365, start = c(2019,12))
 h <- 7
 
 for(i in 1:52){
-  pr.var <- matrix(nrow=1,ncol=1000,NA)
-  for (j in 1:1000) {
+  pr.var <- matrix(nrow=1,ncol=100,NA)
+  for (j in 1:100) {
     data.var.bag.ex <- window(cbind(data.bag.2[,j],data.bag.3[,j],data.bag.5[,j],data.bag.6[,j],
                                     data.bag.7[,j], data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],
                                     data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j]), 
