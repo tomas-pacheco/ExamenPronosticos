@@ -1689,6 +1689,8 @@ write.csv(pr.f.h1.b, "pr.f.h1.b.csv", row.names = FALSE)
 
 # h = 2 
 
+# Aca empieza tomi
+
 pr.f.h2.b <- matrix(nrow=57,ncol=5, NA)
 
 h<-2
@@ -1829,7 +1831,6 @@ for(i in 1:52){
 }
 
 
-
 # Realizamos los pronósticos con el VAR 
 
 # Construimos la serie diferenciando las variables que son I(1)
@@ -1855,6 +1856,10 @@ for(i in 1:52){
 }
 pr.f.h7.b <- ts(pr.f.h7.b, frequency = 365, start = c(2019,12))
 
+write.csv(pr.f.h7.b, "pr.f.h7.b.csv", row.names = FALSE)
+
+# aca termina tomi.
+
 
 # Realizamos el gráfico de los pronósticos 
 
@@ -1866,7 +1871,6 @@ autoplot(ts.union(out.of.sample[7:58,2], pr.f.h7.b[,1], pr.f.h7.b[,2], pr.f.h7.b
   theme_minimal() +  
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
-write.csv(pr.f.h7.b, "pr.f.h7.b.csv", row.names = FALSE)
 
 # Realizamos bagging con los modelos arima, ets, var, adl con esquema recursivo 
 
