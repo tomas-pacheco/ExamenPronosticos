@@ -1904,6 +1904,7 @@ for(i in 1:58){
   pr.favar <- matrix(nrow=1,ncol=1000,NA)
   
   for (j in 1:1000) {
+    if (j == 500){print(j)}
     temp <-window(data.bag.2[,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
     data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],
                              data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],
@@ -1932,8 +1933,6 @@ for(i in 1:58){
     f4 <- VAR(cbind(temp, temp3), p = a, type= "trend")
     forecast4<-forecast(f4, h=h)
     pr.favar[1,j] <- forecast4$forecast$temp$mean[h]
-    
-    print(j)
   } 
   
   pr.rec.h1.b[i,1] <- mean(pr.arima)
@@ -2133,6 +2132,7 @@ pr.rec.h7.b <- ts(pr.rec.h7.b, frequency = 365, start = c(2019,12))
 h <- 7
 
 for(i in 1:52){
+  pr.var <- matrix(nrow=1,ncol=1000,NA)
   for (j in 1:1000) {
     data.var.bag.ex <- window(cbind(data.bag.2[,j],data.bag.3[,j],data.bag.5[,j],data.bag.6[,j],
                                     data.bag.7[,j], data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],
