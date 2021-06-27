@@ -1326,6 +1326,7 @@ for(i in 1:52){
   pr.f.h7[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
 }
 
+write.csv(cbind(out.of.sample[7:58,1:2], pr.f.h7), "pr.f.h7.csv") ## correr esto
 
 # Grafico de los pronosticos con esquema fijo y h=7
 
@@ -1602,7 +1603,10 @@ for(i in 1:58){
   
   for (j in 1:100) {
   temp <-window(data.bag.2[,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
-  data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j])
+  data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],
+                           data.bag.7[,j],data.bag.8[,j],data.bag.9[,j],data.bag.10[,j],
+                           data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],
+                           data.bag.15[,j])
   temp2 <- window(data.var.bag.ex, start = c(2019,12), end = 2020.195 + (i-1)/365)
 
     # ARIMA 
@@ -3542,11 +3546,7 @@ AC1[33,6]<-round(coeftest(lm(DL.var.rol.h2.b~1), vcov = NeweyWest(lm(DL.var.rol.
 AC1[34,6]<-round(coeftest(lm(DL.favar.rol.h2.b~1), vcov = NeweyWest(lm(DL.favar.rol.h2.b~1)))[4],4)
 
 
-
 # h= 7 
-
-# Estadístico 
-
 
 # Estadístico 
 
@@ -3642,6 +3642,14 @@ AC4[31,6]<-round(coeftest(lm(DL.arimax.rol.h7.b~1), vcov = NeweyWest(lm(DL.arima
 AC4[32,6]<-round(coeftest(lm(DL.ets.rol.h7.b~1), vcov = NeweyWest(lm(DL.ets.rol.h7.b~1)))[4],4)
 AC4[33,6]<-round(coeftest(lm(DL.var.rol.h7.b~1), vcov = NeweyWest(lm(DL.var.rol.h7.b~1)))[4],4)
 AC4[34,6]<-round(coeftest(lm(DL.favar.rol.h7.b~1), vcov = NeweyWest(lm(DL.favar.rol.h7.b~1)))[4],4)
+
+
+# Medidas de accuracy comparables 
+
+
+
+
+# Test de Giacomini Rossi 
 
 
 
