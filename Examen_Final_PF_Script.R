@@ -3103,256 +3103,251 @@ error.var.rol.h7.b <- out.of.sample[,2]-pr.rol.h7.b[,5]
 error.favar.rol.h7.b <- out.of.sample[,2]-pr.rol.h7.b[,4]
 
 
-# Armamos las funciones de pérdida cuadráticas (poner a todos ^{2})
-
-# h=1 
-
-# Esquema fijo 
+# Funciones de pérdida 
 
 DL.arima.f.h1 <- error.arima.f.h1^{2} - error.bench^{2}
 
 DL.arimax.f.h1 <- error.arimax.f.h1^{2} - error.bench^{2}
 
-DL.ets.f.h1 <- error.ets.f.h1^{2} - error.bench
+DL.ets.f.h1 <- error.ets.f.h1^{2} - error.bench^{2}
 
-DL.adl.f.h1 <- error.adl.f.h1 - error.bench
+DL.adl.f.h1 <- error.adl.f.h1^{2} - error.bench^{2}
 
-DL.var.f.h1 <- error.var.f.h1 - error.bench
+DL.var.f.h1 <- error.var.f.h1^{2} - error.bench^{2}
 
-DL.favar.f.h1 <- error.favar.f.h1 - error.bench
+DL.favar.f.h1 <- error.favar.f.h1^{2} - error.bench^{2}
 
 # Esquema recursivo 
 
-DL.arima.rec.h1 <- error.arima.rec.h1 - error.bench
+DL.arima.rec.h1 <- error.arima.rec.h1^{2} - error.bench^{2}
 
-DL.arimax.rec.h1 <- error.arimax.rec.h1 - error.bench
+DL.arimax.rec.h1 <- error.arimax.rec.h1^{2} - error.bench^{2}
 
-DL.ets.rec.h1 <- error.ets.rec.h1 - error.bench
+DL.ets.rec.h1 <- error.ets.rec.h1^{2} - error.bench^{2}
 
-DL.adl.rec.h1 <- error.adl.rec.h1 - error.bench
+DL.adl.rec.h1 <- error.adl.rec.h1^{2} - error.bench^{2}
 
-DL.var.rec.h1 <- error.var.rec.h1 - error.bench
+DL.var.rec.h1 <- error.var.rec.h1^{2} - error.bench^{2}
 
-DL.favar.rec.h1 <- error.favar.rec.h1 - error.bench
+DL.favar.rec.h1 <- error.favar.rec.h1^{2} - error.bench^{2}
 
 # Esquema rolling 
 
-DL.arima.rec.h1 <- error.arima.rec.h1 - error.bench
+DL.arima.rec.h1 <- error.arima.rec.h1^{2} - error.bench^{2}
 
-DL.arimax.rec.h1 <- error.arimax.rec.h1 - error.bench
+DL.arimax.rec.h1 <- error.arimax.rec.h1^{2} - error.bench^{2}
 
-DL.ets.rec.h1 <- error.ets.rec.h1 - error.bench
+DL.ets.rec.h1 <- error.ets.rec.h1^{2} - error.bench^{2}
 
-DL.adl.rec.h1 <- error.adl.rec.h1 - error.bench
+DL.adl.rec.h1 <- error.adl.rec.h1^{2} - error.bench^{2}
 
-DL.var.rec.h1 <- error.var.rec.h1 - error.bench
+DL.var.rec.h1 <- error.var.rec.h1^{2} - error.bench^{2}
 
-DL.favar.rec.h1 <- error.favar.rec.h1 - error.bench
+DL.favar.rec.h1 <- error.favar.rec.h1^{2} - error.bench^{2}
 
 # Bagging  
 
-DL.arima.f.h1.b <- error.arima.f.h1.b - error.bench
+DL.arima.f.h1.b <- error.arima.f.h1.b^{2} - error.bench^{2}
 
-DL.arimax.f.h1.b <- error.arimax.f.h1.b - error.bench
+DL.arimax.f.h1.b <- error.arimax.f.h1.b^{2} - error.bench^{2}
 
-DL.ets.f.h1.b <- error.ets.f.h1.b - error.bench
+DL.ets.f.h1.b <- error.ets.f.h1.b^{2} - error.bench^{2}
 
-DL.var.f.h1.b <- error.var.f.h1.b - error.bench
+DL.var.f.h1.b <- error.var.f.h1.b^{2} - error.bench^{2}
 
-DL.favar.f.h1.b <- error.favar.f.h1.b - error.bench
+DL.favar.f.h1.b <- error.favar.f.h1.b^{2} - error.bench^{2}
 
 # Esquema recursivo 
 
-DL.arima.rec.h1.b <- error.arima.rec.h1.b - error.bench
+DL.arima.rec.h1.b <- error.arima.rec.h1.b^{2} - error.bench^{2}
 
-DL.arimax.rec.h1.b <- error.arimax.rec.h1.b - error.bench
+DL.arimax.rec.h1.b <- error.arimax.rec.h1.b^{2} - error.bench^{2}
 
-DL.ets.rec.h1.b <- error.ets.rec.h1.b - error.bench
+DL.ets.rec.h1.b <- error.ets.rec.h1.b^{2} - error.bench^{2}
 
-DL.var.rec.h1.b <- error.var.rec.h1.b - error.bench
+DL.var.rec.h1.b <- error.var.rec.h1.b^{2} - error.bench^{2}
 
-DL.favar.rec.h1.b <- error.favar.rec.h1.b - error.bench
+DL.favar.rec.h1.b <- error.favar.rec.h1.b^{2} - error.bench^{2}
 
 # Esquema rolling 
 
-DL.arima.rec.h1.b <- error.arima.rec.h1.b - error.bench
+DL.arima.rec.h1.b <- error.arima.rec.h1.b^{2} - error.bench^{2}
 
-DL.arimax.rec.h1.b <- error.arimax.rec.h1.b - error.bench
+DL.arimax.rec.h1.b <- error.arimax.rec.h1.b^{2} - error.bench^{2}
 
-DL.ets.rec.h1.b <- error.ets.rec.h1.b - error.bench
+DL.ets.rec.h1.b <- error.ets.rec.h1.b^{2} - error.bench^{2}
 
-DL.var.rec.h1.b <- error.var.rec.h1.b - error.bench
+DL.var.rec.h1.b <- error.var.rec.h1.b^{2} - error.bench^{2}
 
-DL.favar.rec.h1.b <- error.favar.rec.h1.b - error.bench
+DL.favar.rec.h1.b <- error.favar.rec.h1.b^{2} - error.bench^{2}
 
 
 # h=2 
 
 # Esquema fijo 
 
-DL.arima.f.h2 <- error.arima.f.h2 - error.bench[-1,]
+DL.arima.f.h2 <- error.arima.f.h2^{2} - error.bench[-1,]^{2}
 
-DL.arimax.f.h2 <- error.arimax.f.h2 - error.bench[-1,]
+DL.arimax.f.h2 <- error.arimax.f.h2^{2} - error.bench[-1,]^{2}
 
-DL.ets.f.h2 <- error.ets.f.h2 - error.bench[-1,]
+DL.ets.f.h2 <- error.ets.f.h2^{2} - error.bench[-1,]^{2}
 
-DL.adl.f.h2 <- error.adl.f.h2 - error.bench[-1,]
+DL.adl.f.h2 <- error.adl.f.h2^{2} - error.bench[-1,]^{2}
 
-DL.var.f.h2 <- error.var.f.h2 - error.bench[-1,]
+DL.var.f.h2 <- error.var.f.h2^{2} - error.bench[-1,]^{2}
 
-DL.favar.f.h2 <- error.favar.f.h2 - error.bench[-1,]
+DL.favar.f.h2 <- error.favar.f.h2^{2} - error.bench[-1,]^{2}
 
 # Esquema recursivo 
 
-DL.arima.rec.h2 <- error.arima.rec.h2 - error.bench[-1,]
+DL.arima.rec.h2 <- error.arima.rec.h2^{2} - error.bench[-1,]^{2}
 
-DL.arimax.rec.h2 <- error.arimax.rec.h2 - error.bench[-1,]
+DL.arimax.rec.h2 <- error.arimax.rec.h2^{2} - error.bench[-1,]^{2}
 
-DL.ets.rec.h2 <- error.ets.rec.h2 - error.bench[-1,]
+DL.ets.rec.h2 <- error.ets.rec.h2^{2} - error.bench[-1,]^{2}
 
-DL.adl.rec.h2 <- error.adl.rec.h2 - error.bench[-1,]
+DL.adl.rec.h2 <- error.adl.rec.h2^{2} - error.bench[-1,]^{2}
 
-DL.var.rec.h2 <- error.var.rec.h2 - error.bench[-1,]
+DL.var.rec.h2 <- error.var.rec.h2^{2} - error.bench[-1,]^{2}
 
-DL.favar.rec.h2 <- error.favar.rec.h2 - error.bench[-1,]
+DL.favar.rec.h2 <- error.favar.rec.h2^{2} - error.bench[-1,]^{2}
 
 # Esquema rolling 
 
-DL.arima.rec.h2 <- error.arima.rec.h2 - error.bench[-1,]
+DL.arima.rec.h2 <- error.arima.rec.h2^{2} - error.bench[-1,]^{2}
 
-DL.arimax.rec.h2 <- error.arimax.rec.h2 - error.bench[-1,]
+DL.arimax.rec.h2 <- error.arimax.rec.h2^{2} - error.bench[-1,]^{2}
 
-DL.ets.rec.h2 <- error.ets.rec.h2 - error.bench[-1,]
+DL.ets.rec.h2 <- error.ets.rec.h2^{2} - error.bench[-1,]^{2}
 
-DL.adl.rec.h2 <- error.adl.rec.h2 - error.bench[-1,]
+DL.adl.rec.h2 <- error.adl.rec.h2^{2} - error.bench[-1,]^{2}
 
-DL.var.rec.h2 <- error.var.rec.h2 - error.bench[-1,]
+DL.var.rec.h2 <- error.var.rec.h2^{2} - error.bench[-1,]^{2}
 
-DL.favar.rec.h2 <- error.favar.rec.h2 - error.bench[-1,]
+DL.favar.rec.h2 <- error.favar.rec.h2^{2} - error.bench[-1,]^{2}
 
 
 # Bagging 
 
 # Esquema fijo 
 
-DL.arima.f.h2.b <- error.arima.f.h2.b - error.bench[-1,]
+DL.arima.f.h2.b <- error.arima.f.h2.b^{2} - error.bench[-1,]^{2}
 
-DL.arimax.f.h2.b <- error.arimax.f.h2.b - error.bench[-1,]
+DL.arimax.f.h2.b <- error.arimax.f.h2.b^{2} - error.bench[-1,]^{2}
 
-DL.ets.f.h2.b <- error.ets.f.h2.b - error.bench[-1,]
+DL.ets.f.h2.b <- error.ets.f.h2.b^{2} - error.bench[-1,]^{2}
 
-DL.var.f.h2.b <- error.var.f.h2.b - error.bench[-1,]
+DL.var.f.h2.b <- error.var.f.h2.b^{2} - error.bench[-1,]^{2}
 
-DL.favar.f.h2.b <- error.favar.f.h2.b - error.bench[-1,]
+DL.favar.f.h2.b <- error.favar.f.h2.b^{2} - error.bench[-1,]^{2}
 
 # Esquema recursivo 
 
-DL.arima.rec.h2.b <- error.arima.rec.h2.b - error.bench[-1,]
+DL.arima.rec.h2.b <- error.arima.rec.h2.b^{2} - error.bench[-1,]^{2}
 
-DL.arimax.rec.h2.b <- error.arimax.rec.h2.b - error.bench[-1,]
+DL.arimax.rec.h2.b <- error.arimax.rec.h2.b^{2} - error.bench[-1,]^{2}
 
-DL.ets.rec.h2.b <- error.ets.rec.h2.b - error.bench[-1,]
+DL.ets.rec.h2.b <- error.ets.rec.h2.b^{2} - error.bench[-1,]^{2}
 
-DL.var.rec.h2.b <- error.var.rec.h2.b - error.bench[-1,]
+DL.var.rec.h2.b <- error.var.rec.h2.b^{2} - error.bench[-1,]^{2}
 
-DL.favar.rec.h2.b <- error.favar.rec.h2.b - error.bench[-1,]
+DL.favar.rec.h2.b <- error.favar.rec.h2.b^{2} - error.bench[-1,]^{2}
 
 # Esquema rolling 
 
-DL.arima.rec.h2.b <- error.arima.rec.h2.b - error.bench[-1,]
+DL.arima.rec.h2.b <- error.arima.rec.h2.b^{2} - error.bench[-1,]^{2}
 
-DL.arimax.rec.h2.b <- error.arimax.rec.h2.b - error.bench[-1,]
+DL.arimax.rec.h2.b <- error.arimax.rec.h2.b^{2} - error.bench[-1,]^{2}
 
-DL.ets.rec.h2.b <- error.ets.rec.h2.b - error.bench[-1,]
+DL.ets.rec.h2.b <- error.ets.rec.h2.b^{2} - error.bench[-1,]^{2}
 
-DL.var.rec.h2.b <- error.var.rec.h2.b - error.bench[-1,]
+DL.var.rec.h2.b <- error.var.rec.h2.b^{2} - error.bench[-1,]^{2}
 
-DL.favar.rec.h2.b <- error.favar.rec.h2.b - error.bench[-1,]
+DL.favar.rec.h2.b <- error.favar.rec.h2.b^{2} - error.bench[-1,]^{2}
 
 
 # h = 7 
 
 # Esquema fijo 
 
-DL.arima.f.h7 <- error.arima.f.h7 - error.bench
+DL.arima.f.h7 <- error.arima.f.h7^{2}  - error.bench^{2}
 
-DL.arimax.f.h7 <- error.arimax.f.h7 - error.bench[7:58,]
+DL.arimax.f.h7 <- error.arimax.f.h7^{2}  - error.bench[7:58,]^{2}
 
-DL.ets.f.h7 <- error.ets.f.h7 - error.bench[7:58,]
+DL.ets.f.h7 <- error.ets.f.h7^{2}  - error.bench[7:58,]^{2}
 
-DL.adl.f.h7 <- error.adl.f.h7 - error.bench[7:58,]
+DL.adl.f.h7 <- error.adl.f.h7^{2}  - error.bench[7:58,]^{2}
 
-DL.var.f.h7 <- error.var.f.h7 - error.bench[7:58,]
+DL.var.f.h7 <- error.var.f.h7^{2}  - error.bench[7:58,]^{2}
 
-DL.favar.f.h7 <- error.favar.f.h7 - error.bench[7:58,]
+DL.favar.f.h7 <- error.favar.f.h7^{2}  - error.bench[7:58,]^{2}
 
 # Esquema recursivo 
 
-DL.arima.rec.h7 <- error.arima.rec.h7 - error.bench[7:58,]
+DL.arima.rec.h7 <- error.arima.rec.h7^{2}  - error.bench[7:58,]^{2}
 
-DL.arimax.rec.h7 <- error.arimax.rec.h7 - error.bench[7:58,]
+DL.arimax.rec.h7 <- error.arimax.rec.h7^{2}  - error.bench[7:58,]^{2}
 
-DL.ets.rec.h7 <- error.ets.rec.h7 - error.bench[7:58,]
+DL.ets.rec.h7 <- error.ets.rec.h7^{2}  - error.bench[7:58,]^{2}
 
-DL.adl.rec.h7 <- error.adl.rec.h7 - error.bench[7:58,]
+DL.adl.rec.h7 <- error.adl.rec.h7^{2}  - error.bench[7:58,]^{2}
 
-DL.var.rec.h7 <- error.var.rec.h7 - error.bench[7:58,]
+DL.var.rec.h7 <- error.var.rec.h7^{2}  - error.bench[7:58,]^{2}
 
-DL.favar.rec.h7 <- error.favar.rec.h7 - error.bench[7:58,]
+DL.favar.rec.h7 <- error.favar.rec.h7^{2}  - error.bench[7:58,]^{2}
 
 # Esquema rolling 
 
-DL.arima.rec.h7 <- error.arima.rec.h7 - error.bench[7:58,]
+DL.arima.rec.h7 <- error.arima.rec.h7^{2}  - error.bench[7:58,]^{2}
 
-DL.arimax.rec.h7 <- error.arimax.rec.h7 - error.bench[7:58,]
+DL.arimax.rec.h7 <- error.arimax.rec.h7^{2}  - error.bench[7:58,]^{2}
 
-DL.ets.rec.h7 <- error.ets.rec.h7 - error.bench[7:58,]
+DL.ets.rec.h7 <- error.ets.rec.h7^{2}  - error.bench[7:58,]^{2}
 
-DL.adl.rec.h7 <- error.adl.rec.h7 - error.bench[7:58,]
+DL.adl.rec.h7 <- error.adl.rec.h7^{2}  - error.bench[7:58,]^{2}
 
-DL.var.rec.h7 <- error.var.rec.h7 - error.bench[7:58,]
+DL.var.rec.h7 <- error.var.rec.h7^{2}  - error.bench[7:58,]^{2}
 
-DL.favar.rec.h7 <- error.favar.rec.h7 - error.bench[7:58,]
+DL.favar.rec.h7 <- error.favar.rec.h7^{2}  - error.bench[7:58,]^{2}
 
 
 # Bagging 
 
 # Esquema fijo 
 
-DL.arima.f.h7.b <- error.arima.f.h7.b - error.bench[7:58,]
+DL.arima.f.h7.b <- error.arima.f.h7.b^{2}  - error.bench[7:58,]^{2}
 
-DL.arimax.f.h7.b <- error.arimax.f.h7.b - error.bench[7:58,]
+DL.arimax.f.h7.b <- error.arimax.f.h7.b^{2}  - error.bench[7:58,]^{2}
 
-DL.ets.f.h7.b <- error.ets.f.h7.b - error.bench[7:58,]
+DL.ets.f.h7.b <- error.ets.f.h7.b^{2}  - error.bench[7:58,]^{2}
 
-DL.var.f.h7.b <- error.var.f.h7.b - error.bench[7:58,]
+DL.var.f.h7.b <- error.var.f.h7.b^{2}  - error.bench[7:58,]^{2}
 
-DL.favar.f.h7.b <- error.favar.f.h7.b - error.bench[7:58,]
+DL.favar.f.h7.b <- error.favar.f.h7.b^{2}  - error.bench[7:58,]^{2}
 
 # Esquema recursivo 
 
-DL.arima.rec.h7.b <- error.arima.rec.h7.b - error.bench[7:58,]
+DL.arima.rec.h7.b <- error.arima.rec.h7.b^{2}  - error.bench[7:58,]^{2}
 
-DL.arimax.rec.h7.b <- error.arimax.rec.h7.b - error.bench[7:58,]
+DL.arimax.rec.h7.b <- error.arimax.rec.h7.b^{2}  - error.bench[7:58,]^{2}
 
-DL.ets.rec.h7.b <- error.ets.rec.h7.b - error.bench[7:58,]
+DL.ets.rec.h7.b <- error.ets.rec.h7.b^{2}  - error.bench[7:58,]^{2}
 
-DL.var.rec.h7.b <- error.var.rec.h7.b - error.bench[7:58,]
+DL.var.rec.h7.b <- error.var.rec.h7.b^{2}  - error.bench[7:58,]^{2}
 
-DL.favar.rec.h7.b <- error.favar.rec.h7.b - error.bench[7:58,]
+DL.favar.rec.h7.b <- error.favar.rec.h7.b^{2}  - error.bench[7:58,]^{2}
 
 # Esquema rolling 
 
-DL.arima.rec.h7.b.b <- error.arima.rec.h7.b - error.bench[7:58,]
+DL.arima.rec.h7.b.b <- error.arima.rec.h7.b^{2}  - error.bench[7:58,]^{2}
 
-DL.arimax.rec.h7 <- error.arimax.rec.h7.b - error.bench[7:58,]
+DL.arimax.rec.h7 <- error.arimax.rec.h7.b^{2}  - error.bench[7:58,]^{2}
 
-DL.ets.rec.h7.b <- error.ets.rec.h7.b - error.bench[7:58,]
+DL.ets.rec.h7.b <- error.ets.rec.h7.b^{2}  - error.bench[7:58,]^{2}
 
-DL.var.rec.h7.b <- error.var.rec.h7.b - error.bench[7:58,]
+DL.var.rec.h7.b <- error.var.rec.h7.b^{2}  - error.bench[7:58,]^{2}
 
-DL.favar.rec.h7.b <- error.favar.rec.h7.b - error.bench[7:58,]
-
+DL.favar.rec.h7.b <- error.favar.rec.h7.b^{2}  - error.bench[7:58,]^{2}
 
 # Realizamos el test de Diebold Mariano, ajustamos por NW para cuando h>1
 
@@ -3645,6 +3640,11 @@ AC4[34,6]<-round(coeftest(lm(DL.favar.rol.h7.b~1), vcov = NeweyWest(lm(DL.favar.
 
 
 # Medidas de accuracy comparables 
+
+
+
+
+
 
 
 
