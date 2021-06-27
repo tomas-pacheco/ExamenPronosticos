@@ -2361,7 +2361,7 @@ autoplot(ts.union(out.of.sample[2:58,2], pr.rol.h2.b[,1], pr.rol.h2.b[,2], pr.ro
 
 pr.rol.h7.b <- matrix(nrow=52,ncol=5, NA)
 
-h<-1
+h<- 7
 for(i in 1:52){
   pr.arima <- matrix(nrow=1,ncol=100,NA)
   pr.arimax <- matrix(nrow=1,ncol=100,NA)
