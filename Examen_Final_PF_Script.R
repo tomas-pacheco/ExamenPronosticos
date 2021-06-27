@@ -3651,6 +3651,287 @@ AC4[34,6]<-round(coeftest(lm(DL.favar.rol.h7.b~1), vcov = NeweyWest(lm(DL.favar.
 
 # Test de Giacomini Rossi 
 
+# Para este test hacemos las funciones cuadraticas
+
+### h=1 
+
+# Esquema fijo
+
+error.bench.sq <- error.bench^2 
+
+error.arima.f.h1.sq <- (out.of.sample[,2]-pr.f.h1[,1])^2
+
+error.arimax.f.h1.sq <- (out.of.sample[,2]-pr.f.h1[,2])^2
+
+error.ets.f.h1.sq <- (out.of.sample[,2]-pr.f.h1[,3])^2
+
+error.adl.f.h1.sq <- (out.of.sample[,2]-pr.f.h1[,4])^2
+
+error.var.f.h1.sq <- (out.of.sample[,2]-pr.f.h1[,5])^2
+
+error.favar.f.h1.sq <- (out.of.sample[,2]-pr.f.h1[,6])^2
+
+# Esquema recursivo
+
+error.arima.rec.h1 <- out.of.sample[,2]-pr.rec.h1[,1]
+
+error.arimax.rec.h1 <- out.of.sample[,2]-pr.rec.h1[,2]
+
+error.ets.rec.h1 <- out.of.sample[,2]-pr.rec.h1[,3]
+
+error.adl.rec.h1 <- out.of.sample[,2]-pr.rec.h1[,4]
+
+error.var.rec.h1 <- out.of.sample[,2]-pr.rec.h1[,5]
+
+error.favar.rec.h1 <- out.of.sample[,2]-pr.rec.h1[,6]
+
+# Esquema rolling 
+
+error.arima.rol.h1 <- out.of.sample[,2]-pr.rol.h1[,1]
+
+error.arimax.rol.h1 <- out.of.sample[,2]-pr.rol.h1[,2]
+
+error.ets.rol.h1 <- out.of.sample[,2]-pr.rol.h1[,3]
+
+error.adl.rol.h1 <- out.of.sample[,2]-pr.rol.h1[,4]
+
+error.var.rol.h1 <- out.of.sample[,2]-pr.rol.h1[,5]
+
+error.favar.rol.h1 <- out.of.sample[,2]-pr.rol.h1[,6]
+
+# Bagging 
+
+# Esquema fijo bagged
+
+error.arima.f.h1.b <- out.of.sample[,2]-pr.f.h1.b[,1]
+
+error.arimax.f.h1.b <- out.of.sample[,2]-pr.f.h1.b[,2]
+
+error.ets.f.h1.b <- out.of.sample[,2]-pr.f.h1.b[,3]
+
+error.var.f.h1.b <- out.of.sample[,2]-pr.f.h1.b[,4]
+
+error.favar.f.h1.b <- out.of.sample[,2]-pr.f.h1.b[,5]
+
+# Esquema recursivo bagged
+
+error.arima.rec.h1.b <- out.of.sample[,2]-pr.rec.h1.b[,1]
+
+error.arimax.rec.h1.b <- out.of.sample[,2]-pr.rec.h1.b[,2]
+
+error.ets.rec.h1.b <- out.of.sample[,2]-pr.rec.h1.b[,3]
+
+error.var.rec.h1.b <- out.of.sample[,2]-pr.rec.h1.b[,4]
+
+error.favar.rec.h1.b <- out.of.sample[,2]-pr.rec.h1.b[,5]
+
+# Esquema rolling bagged
+
+error.arima.rol.h1.b <- out.of.sample[,2]-pr.rol.h1.b[,1]
+
+error.arimax.rol.h1.b <- out.of.sample[,2]-pr.rol.h1.b[,2]
+
+error.ets.rol.h1.b <- out.of.sample[,2]-pr.rol.h1.b[,3]
+
+error.var.rol.h1.b <- out.of.sample[,2]-pr.rol.h1.b[,4]
+
+error.favar.rol.h1.b <- out.of.sample[,2]-pr.rol.h1.b[,5]
+
+
+### h=2 
+
+error.arima.f.h2 <- out.of.sample[,2]-pr.f.h2[,1]
+
+error.arimax.f.h2 <- out.of.sample[,2]-pr.f.h2[,2]
+
+error.ets.f.h2 <- out.of.sample[,2]-pr.f.h2[,3]
+
+error.adl.f.h2 <- out.of.sample[,2]-pr.f.h2[,4]
+
+error.var.f.h2 <- out.of.sample[,2]-pr.f.h2[,5]
+
+error.favar.f.h2 <- out.of.sample[,2]-pr.f.h2[,6]
+
+# Esquema recursivo
+
+error.arima.rec.h2 <- out.of.sample[,2]-pr.rec.h2[,1]
+
+error.arimax.rec.h2 <- out.of.sample[,2]-pr.rec.h2[,2]
+
+error.ets.rec.h2 <- out.of.sample[,2]-pr.rec.h2[,3]
+
+error.adl.rec.h2 <- out.of.sample[,2]-pr.rec.h2[,4]
+
+error.var.rec.h2 <- out.of.sample[,2]-pr.rec.h2[,5]
+
+error.favar.rec.h2 <- out.of.sample[,2]-pr.rec.h2[,6]
+
+# Esquema rolling 
+
+error.arima.rol.h2 <- out.of.sample[,2]-pr.rol.h2[,1]
+
+error.arimax.rol.h2 <- out.of.sample[,2]-pr.rol.h2[,2]
+
+error.ets.rol.h2 <- out.of.sample[,2]-pr.rol.h2[,3]
+
+error.adl.rol.h2 <- out.of.sample[,2]-pr.rol.h2[,4]
+
+error.var.rol.h2 <- out.of.sample[,2]-pr.rol.h2[,5]
+
+error.favar.rol.h2 <- out.of.sample[,2]-pr.rol.h2[,6]
+
+# Bagging 
+
+# Esquema fijo bagged
+
+error.arima.f.h2.b <- out.of.sample[,2]-pr.f.h2.b[,1]
+
+error.arimax.f.h2.b <- out.of.sample[,2]-pr.f.h2.b[,2]
+
+error.ets.f.h2.b <- out.of.sample[,2]-pr.f.h2.b[,3]
+
+error.var.f.h2.b <- out.of.sample[,2]-pr.f.h2.b[,4]
+
+error.favar.f.h2.b <- out.of.sample[,2]-pr.f.h2.b[,5]
+
+# Esquema recursivo bagged
+
+error.arima.rec.h2.b <- out.of.sample[,2]-pr.rec.h2.b[,1]
+
+error.arimax.rec.h2.b <- out.of.sample[,2]-pr.rec.h2.b[,2]
+
+error.ets.rec.h2.b <- out.of.sample[,2]-pr.rec.h2.b[,3]
+
+error.var.rec.h2.b <- out.of.sample[,2]-pr.rec.h2.b[,4]
+
+error.favar.rec.h2.b <- out.of.sample[,2]-pr.rec.h2.b[,5]
+
+# Esquema rolling 
+
+error.arima.rol.h2.b <- out.of.sample[,2]-pr.rol.h2.b[,1]
+
+error.arimax.rol.h2.b <- out.of.sample[,2]-pr.rol.h2.b[,2]
+
+error.ets.rol.h2.b <- out.of.sample[,2]-pr.rol.h2.b[,3]
+
+error.var.rol.h2.b <- out.of.sample[,2]-pr.rol.h2.b[,4]
+
+error.favar.rol.h2.b <- out.of.sample[,2]-pr.rol.h2.b[,5]
+
+
+### h=7
+
+error.arima.f.h7 <- out.of.sample[,2]-pr.f.h7[,1]
+
+error.arimax.f.h7 <- out.of.sample[,2]-pr.f.h7[,2]
+
+error.ets.f.h7 <- out.of.sample[,2]-pr.f.h7[,3]
+
+error.adl.f.h7 <- out.of.sample[,2]-pr.f.h7[,4]
+
+error.var.f.h7 <- out.of.sample[,2]-pr.f.h7[,5]
+
+error.favar.f.h7 <- out.of.sample[,2]-pr.f.h7[,6]
+
+# Esquema recursivo
+
+error.arima.rec.h7 <- out.of.sample[,2]-pr.rec.h7[,1]
+
+error.arimax.rec.h7 <- out.of.sample[,2]-pr.rec.h7[,2]
+
+error.ets.rec.h7 <- out.of.sample[,2]-pr.rec.h7[,3]
+
+error.adl.rec.h7 <- out.of.sample[,2]-pr.rec.h7[,4]
+
+error.var.rec.h7 <- out.of.sample[,2]-pr.rec.h7[,5]
+
+error.favar.rec.h7 <- out.of.sample[,2]-pr.rec.h7[,6]
+
+# Esquema rolling 
+
+error.arima.rol.h7 <- out.of.sample[,2]-pr.rol.h7[,1]
+
+error.arimax.rol.h7 <- out.of.sample[,2]-pr.rol.h7[,2]
+
+error.ets.rol.h7 <- out.of.sample[,2]-pr.rol.h7[,3]
+
+error.adl.rol.h7 <- out.of.sample[,2]-pr.rol.h7[,4]
+
+error.var.rol.h7 <- out.of.sample[,2]-pr.rol.h7[,5]
+
+error.favar.rol.h7 <- out.of.sample[,2]-pr.rol.h7[,6]
+
+# Bagging 
+
+# Esquema fijo bagged
+
+error.arima.f.h7.b <- out.of.sample[,2]-pr.f.h7.b[,1]
+
+error.arimax.f.h7.b <- out.of.sample[,2]-pr.f.h7.b[,2]
+
+error.ets.f.h7.b <- out.of.sample[,2]-pr.f.h7.b[,3]
+
+error.var.f.h7.b <- out.of.sample[,2]-pr.f.h7.b[,5]
+
+error.favar.f.h7.b <- out.of.sample[,2]-pr.f.h7.b[,4]
+
+# Esquema recursivo bagged
+
+error.arima.rec.h7.b <- out.of.sample[,2]-pr.rec.h7.b[,1]
+
+error.arimax.rec.h7.b <- out.of.sample[,2]-pr.rec.h7.b[,2]
+
+error.ets.rec.h7.b <- out.of.sample[,2]-pr.rec.h7.b[,3]
+
+error.var.rec.h7.b <- out.of.sample[,2]-pr.rec.h7.b[,5]
+
+error.favar.rec.h7.b <- out.of.sample[,2]-pr.rec.h7.b[,4]
+
+# Esquema rolling bagged
+
+error.arima.rol.h7.b <- out.of.sample[,2]-pr.rol.h7.b[,1]
+
+error.arimax.rol.h7.b <- out.of.sample[,2]-pr.rol.h7.b[,2]
+
+error.ets.rol.h7.b <- out.of.sample[,2]-pr.rol.h7.b[,3]
+
+error.var.rol.h7.b <- out.of.sample[,2]-pr.rol.h7.b[,5]
+
+error.favar.rol.h7.b <- out.of.sample[,2]-pr.rol.h7.b[,4]
+
+
+
+
+
+library(murphydiagram)
+
+
+loss.var.h6<-error.var.rol.h6^2
+
+loss.adl.h6<-error.adl.rol.h6^2
+
+fluctuation_test(loss.var.h6,loss.adl.h6, mu = 0.5)
+
+gr1 <- fluctuation_test(loss.var.h6,loss.adl.h6, mu = 0.5)
+band1 <- gr1$CV[1]
+band2 <- gr1$CV[2]
+values.gr1 <- as.data.frame(gr1$df)
+
+ggplot(values.gr1 , aes(y = dmstat, x = time)) +
+  theme_bw() + 
+  xlim(10,20) +
+  ylim(-6,6) +
+  geom_hline(aes(yintercept = 0), size = 1, color = "black",
+             linetype = "dashed") +
+  geom_hline(aes(yintercept = band1), size = 1, color = "black") +
+  geom_hline(aes(yintercept = band2), size = 1, color = "black") +
+  xlab("Tiempo") +
+  ylab("Estadístico Diebold-Mariano") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  ggtitle("Fluctuation Test") +
+  geom_line(aes(y = dmstat, x = time), size = 1.5, color = "#00AFBB")    
+
+
 
 
 
