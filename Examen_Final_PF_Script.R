@@ -1610,6 +1610,8 @@ for(i in 1:58){
   f1 <- ets(temp, model=ets.1, use.initial.values=TRUE)
   pre <- forecast(f1, n.ahead=h)
   pr.ets[1,j] <- pre$mean[h]
+  
+  print(j)
   } 
   pr.f.h1.b[i,1] <- mean(pr.arima)
   pr.f.h1.b[i,2] <- mean(pr.arimax)
@@ -1617,7 +1619,6 @@ for(i in 1:58){
   print(i)
 }
 
-pr.f.h1.b <- ts(pr.f.h1.b, frequency = 365, start = c(2019,12))
 
 # Realizamos los pronósticos con el VAR 
 
@@ -1654,15 +1655,19 @@ for(i in 1:58){
     f4 <- VAR(cbind(temp, temp3[,1]), p = 6, type= "trend")
     forecast4<-forecast(f4, h=h)
     pr.favar[1,j] <- forecast4$forecast$temp$mean[h]
+    print(j)
   } 
   
   pr.f.h1.b[i,4] <- mean(pr.favar,na.rm = TRUE)
   print(i)
 }
 
-autoplot(ts.union(out.of.sample[,2], pr.f.h1.b[,1], pr.f.h1.b[,2], pr.f.h1.b[,3], pr.f.h1[,4], pr.f.h1[,5]), size = 0.7) + 
+pr.f.h1.b <- ts(pr.f.h1.b, frequency = 365, start = c(2019,12))
+
+
+autoplot(ts.union(out.of.sample[,2], pr.f.h1.b[,1], pr.f.h1.b[,2], pr.f.h1.b[,3], pr.f.h1.b[,4], pr.f.h1.b[,5]), size = 0.7) + 
   scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS", "FAVAR, VAR"),
-                     values = c("black", colores[1], colores[2], colores[3], colores[4])) +
+                     values = c("black", colores[1], colores[2], colores[3], colores[4]), colores[5]) +
   ggtitle("Pronósticos bagging h=1, esquema fijo") + 
   xlab("Tiempo") + ylab("Sentimiento Alberto")+
   theme_minimal() +  
@@ -1673,8 +1678,6 @@ autoplot(ts.union(out.of.sample[,2], pr.f.h1.b[,1], pr.f.h1.b[,2], pr.f.h1.b[,3]
 write.csv(pr.f.h1.b, "pr.f.h1.b.csv", row.names = FALSE)
 
 # h = 2 
-
-# Aca empieza tomi
 
 pr.f.h2.b <- matrix(nrow=57,ncol=5, NA)
 
@@ -1714,7 +1717,7 @@ for(i in 1:57){
     f4 <- VAR(cbind(temp, temp3), p = 6, type= "trend")
     forecast4<-forecast(f4, h=h)
     pr.favar[1,j] <- forecast4$forecast$temp$mean[h]
-    
+    print(j)
   } 
   pr.f.h2.b[i,1] <- mean(pr.arima)
   pr.f.h2.b[i,2] <- mean(pr.arimax)
@@ -1723,7 +1726,6 @@ for(i in 1:57){
   print(i)
 }
 
-pr.f.h2.b <- ts(pr.f.h2.b, frequency = 365, start = c(2019,12))
 
 # Realizamos los pronósticos con el VAR 
 
@@ -1749,11 +1751,13 @@ for(i in 1:57){
   print(paste("VAMOS:", i, "PERIODOS"))
 }
 
+pr.f.h2.b <- ts(pr.f.h2.b, frequency = 365, start = c(2019,12))
+
 # Realizamos el gráfico de los pronósticos 
 
 autoplot(ts.union(out.of.sample[2:58,2], pr.f.h2.b[,1], pr.f.h2.b[,2], pr.f.h2.b[,3], pr.f.h2.b[,4], pr.f.h2.b[,5]), size = 0.7) + 
   scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS", "FAVAR", "VAR"),
-                     values = c("black", colores[1], colores[2], colores[3], colores[4])) +
+                     values = c("black", colores[1], colores[2], colores[3], colores[4], colores[5])) +
   ggtitle("Pronósticos baggind h=2, esquema fijo") + 
   xlab("Tiempo") + ylab("Sentimiento Alberto")+
   theme_minimal() +  
@@ -1819,7 +1823,6 @@ for(i in 1:52){
 
 # Construimos la serie diferenciando las variables que son I(1)
 
-
 h <- 7
 
 for(i in 1:52){
@@ -1838,21 +1841,20 @@ for(i in 1:52){
   pr.f.h7.b[i,5] <- mean(pr.var)
   print(paste("VAMOS:", i, "PERIODOS"))
 }
+
 pr.f.h7.b <- ts(pr.f.h7.b, frequency = 365, start = c(2019,12))
-
-write.csv(pr.f.h7.b, "pr.f.h7.b.csv", row.names = FALSE)
-
 
 # Realizamos el gráfico de los pronósticos 
 
 autoplot(ts.union(out.of.sample[7:58,2], pr.f.h7.b[,1], pr.f.h7.b[,2], pr.f.h7.b[,3], pr.f.h7.b[,4], pr.f.h7.b[,5]), size = 0.7) + 
   scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","FAVAR", "VAR"),
-                     values = c("black", colores[1], colores[2], colores[3], colores[4])) +
+                     values = c("black", colores[1], colores[2], colores[3], colores[4], colores[5])) +
   ggtitle("Pronósticos bagging h=7, esquema fijo") + 
   xlab("Tiempo") + ylab("Sentimiento Alberto")+
   theme_minimal() +  
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
+write.csv(pr.f.h7.b, "pr.f.h7.b.csv", row.names = FALSE)
 
 # Realizamos bagging con los modelos arima, ets, var, adl con esquema recursivo 
 
