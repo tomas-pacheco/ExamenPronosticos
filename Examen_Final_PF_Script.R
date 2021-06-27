@@ -840,6 +840,8 @@ for(i in 1:58){
 }
 
 
+write.csv(cbind(out.of.sample[,1:2], pr.rol.h1), "pr.rol.h1.csv") ## correr esto
+
 # Gráfico con los pronósticos rolling y h=1 
 
 autoplot(ts.union(out.of.sample[,2], pr.rol.h1[,1], pr.rol.h1[,2],pr.rol.h1[,3],pr.rol.h1[,4],pr.rol.h1[,5], pr.rol.h1[,6]), size = 0.7) + 
@@ -964,6 +966,10 @@ for(i in 1:57){
 }
 
 
+
+write.csv(cbind(out.of.sample[-1,1:2], pr.f.h2), "pr.f.h2.csv") ## correr esto
+
+
 # Grafico de los pronosticos con esquema fijo y h=2
 
 
@@ -1036,14 +1042,14 @@ for(i in 1:57){
   
   order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                               casosarg + muertosarg + vacunasarg + maxtemp + 
-                              mintemp + sent_trends + muertes.arg.rel + casos.arg.rel|
+                              mintemp +  muertes.arg.rel + casos.arg.rel|
                               mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
                               mes07 + mes08 + mes09 +  mes10 + mes11, 
                             data = temp2, max_order = 5)
   
   adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                    casosarg + muertosarg + vacunasarg + maxtemp + 
-                   mintemp + sent_trends + muertes.arg.rel + casos.arg.rel|
+                   mintemp  + muertes.arg.rel + casos.arg.rel|
                    mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
                    mes07 + mes08 + mes09 +  mes10 + mes11, 
                  data = temp2, order = as.vector(order.adl.dl$best_order))
@@ -1052,7 +1058,7 @@ for(i in 1:57){
   
   adl<-adl.dl$full_formula
   adl.1 <- dynlm(adl, data = adl.dl$data)
-  forecast2 <- predict(adl.1$fitted.values,h=1)
+  forecast2 <- predict(adl.1$fitted.values,h=h)
   pr.rec.h2[i,4] <- forecast2$mean[h]
   print(count) 
   count = count + 1
@@ -1081,6 +1087,7 @@ for(i in 1:57){
   pr.rec.h2[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
 }
 
+write.csv(cbind(out.of.sample[-1,1:2], pr.rec.h2), "pr.rec.h2.csv") ## correr esto
 
 # Gráfico con los pronósticos recursivos y h=2
 
@@ -1149,14 +1156,14 @@ for(i in 1:57){
   
   order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                               casosarg + muertosarg + vacunasarg + maxtemp + 
-                              mintemp + sent_trends + muertes.arg.rel + casos.arg.rel|
+                              mintemp  + muertes.arg.rel + casos.arg.rel|
                               mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
                               mes07 + mes08 + mes09 +  mes10 + mes11, 
                             data = temp2, max_order = 5)
   
   adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                    casosarg + muertosarg + vacunasarg + maxtemp + 
-                   mintemp + sent_trends + muertes.arg.rel + casos.arg.rel|
+                   mintemp + muertes.arg.rel + casos.arg.rel|
                    mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
                    mes07 + mes08 + mes09 +  mes10 + mes11, 
                  data = temp2, order = as.vector(order.adl.dl$best_order))
@@ -1165,7 +1172,7 @@ for(i in 1:57){
   
   adl<-adl.dl$full_formula
   adl.1 <- dynlm(adl, data = adl.dl$data)
-  forecast2 <- predict(adl.1$fitted.values,h=1)
+  forecast2 <- predict(adl.1$fitted.values,h=h)
   pr.rol.h2[i,4] <- forecast2$mean[h]
   print(count) 
   count = count + 1
@@ -1194,6 +1201,8 @@ for(i in 1:57){
   pr.rol.h2[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
 }
 
+
+write.csv(cbind(out.of.sample[-1,1:2], pr.rol.h2), "pr.rol.h2.csv") ## correr esto
 
 # Gráfico con los pronósticos rolling y h=2
 
@@ -1391,14 +1400,14 @@ for(i in 1:52){
   
   order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                               casosarg + muertosarg + vacunasarg + maxtemp + 
-                              mintemp + sent_trends + muertes.arg.rel + casos.arg.rel|
+                              mintemp  + muertes.arg.rel + casos.arg.rel|
                               mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
                               mes07 + mes08 + mes09 +  mes10 + mes11, 
                             data = temp2, max_order = 5)
   
   adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                    casosarg + muertosarg + vacunasarg + maxtemp + 
-                   mintemp + sent_trends + muertes.arg.rel + casos.arg.rel|
+                   mintemp  + muertes.arg.rel + casos.arg.rel|
                    mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
                    mes07 + mes08 + mes09 +  mes10 + mes11, 
                  data = temp2, order = as.vector(order.adl.dl$best_order))
@@ -1407,7 +1416,7 @@ for(i in 1:52){
   
   adl<-adl.dl$full_formula
   adl.1 <- dynlm(adl, data = adl.dl$data)
-  forecast2 <- predict(adl.1$fitted.values,h=1)
+  forecast2 <- predict(adl.1$fitted.values,h=h)
   pr.rec.h7[i,4] <- forecast2$mean[h]
   print(count) 
   count = count + 1
@@ -1504,14 +1513,14 @@ for(i in 1:52){
   
   order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                               casosarg + muertosarg + vacunasarg + maxtemp + 
-                              mintemp + sent_trends + muertes.arg.rel + casos.arg.rel|
+                              mintemp  + muertes.arg.rel + casos.arg.rel|
                               mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
                               mes07 + mes08 + mes09 +  mes10 + mes11, 
                             data = temp2, max_order = 5)
   
   adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                    casosarg + muertosarg + vacunasarg + maxtemp + 
-                   mintemp + sent_trends + muertes.arg.rel + casos.arg.rel|
+                   mintemp  + muertes.arg.rel + casos.arg.rel|
                    mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
                    mes07 + mes08 + mes09 +  mes10 + mes11, 
                  data = temp2, order = as.vector(order.adl.dl$best_order))
@@ -2202,6 +2211,8 @@ for(i in 1:58){
 pr.rol.h1.b <- ts(pr.rol.h1.b, frequency = 365, start = c(2019,12))
 
 
+
+
 # Realizamos los pronósticos con el VAR 
 
 # Construimos la serie diferenciando las variables que son I(1)
@@ -2228,7 +2239,7 @@ for(i in 1:58){
 }
 
 
-write.csv(pr.rol.h1.b, "pr.rol.h1.b.csv", row.names = FALSE)
+write.csv(pr.rol.h1.b, "pr.rol.h1.b.csv", row.names = FALSE )
 
 autoplot(ts.union(out.of.sample[,2], pr.rol.h1.b[,1], pr.rol.h1.b[,2], pr.rol.h1.b[,3], pr.rol.h1[,4], pr.rol.h1[,5]), size = 0.7) + 
   scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS", "FAVAR, VAR"),
