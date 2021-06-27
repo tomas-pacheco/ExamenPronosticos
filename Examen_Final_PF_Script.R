@@ -3673,69 +3673,69 @@ error.favar.f.h1.sq <- (out.of.sample[,2]-pr.f.h1[,6])^2
 
 # Esquema recursivo
 
-error.arima.rec.h1 <- out.of.sample[,2]-pr.rec.h1[,1]
+error.arima.rec.h1.sq <- (out.of.sample[,2]-pr.rec.h1[,1])^2
 
-error.arimax.rec.h1 <- out.of.sample[,2]-pr.rec.h1[,2]
+error.arimax.rec.h1.sq <- (out.of.sample[,2]-pr.rec.h1[,2])^2
 
-error.ets.rec.h1 <- out.of.sample[,2]-pr.rec.h1[,3]
+error.ets.rec.h1.sq <- (out.of.sample[,2]-pr.rec.h1[,3])^2
 
-error.adl.rec.h1 <- out.of.sample[,2]-pr.rec.h1[,4]
+error.adl.rec.h1.sq <- (out.of.sample[,2]-pr.rec.h1[,4])^2
 
-error.var.rec.h1 <- out.of.sample[,2]-pr.rec.h1[,5]
+error.var.rec.h1.sq <- (out.of.sample[,2]-pr.rec.h1[,5])^2
 
-error.favar.rec.h1 <- out.of.sample[,2]-pr.rec.h1[,6]
+error.favar.rec.h1.sq <- (out.of.sample[,2]-pr.rec.h1[,6])^2
 
 # Esquema rolling 
 
-error.arima.rol.h1 <- out.of.sample[,2]-pr.rol.h1[,1]
+error.arima.rol.h1.sq <- (out.of.sample[,2]-pr.rol.h1[,1])^2
 
-error.arimax.rol.h1 <- out.of.sample[,2]-pr.rol.h1[,2]
+error.arimax.rol.h1.sq <- (out.of.sample[,2]-pr.rol.h1[,2])^2
 
-error.ets.rol.h1 <- out.of.sample[,2]-pr.rol.h1[,3]
+error.ets.rol.h1.sq <- (out.of.sample[,2]-pr.rol.h1[,3])^2
 
-error.adl.rol.h1 <- out.of.sample[,2]-pr.rol.h1[,4]
+error.adl.rol.h1.sq <- (out.of.sample[,2]-pr.rol.h1[,4])^2
 
-error.var.rol.h1 <- out.of.sample[,2]-pr.rol.h1[,5]
+error.var.rol.h1.sq <- (out.of.sample[,2]-pr.rol.h1[,5])^2
 
-error.favar.rol.h1 <- out.of.sample[,2]-pr.rol.h1[,6]
+error.favar.rol.h1.sq <- (out.of.sample[,2]-pr.rol.h1[,6])^2
 
 # Bagging 
 
 # Esquema fijo bagged
 
-error.arima.f.h1.b <- out.of.sample[,2]-pr.f.h1.b[,1]
+error.arima.f.h1.b.sq <- (out.of.sample[,2]-pr.f.h1.b[,1])^2
 
-error.arimax.f.h1.b <- out.of.sample[,2]-pr.f.h1.b[,2]
+error.arimax.f.h1.b.sq <- (out.of.sample[,2]-pr.f.h1.b[,2])^2
 
-error.ets.f.h1.b <- out.of.sample[,2]-pr.f.h1.b[,3]
+error.ets.f.h1.b.sq <- (out.of.sample[,2]-pr.f.h1.b[,3])^2
 
-error.var.f.h1.b <- out.of.sample[,2]-pr.f.h1.b[,4]
+error.var.f.h1.b.sq <- (out.of.sample[,2]-pr.f.h1.b[,4])^2
 
-error.favar.f.h1.b <- out.of.sample[,2]-pr.f.h1.b[,5]
+error.favar.f.h1.b.sq <- (out.of.sample[,2]-pr.f.h1.b[,5])^2
 
 # Esquema recursivo bagged
 
-error.arima.rec.h1.b <- out.of.sample[,2]-pr.rec.h1.b[,1]
+error.arima.rec.h1.b.sq <- (out.of.sample[,2]-pr.rec.h1.b[,1])^2
 
-error.arimax.rec.h1.b <- out.of.sample[,2]-pr.rec.h1.b[,2]
+error.arimax.rec.h1.b.sq <- (out.of.sample[,2]-pr.rec.h1.b[,2])^2
 
-error.ets.rec.h1.b <- out.of.sample[,2]-pr.rec.h1.b[,3]
+error.ets.rec.h1.b.sq <- (out.of.sample[,2]-pr.rec.h1.b[,3])^2
 
-error.var.rec.h1.b <- out.of.sample[,2]-pr.rec.h1.b[,4]
+error.var.rec.h1.b.sq <- (out.of.sample[,2]-pr.rec.h1.b[,4])^2
 
-error.favar.rec.h1.b <- out.of.sample[,2]-pr.rec.h1.b[,5]
+error.favar.rec.h1.b.sq <- (out.of.sample[,2]-pr.rec.h1.b[,5])^2
 
 # Esquema rolling bagged
 
-error.arima.rol.h1.b <- out.of.sample[,2]-pr.rol.h1.b[,1]
+error.arima.rol.h1.b.sq <-  (out.of.sample[,2]-pr.rol.h1.b[,1])^2
 
-error.arimax.rol.h1.b <- out.of.sample[,2]-pr.rol.h1.b[,2]
+error.arimax.rol.h1.b.sq <- (out.of.sample[,2]-pr.rol.h1.b[,2])^2
 
-error.ets.rol.h1.b <- out.of.sample[,2]-pr.rol.h1.b[,3]
+error.ets.rol.h1.b.sq <- (out.of.sample[,2]-pr.rol.h1.b[,3])^2
 
-error.var.rol.h1.b <- out.of.sample[,2]-pr.rol.h1.b[,4]
+error.var.rol.h1.b.sq <- (out.of.sample[,2]-pr.rol.h1.b[,4])^2
 
-error.favar.rol.h1.b <- out.of.sample[,2]-pr.rol.h1.b[,5]
+error.favar.rol.h1.b.sq <- (out.of.sample[,2]-pr.rol.h1.b[,5])^2
 
 
 ### h=2 
@@ -3821,83 +3821,83 @@ error.favar.rol.h2.b <- out.of.sample[,2]-pr.rol.h2.b[,5]
 
 ### h=7
 
-error.arima.f.h7 <- out.of.sample[,2]-pr.f.h7[,1]
+error.arima.f.h7.sq <- (out.of.sample[,2]-pr.f.h7[,1])^2
 
-error.arimax.f.h7 <- out.of.sample[,2]-pr.f.h7[,2]
+error.arimax.f.h7.sq <- (out.of.sample[,2]-pr.f.h7[,2])^2
 
-error.ets.f.h7 <- out.of.sample[,2]-pr.f.h7[,3]
+error.ets.f.h7.sq<- (out.of.sample[,2]-pr.f.h7[,3])^2
 
-error.adl.f.h7 <- out.of.sample[,2]-pr.f.h7[,4]
+error.adl.f.h7.sq <- (out.of.sample[,2]-pr.f.h7[,4])^2
 
-error.var.f.h7 <- out.of.sample[,2]-pr.f.h7[,5]
+error.var.f.h7.sq <-  (out.of.sample[,2]-pr.f.h7[,5])^2
 
-error.favar.f.h7 <- out.of.sample[,2]-pr.f.h7[,6]
+error.favar.f.h7.sq <- (out.of.sample[,2]-pr.f.h7[,6])^2
 
 # Esquema recursivo
 
-error.arima.rec.h7 <- out.of.sample[,2]-pr.rec.h7[,1]
+error.arima.rec.h7.sq <- (out.of.sample[,2]-pr.rec.h7[,1])^2
 
-error.arimax.rec.h7 <- out.of.sample[,2]-pr.rec.h7[,2]
+error.arimax.rec.h7.sq <- (out.of.sample[,2]-pr.rec.h7[,2])^2
 
-error.ets.rec.h7 <- out.of.sample[,2]-pr.rec.h7[,3]
+error.ets.rec.h7.sq <- (out.of.sample[,2]-pr.rec.h7[,3])^2
 
-error.adl.rec.h7 <- out.of.sample[,2]-pr.rec.h7[,4]
+error.adl.rec.h7.sq <- (out.of.sample[,2]-pr.rec.h7[,4])^2
 
-error.var.rec.h7 <- out.of.sample[,2]-pr.rec.h7[,5]
+error.var.rec.h7.sq <- (out.of.sample[,2]-pr.rec.h7[,5])^2
 
-error.favar.rec.h7 <- out.of.sample[,2]-pr.rec.h7[,6]
+error.favar.rec.h7.sq <- (out.of.sample[,2]-pr.rec.h7[,6])^2
 
 # Esquema rolling 
 
-error.arima.rol.h7 <- out.of.sample[,2]-pr.rol.h7[,1]
+error.arima.rol.h7.sq <- (out.of.sample[,2]-pr.rol.h7[,1])^2
 
-error.arimax.rol.h7 <- out.of.sample[,2]-pr.rol.h7[,2]
+error.arimax.rol.h7.sq <- (out.of.sample[,2]-pr.rol.h7[,2])^2
 
-error.ets.rol.h7 <- out.of.sample[,2]-pr.rol.h7[,3]
+error.ets.rol.h7.sq <- (out.of.sample[,2]-pr.rol.h7[,3])^2
 
-error.adl.rol.h7 <- out.of.sample[,2]-pr.rol.h7[,4]
+error.adl.rol.h7.sq <- (out.of.sample[,2]-pr.rol.h7[,4])^2
 
-error.var.rol.h7 <- out.of.sample[,2]-pr.rol.h7[,5]
+error.var.rol.h7.sq <- (out.of.sample[,2]-pr.rol.h7[,5])^2
 
-error.favar.rol.h7 <- out.of.sample[,2]-pr.rol.h7[,6]
+error.favar.rol.h7.sq <- (out.of.sample[,2]-pr.rol.h7[,6])^2
 
 # Bagging 
 
 # Esquema fijo bagged
 
-error.arima.f.h7.b <- out.of.sample[,2]-pr.f.h7.b[,1]
+error.arima.f.h7.b.sq <- (out.of.sample[,2]-pr.f.h7.b[,1])^2
 
-error.arimax.f.h7.b <- out.of.sample[,2]-pr.f.h7.b[,2]
+error.arimax.f.h7.b.sq <- (out.of.sample[,2]-pr.f.h7.b[,2])^2
 
-error.ets.f.h7.b <- out.of.sample[,2]-pr.f.h7.b[,3]
+error.ets.f.h7.b.sq <- (out.of.sample[,2]-pr.f.h7.b[,3])^2
 
-error.var.f.h7.b <- out.of.sample[,2]-pr.f.h7.b[,5]
+error.var.f.h7.b.sq <- (out.of.sample[,2]-pr.f.h7.b[,5])^2
 
-error.favar.f.h7.b <- out.of.sample[,2]-pr.f.h7.b[,4]
+error.favar.f.h7.b.sq <- (out.of.sample[,2]-pr.f.h7.b[,4])^2
 
 # Esquema recursivo bagged
 
-error.arima.rec.h7.b <- out.of.sample[,2]-pr.rec.h7.b[,1]
+error.arima.rec.h7.b.sq <- (out.of.sample[,2]-pr.rec.h7.b[,1])^2
 
-error.arimax.rec.h7.b <- out.of.sample[,2]-pr.rec.h7.b[,2]
+error.arimax.rec.h7.b.sq <- (out.of.sample[,2]-pr.rec.h7.b[,2])^2
 
-error.ets.rec.h7.b <- out.of.sample[,2]-pr.rec.h7.b[,3]
+error.ets.rec.h7.b.sq <- (out.of.sample[,2]-pr.rec.h7.b[,3])^2
 
-error.var.rec.h7.b <- out.of.sample[,2]-pr.rec.h7.b[,5]
+error.var.rec.h7.b.sq <- (out.of.sample[,2]-pr.rec.h7.b[,5])^2
 
-error.favar.rec.h7.b <- out.of.sample[,2]-pr.rec.h7.b[,4]
+error.favar.rec.h7.b.sq <- (out.of.sample[,2]-pr.rec.h7.b[,4])^2
 
 # Esquema rolling bagged
 
-error.arima.rol.h7.b <- out.of.sample[,2]-pr.rol.h7.b[,1]
+error.arima.rol.h7.b.sq <- (out.of.sample[,2]-pr.rol.h7.b[,1])^2
 
-error.arimax.rol.h7.b <- out.of.sample[,2]-pr.rol.h7.b[,2]
+error.arimax.rol.h7.b.sq <- (out.of.sample[,2]-pr.rol.h7.b[,2])^2
 
-error.ets.rol.h7.b <- out.of.sample[,2]-pr.rol.h7.b[,3]
+error.ets.rol.h7.b.sq <- (out.of.sample[,2]-pr.rol.h7.b[,3])^2
 
-error.var.rol.h7.b <- out.of.sample[,2]-pr.rol.h7.b[,5]
+error.var.rol.h7.b.sq <- (out.of.sample[,2]-pr.rol.h7.b[,5])^2
 
-error.favar.rol.h7.b <- out.of.sample[,2]-pr.rol.h7.b[,4]
+error.favar.rol.h7.b.sq <- (out.of.sample[,2]-pr.rol.h7.b[,4])^2
 
 
 
