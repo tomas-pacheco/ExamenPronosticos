@@ -2059,7 +2059,10 @@ autoplot(ts.union(out.of.sample[2:58,2], pr.rec.h2.b[,1], pr.rec.h2.b[,2], pr.re
 
 pr.rec.h7.b <- matrix(nrow=52,ncol=5, NA)
 
-h<-1
+h<-7
+
+
+
 for(i in 1:52){
   pr.arima <- matrix(nrow=1,ncol=100,NA)
   pr.arimax <- matrix(nrow=1,ncol=100,NA)
@@ -2129,7 +2132,7 @@ for(i in 1:52){
     pr.var[1,j]<- forecast(f5)$forecast$data.var.bag.ex..1....data.bag.2...j.$mean[h]
     print(j)
   }
-  pr.rec.h7.b[i,5]
+  pr.rec.h7.b[i,5] <- mean(pr.var)
   print(paste("VAMOS:", i, "PERIODOS"))
 }
 
@@ -2232,7 +2235,8 @@ for(i in 1:58){
                                     data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],
                                     data.bag.13[,j],data.bag.14[,j],data.bag.15[,j]), 
                               start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
-    var.bag.ex.diff<- window(cbind(diff(data.bag.4[,j]), diff(data.bag.8[,j])), start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+    var.bag.ex.diff.1<- window(cbind(data.bag.4[,j], data.bag.8[,j]), start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+    var.bag.ex.diff <- diff(var.bag.ex.diff.1)
     a <- VARselect(cbind(data.var.bag.ex[-1,],var.bag.ex.diff), lag.max = 13, type = "const")$selection[1]
     f5 <- VAR(cbind(data.var.bag.ex[-1,],var.bag.ex.diff), p = a, type = "trend")
     pr.var[1,j] <- forecast(f5)$forecast$data.var.bag.ex..1....data.bag.2...j.$mean[h]
@@ -2310,7 +2314,7 @@ for(i in 1:57){
   print(i)
 }
 
-pr.rol.h2.b <- ts(pr.rol.h2.b, frequency = 365, start = c(2019,12))
+pr.rol.h2.b <- ts(pr.rol.h2.b, frequency = 365, start = c(2019,12)) #### VER corregir, el periodo out of sample empieza despues 
 
 
 # Realizamos los pronósticos con el VAR 
@@ -2326,7 +2330,8 @@ for(i in 1:57){
                                     data.bag.7[,j], data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],
                                     data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j]), 
                               start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
-    var.bag.ex.diff<- window(cbind(diff(data.bag.4[,j]), diff(data.bag.8[,j])), start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+    var.bag.ex.diff.1<- window(cbind(data.bag.4[,j], data.bag.8[,j]), start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+    var.bag.ex.diff <- diff(var.bag.ex.diff.1)
     a <- VARselect(cbind(data.var.bag.ex[-1,],var.bag.ex.diff),lag.max = 13, type = "trend")$selection[1]
     f5 <- VAR(cbind(data.var.bag.ex[-1,],var.bag.ex.diff), p = a, type = "trend")
     pr.var[1,j] <- forecast(f5)$forecast$data.var.bag.ex..1....data.bag.2...j.$mean[h]
