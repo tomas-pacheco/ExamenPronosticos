@@ -727,6 +727,7 @@ for(i in 1:58){
   pr.rec.h1[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
 }
 
+write.csv(cbind(out.of.sample[,1:2], pr.rec.h1), "pr.rec.h1.csv")
 
 # Gráfico con los pronósticos recursivos y h=1 
 
@@ -795,14 +796,14 @@ for(i in 1:58){
   
   order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                               casosarg + muertosarg + vacunasarg + maxtemp + 
-                              mintemp + sent_trends + muertes.arg.rel + casos.arg.rel|
+                              mintemp + muertes.arg.rel + casos.arg.rel|
                               mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
                               mes07 + mes08 + mes09 +  mes10 + mes11, 
                             data = temp2, max_order = 5)
   
   adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                    casosarg + muertosarg + vacunasarg + maxtemp + 
-                   mintemp + sent_trends + muertes.arg.rel + casos.arg.rel|
+                   mintemp + muertes.arg.rel + casos.arg.rel|
                    mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
                    mes07 + mes08 + mes09 +  mes10 + mes11, 
                  data = temp2, order = as.vector(order.adl.dl$best_order))
@@ -1562,6 +1563,7 @@ autoplot(ts.union(out.of.sample[7:58,2], pr.rol.h7[,1], pr.rol.h7[,2],pr.rol.h7[
 
 ########### BAGGING ########################
 
+#### FIJO ####
 # Realizamos bagging con los modelos arima, ets, var, adl con esquema fijo 
 
 # h = 1
@@ -1795,7 +1797,7 @@ for(i in 1:52){
     pr.arima[1,j] <- forecast$mean[h]
     
     # ARIMAX
-    f2 <- Arima(temp,model=auto.arima(temp),xreg=temp2)
+    f2 <- Arima(temp,model=auto.arima(temp),newxreg=temp2)
     forecast2 <- forecast(f2$fitted,h=h)
     pr.arimax[1,j] <- forecast2$mean[h]
     
@@ -1856,6 +1858,9 @@ autoplot(ts.union(out.of.sample[7:58,2], pr.f.h7.b[,1], pr.f.h7.b[,2], pr.f.h7.b
 
 write.csv(pr.f.h7.b, "pr.f.h7.b.csv", row.names = FALSE)
 
+
+#### RECURSIVO ####
+
 # Realizamos bagging con los modelos arima, ets, var, adl con esquema recursivo 
 
 # h = 1
@@ -1865,11 +1870,11 @@ write.csv(pr.f.h7.b, "pr.f.h7.b.csv", row.names = FALSE)
 library(forecast)
 library(quantmod)
 
+ptm <- proc.time()
+
 
 pr.rec.h1.b <- matrix(nrow=58,ncol=5, NA)
-
 h<-1
-
 for(i in 1:58){
   pr.arima <- matrix(nrow=1,ncol=100,NA)
   pr.arimax <- matrix(nrow=1,ncol=100,NA)
@@ -1914,9 +1919,6 @@ for(i in 1:58){
   print(i)
 }
 
-pr.rec.h1.b <- ts(pr.rec.h1.b, frequency = 365, start = c(2019,12))
-
-
 # Realizamos los pronósticos con el VAR 
 
 # Construimos la serie diferenciando las variables que son I(1)
@@ -1937,8 +1939,11 @@ for(i in 1:58){
   print(paste("VAMOS:", i, "PERIODOS"))
 }
 
-
+pr.rec.h1.b <- ts(pr.rec.h1.b, frequency = 365, start = c(2019,12))
 write.csv(pr.rec.h1.b, "pr.rec.h1.b.csv", row.names = FALSE)
+
+
+
 
 
 autoplot(ts.union(out.of.sample[,2], pr.rec.h1.b[,1], pr.rec.h1.b[,2], pr.rec.h1.b[,3], pr.rec.h1[,4], pr.rec.h1[,5]), size = 0.7) + 
@@ -1953,7 +1958,6 @@ autoplot(ts.union(out.of.sample[,2], pr.rec.h1.b[,1], pr.rec.h1.b[,2], pr.rec.h1
 # h = 2 
 
 pr.rec.h2.b <- matrix(nrow=57,ncol=5, NA)
-
 h<-2
 for(i in 1:57){
   pr.arima <- matrix(nrow=1,ncol=100,NA)
@@ -2001,9 +2005,6 @@ for(i in 1:57){
   print(i)
 }
 
-pr.rec.h2.b <- ts(pr.rec.h2.b, frequency = 365, start = c(2019,12))
-
-
 # Realizamos los pronósticos con el VAR 
 
 # Construimos la serie diferenciando las variables que son I(1)
@@ -2026,6 +2027,7 @@ for(i in 1:57){
   print(paste("VAMOS:", i, "PERIODOS"))
 }
 
+pr.rec.h2.b <- ts(pr.rec.h2.b, frequency = 365, start = c(2019,12))
 write.csv(pr.rec.h2.b, "pr.rec.h2.b.csv", row.names = FALSE)
 
 # Realizamos el gráfico de los pronósticos 
@@ -2091,7 +2093,6 @@ for(i in 1:52){
   print(i)
 }
 
-pr.rec.h7.b <- ts(pr.rec.h7.b, frequency = 365, start = c(2019,12))
 
 
 # Realizamos los pronósticos con el VAR 
@@ -2119,10 +2120,13 @@ for(i in 1:52){
   print(paste("VAMOS:", i, "PERIODOS"))
 }
 
-
+pr.rec.h7.b <- ts(pr.rec.h7.b, frequency = 365, start = c(2019,12))
 write.csv(pr.rec.h7.b, "pr.rec.h7.b.csv", row.names = FALSE)
 
 # Realizamos el gráfico de los pronósticos 
+
+proc.time() - ptm
+
 
 autoplot(ts.union(out.of.sample[7:58,2], pr.rec.h7.b[,1], pr.rec.h7.b[,2], pr.rec.h7.b[,3], pr.rec.h7.b[,4], pr.rec.h7.b[,5]), size = 0.7) + 
   scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","FAVAR", "VAR"),
@@ -2133,7 +2137,7 @@ autoplot(ts.union(out.of.sample[7:58,2], pr.rec.h7.b[,1], pr.rec.h7.b[,2], pr.re
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
 
-
+#### ROLLING ####
 # Realizamos bagging con los modelos arima, ets, var, adl con esquema rolling
 
 # h = 1
