@@ -1883,6 +1883,8 @@ ptm <- proc.time()
 
 
 pr.rec.h1.b <- matrix(nrow=58,ncol=5, NA)
+
+
 h<-1
 for(i in 1:58){
   pr.arima <- matrix(nrow=1,ncol=100,NA)
@@ -1905,7 +1907,7 @@ for(i in 1:58){
     pr.arima[1,j] <- forecast$mean[h]
     
     # ARIMAX
-    f2 <- Arima(temp,model=auto.arima(temp),xreg=temp2)
+    f2 <- Arima(temp,model=auto.arima(temp),newxreg=temp2)
     forecast2 <- forecast(f2$fitted,h=h)
     pr.arimax[1,j] <- forecast2$mean[h]
     
@@ -1919,6 +1921,8 @@ for(i in 1:58){
     f4 <- VAR(cbind(temp, temp3), p = a, type= "trend")
     forecast4<-forecast(f4, h=h)
     pr.favar[1,j] <- forecast4$forecast$temp$mean[h]
+    
+    print(j)
   } 
   
   pr.rec.h1.b[i,1] <- mean(pr.arima)
