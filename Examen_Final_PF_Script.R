@@ -87,7 +87,172 @@ autoplot(sentsmooth, ts.colour = colores[1]) +
 
 ggsave(file="Sentimiento_AF.eps", width=6.5, height=4, dpi=300)
 
+# Graficamos las demás variables que consideramos relevantes. 
 
+autoplot(twfav, ts.colour = colores[2]) + 
+  ggtitle("Evolución de los favoritos que recibe Alberto Fernandez en Twitter") + 
+  xlab("Tiempo") + 
+  ylab("Cantidad de favoritos") + 
+  theme_minimal() + 
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5)) + 
+  labs(x = "Tiempo", 
+       y = "Cantidad de favoritos", 
+       title = "Evolución del sentimiento de Alberto Fernández",
+       caption = "Fuente: elaboración propia")
+
+autoplot(twfav, ts.colour = colores[2]) + 
+  ggtitle("Evolución de los retweets que recibe Alberto Fernandez en Twitter") + 
+  xlab("Tiempo") + 
+  ylab("Cantidad de retweets") + 
+  theme_minimal() + 
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5)) + 
+  labs(x = "Tiempo", 
+       y = "Cantidad de retweets", 
+       title = "Evolución del sentimiento de Alberto Fernández",
+       caption = "Fuente: elaboración propia")
+
+autoplot(reservasbcra, ts.colour = colores[3]) + 
+  ggtitle("Evolución de las reservas del BCRA") + 
+  xlab("Tiempo") + 
+  ylab("Miles de millones de dólares") + 
+  theme_minimal() + 
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5)) + 
+  labs(x = "Tiempo", 
+       y = "Miles de millones de dólares", 
+       title = "Evolución de las reservas del BCRA",
+       caption = "Fuente: elaboración propia")
+
+autoplot(tasaint, ts.colour = colores[3]) + 
+  ggtitle("Evolución de la tasa de interés") + 
+  xlab("Tiempo") + 
+  ylab("Miles de millones de pesos") + 
+  theme_minimal() + 
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5)) + 
+  labs(x = "Tiempo", 
+       y = "Tasa de interés", 
+       title = "Evolución de la tasa de interés",
+       caption = "Fuente: elaboración propia")
+
+autoplot(basemon, ts.colour = colores[3]) + 
+  ggtitle("Evolución de la base monetaria") + 
+  xlab("Tiempo") + 
+  ylab("Miles de millones de pesos") + 
+  theme_minimal() + 
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5)) + 
+  labs(x = "Tiempo", 
+       y = "Tasa de interés", 
+       title = "Evolución de la base monetaria",
+       caption = "Fuente: elaboración propia")
+
+autoplot(tcdolar, ts.colour = colores[3]) + 
+  ggtitle("Evolución del tipo de cambio") + 
+  xlab("Tiempo") + 
+  ylab("Pesos") + 
+  theme_minimal() + 
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5)) + 
+  labs(x = "Tiempo", 
+       y = "Pesos", 
+       title = "Evolución del tipo de cambio",
+       caption = "Fuente: elaboración propia")
+
+
+autoplot(casosarg[51:483], ts.colour = colores[4]) + 
+  ggtitle("Evolución de la cantidad de casos de COVID-19 en Argentina") + 
+  xlab("Tiempo") + 
+  ylab("Pesos") + 
+  theme_minimal() + 
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5)) + 
+  labs(x = "Tiempo", 
+       y = "Cantidad de casos", 
+       title = "Evolución de la cantidad de casos de COVID-19 en Argentina",
+       caption = "Fuente: elaboración propia")
+
+
+autoplot(muertosarg[51:483], ts.colour = colores[4]) + 
+  ggtitle("Evolución de la cantidad de muertes por COVID-19 en Argentina") + 
+  xlab("Tiempo") + 
+  ylab("Pesos") + 
+  theme_minimal() + 
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5)) + 
+  labs(x = "Tiempo", 
+       y = "Cantidad de muertes", 
+       title = "Evolución de la cantidad de muertes por COVID-19 en Argentina",
+       caption = "Fuente: elaboración propia")
+
+
+
+autoplot(vacunasarg[51:483], ts.colour = colores[4]) + 
+  ggtitle("Evolución de la cantidad de vacunas aplicadas en Argentina") + 
+  xlab("Tiempo") + 
+  ylab("Pesos") + 
+  theme_minimal() + 
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5)) + 
+  labs(x = "Tiempo", 
+       y = "Cantidad de vacunas", 
+       title = "Evolución de la cantidad de vacunas aplicadas en Argentina",
+       caption = "Fuente: elaboración propia")
+
+
+autoplot(maxtemp, ts.colour = colores[4]) + 
+  ggtitle("Temperatura máxima en Buenos Aires") + 
+  xlab("Tiempo") + 
+  ylab("Pesos") + 
+  theme_minimal() + 
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5)) + 
+  labs(x = "Tiempo", 
+       y = "Grados centígrados", 
+       title = "Temperatura máxima en Buenos Aires",
+       caption = "Fuente: elaboración propia")
+
+
+
+autoplot(mintemp, ts.colour = colores[4]) + 
+  ggtitle("Temperatura mínima en Buenos Aires") + 
+  xlab("Tiempo") + 
+  ylab("Grados centígrados") + 
+  theme_minimal() + 
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5)) + 
+  labs(x = "Tiempo", 
+       y = "Grados centígrados", 
+       title = "Temperatura mínima en Buenos Aires",
+       caption = "Fuente: elaboración propia")
+
+
+autoplot(muertes.arg.rel[51:483], ts.colour = colores[4]) + 
+  ggtitle("Cantidad de muertes por COVID-19 en Argentina relativa al resto del mundo") + 
+  xlab("Tiempo") + 
+  ylab("Pesos") + 
+  theme_minimal() + 
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5)) + 
+  labs(x = "Tiempo", 
+       y = "Cantidad de muertes", 
+       title = "Cantidad de muertes por COVID-19 en Argentina relativa al resto del mundo",
+       caption = "Fuente: elaboración propia")
+
+
+autoplot(casos.arg.rel[51:483], ts.colour = colores[4]) + 
+  ggtitle("Cantidad de casos de COVID-19 en Argentina relativa al resto del mundo") + 
+  xlab("Tiempo") + 
+  ylab("Pesos") + 
+  theme_minimal() + 
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5)) + 
+  labs(x = "Tiempo", 
+       y = "Cantidad de casos", 
+       title = "Cantidad de casos de COVID-19 en Argentina relativa al resto del mundo",
+       caption = "Fuente: elaboración propia")
 
 # Grafico mercado sintetico  (lo dejamos para el event study)
 
