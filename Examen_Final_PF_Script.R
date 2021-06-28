@@ -93,169 +93,131 @@ ggsave(file="Sentimiento_AF.eps", width=6.5, height=4, dpi=300)
 # Graficamos las demás variables que consideramos relevantes. 
 
 autoplot(twfav, ts.colour = colores[2]) + 
-  ggtitle("Evolución de los favoritos que recibe Alberto Fernandez en Twitter") + 
+  ggtitle("Evolución de los favoritos que recibe AF en Twitter") + 
   xlab("Tiempo") + 
   ylab("Cantidad de favoritos") + 
   theme_minimal() + 
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5)) + 
-  labs(x = "Tiempo", 
-       y = "Cantidad de favoritos", 
-       title = "Evolución del sentimiento de Alberto Fernández",
-       caption = "Fuente: elaboración propia")
+  labs(caption = "Fuente: elaboración propia") 
 
-autoplot(twfav, ts.colour = colores[2]) + 
-  ggtitle("Evolución de los retweets que recibe Alberto Fernandez en Twitter") + 
+autoplot(twret, ts.colour = colores[3]) + 
+  ggtitle("Evolución de los retweets que recibe AF en Twitter") + 
   xlab("Tiempo") + 
   ylab("Cantidad de retweets") + 
   theme_minimal() + 
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5)) + 
-  labs(x = "Tiempo", 
-       y = "Cantidad de retweets", 
-       title = "Evolución del sentimiento de Alberto Fernández",
-       caption = "Fuente: elaboración propia")
+  labs(caption = "Fuente: elaboración propia") 
 
-autoplot(reservasbcra, ts.colour = colores[3]) + 
+
+autoplot(reservasbcra, ts.colour = colores2[7]) + 
   ggtitle("Evolución de las reservas del BCRA") + 
   xlab("Tiempo") + 
   ylab("Miles de millones de dólares") + 
   theme_minimal() + 
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5)) + 
-  labs(x = "Tiempo", 
-       y = "Miles de millones de dólares", 
-       title = "Evolución de las reservas del BCRA",
-       caption = "Fuente: elaboración propia")
+  labs(caption = "Fuente: elaboración propia con datos del BCRA") 
 
-autoplot(tasaint, ts.colour = colores[3]) + 
+
+autoplot(tasaint, ts.colour = colores[4]) + 
   ggtitle("Evolución de la tasa de interés") + 
   xlab("Tiempo") + 
-  ylab("Miles de millones de pesos") + 
+  ylab("Tasa") + 
   theme_minimal() + 
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5)) + 
-  labs(x = "Tiempo", 
-       y = "Tasa de interés", 
-       title = "Evolución de la tasa de interés",
-       caption = "Fuente: elaboración propia")
+  labs(caption = "Fuente: elaboración propia con datos del BCRA") 
 
-autoplot(basemon, ts.colour = colores[3]) + 
+
+autoplot(basemon, ts.colour = colores[5]) + 
   ggtitle("Evolución de la base monetaria") + 
   xlab("Tiempo") + 
   ylab("Miles de millones de pesos") + 
   theme_minimal() + 
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5)) + 
-  labs(x = "Tiempo", 
-       y = "Tasa de interés", 
-       title = "Evolución de la base monetaria",
-       caption = "Fuente: elaboración propia")
+  labs(caption = "Fuente: elaboración propia con datos del BCRA") 
 
-autoplot(tcdolar, ts.colour = colores[3]) + 
+
+autoplot(tcdolar, ts.colour = colores2[8]) + 
   ggtitle("Evolución del tipo de cambio") + 
   xlab("Tiempo") + 
-  ylab("Pesos") + 
+  ylab("Pesos por dólar") + 
   theme_minimal() + 
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5)) + 
-  labs(x = "Tiempo", 
-       y = "Pesos", 
-       title = "Evolución del tipo de cambio",
-       caption = "Fuente: elaboración propia")
+  labs(caption = "Fuente: elaboración propia con datos de Yahoo Finance")
 
 
-autoplot(casosarg[51:483], ts.colour = colores[4]) + 
+autoplot(casosarg[51:483], ts.colour = colores[6]) + 
   ggtitle("Evolución de la cantidad de casos de COVID-19 en Argentina") + 
   xlab("Tiempo") + 
-  ylab("Pesos") + 
+  ylab("Cantidad") + 
   theme_minimal() + 
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5)) + 
-  labs(x = "Tiempo", 
-       y = "Cantidad de casos", 
-       title = "Evolución de la cantidad de casos de COVID-19 en Argentina",
-       caption = "Fuente: elaboración propia")
+  labs(caption = "Fuente: elaboración propia con datos del Ministerio de Salud") 
 
 
-autoplot(muertosarg[51:483], ts.colour = colores[4]) + 
+autoplot(muertosarg[51:483], ts.colour = colores2[1]) + 
   ggtitle("Evolución de la cantidad de muertes por COVID-19 en Argentina") + 
   xlab("Tiempo") + 
-  ylab("Pesos") + 
+  ylab("Cantidad") + 
   theme_minimal() + 
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5)) + 
-  labs(x = "Tiempo", 
-       y = "Cantidad de muertes", 
-       title = "Evolución de la cantidad de muertes por COVID-19 en Argentina",
-       caption = "Fuente: elaboración propia")
+  labs(caption = "Fuente: elaboración propia con datos del Ministerio de Salud") 
 
 
-
-autoplot(vacunasarg[51:483], ts.colour = colores[4]) + 
+autoplot(vacunasarg[51:483], ts.colour = colores2[2]) + 
   ggtitle("Evolución de la cantidad de vacunas aplicadas en Argentina") + 
   xlab("Tiempo") + 
-  ylab("Pesos") + 
+  ylab("Cantidad") + 
   theme_minimal() + 
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5)) + 
-  labs(x = "Tiempo", 
-       y = "Cantidad de vacunas", 
-       title = "Evolución de la cantidad de vacunas aplicadas en Argentina",
-       caption = "Fuente: elaboración propia")
+  labs(caption = "Fuente: elaboración propia con datos del Ministerio de Salud") 
 
-
-autoplot(maxtemp, ts.colour = colores[4]) + 
+autoplot(maxtemp, ts.colour = colores2[3]) + 
   ggtitle("Temperatura máxima en Buenos Aires") + 
   xlab("Tiempo") + 
   ylab("Pesos") + 
   theme_minimal() + 
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5)) + 
-  labs(x = "Tiempo", 
-       y = "Grados centígrados", 
-       title = "Temperatura máxima en Buenos Aires",
-       caption = "Fuente: elaboración propia")
+  labs(caption = "Fuente: elaboración propia con datos de World Weather Online") 
 
 
-
-autoplot(mintemp, ts.colour = colores[4]) + 
+autoplot(mintemp, ts.colour = colores2[4]) + 
   ggtitle("Temperatura mínima en Buenos Aires") + 
   xlab("Tiempo") + 
   ylab("Grados centígrados") + 
   theme_minimal() + 
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5)) + 
-  labs(x = "Tiempo", 
-       y = "Grados centígrados", 
-       title = "Temperatura mínima en Buenos Aires",
-       caption = "Fuente: elaboración propia")
+  labs(caption = "Fuente: elaboración propia con datos de World Weather Online") 
 
 
-autoplot(muertes.arg.rel[51:483], ts.colour = colores[4]) + 
-  ggtitle("Cantidad de muertes por COVID-19 en Argentina relativa al resto del mundo") + 
+autoplot(muertes.arg.rel[51:483], ts.colour = colores2[5]) + 
+  ggtitle("Cantidad de muertes en Arg. relativa al resto del mundo") + 
   xlab("Tiempo") + 
+  ylab("Cantidad") + 
+  theme_minimal() + 
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5)) + 
+  labs(caption = "Fuente: elaboración propia con datos del Ministerio de Salud y Our World in Data") 
+
+autoplot(casos.arg.rel[51:483], ts.colour = colores2[6]) + 
+  ggtitle("Cantidad de casos en Arg. relativa al resto del mundo)")+ 
+  xlab("Tiempo")+ 
   ylab("Pesos") + 
   theme_minimal() + 
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5)) + 
-  labs(x = "Tiempo", 
-       y = "Cantidad de muertes", 
-       title = "Cantidad de muertes por COVID-19 en Argentina relativa al resto del mundo",
-       caption = "Fuente: elaboración propia")
+  labs(caption = "Fuente: elaboración propia con datos del Ministerio de Salud y Our World in Data") 
 
-
-autoplot(casos.arg.rel[51:483], ts.colour = colores[4]) + 
-  ggtitle("Cantidad de casos de COVID-19 en Argentina relativa al resto del mundo") + 
-  xlab("Tiempo") + 
-  ylab("Pesos") + 
-  theme_minimal() + 
-  theme(legend.position = "none",
-        plot.title = element_text(hjust = 0.5)) + 
-  labs(x = "Tiempo", 
-       y = "Cantidad de casos", 
-       title = "Cantidad de casos de COVID-19 en Argentina relativa al resto del mundo",
-       caption = "Fuente: elaboración propia")
 
 # Grafico mercado sintetico  (lo dejamos para el event study)
 
@@ -614,10 +576,11 @@ ggplot(fir.cases("twfav") , aes(y = irf, x = day)) +
   geom_line(aes(y = irf, x = day), size = 1, color = "black") +
   geom_line(aes(y = lower, x = day), size = 1, color = colores[1], 
             linetype = "dashed")+
-  xlab("95 % Bootstrap CI, 1000 runs") +
-  ylab("Sentimiento del presidente") + 
   theme(plot.title = element_text(hjust = 0.5))+
-  ggtitle("IRF de Cantidad de Favoritos")
+  ggtitle("IRF de Cantidad de Favoritos") + 
+  labs(x = "95 % Bootstrap CI, 1000 runs", 
+       y = "Sentimiento del presidente", 
+       caption = "Fuente: elaboración propia")
 
 ggplot(fir.cases("twfav") , aes(y = irf, x = day)) +
   theme_bw() + 
@@ -629,10 +592,11 @@ ggplot(fir.cases("twfav") , aes(y = irf, x = day)) +
   geom_line(aes(y = irf, x = day), size = 1, color = "black") +
   geom_line(aes(y = lower, x = day), size = 1, color = colores[2], 
             linetype = "dashed")+
-  xlab("95 % Bootstrap CI, 1000 runs") +
-  ylab("Sentimiento del presidente") + 
   theme(plot.title = element_text(hjust = 0.5))+
-  ggtitle("IRF de Cantidad de Favoritos")
+  ggtitle("IRF de Cantidad de Favoritos") + 
+  labs(x = "95 % Bootstrap CI, 1000 runs", 
+       y = "Sentimiento del presidente", 
+       caption = "Fuente: elaboración propia")
 
 ggplot(fir.cases("tasaint") , aes(y = irf, x = day)) +
   theme_bw() + 
@@ -644,10 +608,11 @@ ggplot(fir.cases("tasaint") , aes(y = irf, x = day)) +
   geom_line(aes(y = irf, x = day), size = 1, color = "black") +
   geom_line(aes(y = lower, x = day), size = 1, color = colores[3], 
             linetype = "dashed")+
-  xlab("95 % Bootstrap CI, 1000 runs") +
-  ylab("Sentimiento del presidente") + 
   theme(plot.title = element_text(hjust = 0.5))+
-  ggtitle("IRF de Tasa de interés")
+  ggtitle("IRF de Tasa de interés") +
+  labs(x = "95 % Bootstrap CI, 1000 runs", 
+       y = "Sentimiento del presidente", 
+       caption = "Fuente: elaboración propia")
 
 ggplot(fir.cases("basemon") , aes(y = irf, x = day)) +
   theme_bw() + 
@@ -659,10 +624,11 @@ ggplot(fir.cases("basemon") , aes(y = irf, x = day)) +
   geom_line(aes(y = irf, x = day), size = 1, color = "black") +
   geom_line(aes(y = lower, x = day), size = 1, color = colores[4], 
             linetype = "dashed")+
-  xlab("95 % Bootstrap CI, 1000 runs") +
-  ylab("Sentimiento del presidente") + 
   theme(plot.title = element_text(hjust = 0.5))+
-  ggtitle("IRF de Base Monetaria")
+  ggtitle("IRF de Base Monetaria") + 
+  labs(x = "95 % Bootstrap CI, 1000 runs", 
+       y = "Sentimiento del presidente", 
+       caption = "Fuente: elaboración propia")
 
 ggplot(fir.cases("casosarg") , aes(y = irf, x = day)) +
   theme_bw() + 
@@ -674,10 +640,11 @@ ggplot(fir.cases("casosarg") , aes(y = irf, x = day)) +
   geom_line(aes(y = irf, x = day), size = 1, color = "black") +
   geom_line(aes(y = lower, x = day), size = 1, color = colores[5], 
             linetype = "dashed")+
-  xlab("95 % Bootstrap CI, 1000 runs") +
-  ylab("Sentimiento del presidente") + 
   theme(plot.title = element_text(hjust = 0.5))+
-  ggtitle("IRF de Casos COVID-19 en Argentina")
+  ggtitle("IRF de Casos COVID-19 en Argentina") +
+  labs(x = "95 % Bootstrap CI, 1000 runs", 
+       y = "Sentimiento del presidente", 
+       caption = "Fuente: elaboración propia")
 
 
 ggplot(fir.cases("muertosarg") , aes(y = irf, x = day)) +
@@ -690,10 +657,11 @@ ggplot(fir.cases("muertosarg") , aes(y = irf, x = day)) +
   geom_line(aes(y = irf, x = day), size = 1, color = "black") +
   geom_line(aes(y = lower, x = day), size = 1, color = colores[6], 
             linetype = "dashed")+
-  xlab("95 % Bootstrap CI, 1000 runs") +
-  ylab("Sentimiento del presidente") + 
   theme(plot.title = element_text(hjust = 0.5))+
-  ggtitle("IRF de Muertes por COVID-19 en Argentina")
+  ggtitle("IRF de Muertes por COVID-19 en Argentina") +
+  labs(x = "95 % Bootstrap CI, 1000 runs", 
+       y = "Sentimiento del presidente", 
+       caption = "Fuente: elaboración propia")
 
 ggplot(fir.cases("vacunasarg") , aes(y = irf, x = day)) +
   theme_bw() + 
@@ -705,10 +673,11 @@ ggplot(fir.cases("vacunasarg") , aes(y = irf, x = day)) +
   geom_line(aes(y = irf, x = day), size = 1, color = "black") +
   geom_line(aes(y = lower, x = day), size = 1, color = colores[1], 
             linetype = "dashed")+
-  xlab("95 % Bootstrap CI, 1000 runs") +
-  ylab("Sentimiento del presidente") + 
   theme(plot.title = element_text(hjust = 0.5))+
-  ggtitle("IRF de Vacunas Aplicadas")
+  ggtitle("IRF de Vacunas Aplicadas")+
+  labs(x = "95 % Bootstrap CI, 1000 runs", 
+       y = "Sentimiento del presidente", 
+       caption = "Fuente: elaboración propia")
 
 ggplot(fir.cases("maxtemp") , aes(y = irf, x = day)) +
   theme_bw() + 
@@ -720,10 +689,11 @@ ggplot(fir.cases("maxtemp") , aes(y = irf, x = day)) +
   geom_line(aes(y = irf, x = day), size = 1, color = "black") +
   geom_line(aes(y = lower, x = day), size = 1, color = colores[1], 
             linetype = "dashed")+
-  xlab("95 % Bootstrap CI, 1000 runs") +
-  ylab("Sentimiento del presidente") + 
   theme(plot.title = element_text(hjust = 0.5))+
-  ggtitle("IRF de Temperatura Máxima")
+  ggtitle("IRF de Temperatura Máxima") +
+  labs(x = "95 % Bootstrap CI, 1000 runs", 
+       y = "Sentimiento del presidente", 
+       caption = "Fuente: elaboración propia")
 
 ggplot(fir.cases("mintemp") , aes(y = irf, x = day)) +
   theme_bw() + 
@@ -735,10 +705,11 @@ ggplot(fir.cases("mintemp") , aes(y = irf, x = day)) +
   geom_line(aes(y = irf, x = day), size = 1, color = "black") +
   geom_line(aes(y = lower, x = day), size = 1, color = colores[2], 
             linetype = "dashed")+
-  xlab("95 % Bootstrap CI, 1000 runs") +
-  ylab("Sentimiento del presidente") + 
   theme(plot.title = element_text(hjust = 0.5))+
-  ggtitle("IRF de Temperatura Mínima")
+  ggtitle("IRF de Temperatura Mínima") +
+  labs(x = "95 % Bootstrap CI, 1000 runs", 
+       y = "Sentimiento del presidente", 
+       caption = "Fuente: elaboración propia")
 
 ggplot(fir.cases("casos.arg.rel") , aes(y = irf, x = day)) +
   theme_bw() + 
@@ -750,10 +721,11 @@ ggplot(fir.cases("casos.arg.rel") , aes(y = irf, x = day)) +
   geom_line(aes(y = irf, x = day), size = 1, color = "black") +
   geom_line(aes(y = lower, x = day), size = 1, color = colores[3], 
             linetype = "dashed")+
-  xlab("95 % Bootstrap CI, 1000 runs") +
-  ylab("Sentimiento del presidente") + 
   theme(plot.title = element_text(hjust = 0.5))+
-  ggtitle("IRF de Casos COVID-19 Relativos")
+  ggtitle("IRF de Casos COVID-19 Relativos") +
+  labs(x = "95 % Bootstrap CI, 1000 runs", 
+       y = "Sentimiento del presidente", 
+       caption = "Fuente: elaboración propia")
 
 
 ggplot(fir.cases("muertes.arg.rel") , aes(y = irf, x = day)) +
@@ -781,10 +753,11 @@ ggplot(fir.cases("reservas.est") , aes(y = irf, x = day)) +
   geom_line(aes(y = irf, x = day), size = 1, color = "black") +
   geom_line(aes(y = lower, x = day), size = 1, color = colores[5], 
             linetype = "dashed")+
-  xlab("95 % Bootstrap CI, 1000 runs") +
-  ylab("Sentimiento del presidente") + 
   theme(plot.title = element_text(hjust = 0.5))+
-  ggtitle("IRF de Reservas del BCRA")
+  ggtitle("IRF de Reservas del BCRA") +
+  labs(x = "95 % Bootstrap CI, 1000 runs", 
+       y = "Sentimiento del presidente", 
+       caption = "Fuente: elaboración propia")
 
 
 ggplot(fir.cases("dolar.est") , aes(y = irf, x = day)) +
@@ -797,10 +770,11 @@ ggplot(fir.cases("dolar.est") , aes(y = irf, x = day)) +
   geom_line(aes(y = irf, x = day), size = 1, color = "black") +
   geom_line(aes(y = lower, x = day), size = 1, color = colores[6], 
             linetype = "dashed")+
-  xlab("95 % Bootstrap CI, 1000 runs") +
-  ylab("Sentimiento del presidente") + 
   theme(plot.title = element_text(hjust = 0.5))+
-  ggtitle("IRF del Tipo de Cambio")
+  ggtitle("IRF del Tipo de Cambio") +
+  labs(x = "95 % Bootstrap CI, 1000 runs", 
+       y = "Sentimiento del presidente", 
+       caption = "Fuente: elaboración propia")
 
 
 
@@ -3107,6 +3081,11 @@ AC[34,2:4]<-round(accuracy(pr.rol.h1.b[,4], out.of.sample[,2])[c(2:3,5)],4)
 
 # TABLA 2 
 
+AC1<-matrix(NA,34,6)
+colnames(AC1) <- c("Modelo", "MAPE", "MAE", "RMSE", "Estadístico","P-valor")
+AC3<-matrix(NA,34,1)
+
+
 AC1[2,1]<-"ARIMA fijo" 
 AC3[2,1]<-"2"
 AC1[2,2:4]<-round(accuracy(pr.f.h2[,1], out.of.sample[2:58,2])[c(2:3,5)],4)
@@ -3224,6 +3203,10 @@ AC1[34,2:4]<-round(accuracy(pr.rol.h2.b[,5], out.of.sample[2:58,2])[c(2:3,5)],4)
 
 # TABLA 3 
 
+AC4<-matrix(NA,34,6)
+colnames(AC1) <- c("Modelo", "MAPE", "MAE", "RMSE", "Estadístico","P-valor")
+AC5<-matrix(NA,34,1)
+
 AC4[2,1]<-"ARIMA fijo" 
 AC5[2,1]<-"2"
 AC4[2,2:4]<-round(accuracy(pr.f.h7[,1], out.of.sample[7:58,2])[c(2:3,5)],4)
@@ -3329,7 +3312,7 @@ AC4[30,2:4]<-round(accuracy(pr.rol.h7.b[,1], out.of.sample[7:58,2])[c(2:3,5)],4)
 AC4[31,1]<-"ARIMAX rolling bagged" 
 AC5[31,1]<-"2"
 AC4[31,2:4]<-round(accuracy(pr.rol.h7.b[,2], out.of.sample[7:58,2])[c(2:3,5)],4)
-AC4[32,1]<-"ETS rollingbagged" 
+AC4[32,1]<-"ETS rolling bagged" 
 AC5[32,1]<-"2"
 AC4[32,2:4]<-round(accuracy(pr.rol.h7.b[,3], out.of.sample[7:58,2])[c(2:3,5)],4)
 AC4[33,1]<- "VAR rolling bagged" 
@@ -3635,17 +3618,17 @@ DL.favar.rec.h1 <- error.favar.rec.h1^{2} - error.bench^{2}
 
 # Esquema rolling.
 
-DL.arima.rec.h1 <- error.arima.rec.h1^{2} - error.bench^{2}
+DL.arima.rol.h1 <- error.arima.rol.h1^{2} - error.bench^{2}
 
-DL.arimax.rec.h1 <- error.arimax.rec.h1^{2} - error.bench^{2}
+DL.arimax.rol.h1 <- error.arimax.rol.h1^{2} - error.bench^{2}
 
-DL.ets.rec.h1 <- error.ets.rec.h1^{2} - error.bench^{2}
+DL.ets.rol.h1 <- error.ets.rol.h1^{2} - error.bench^{2}
 
-DL.adl.rec.h1 <- error.adl.rec.h1^{2} - error.bench^{2}
+DL.adl.rol.h1 <- error.adl.rol.h1^{2} - error.bench^{2}
 
-DL.var.rec.h1 <- error.var.rec.h1^{2} - error.bench^{2}
+DL.var.rol.h1 <- error.var.rol.h1^{2} - error.bench^{2}
 
-DL.favar.rec.h1 <- error.favar.rec.h1^{2} - error.bench^{2}
+DL.favar.rol.h1 <- error.favar.rol.h1^{2} - error.bench^{2}
 
 # Bagging  
 
@@ -3673,15 +3656,15 @@ DL.favar.rec.h1.b <- error.favar.rec.h1.b^{2} - error.bench^{2}
 
 # Esquema rolling. 
 
-DL.arima.rec.h1.b <- error.arima.rec.h1.b^{2} - error.bench^{2}
+DL.arima.rol.h1.b <- error.arima.rol.h1.b^{2} - error.bench^{2}
 
-DL.arimax.rec.h1.b <- error.arimax.rec.h1.b^{2} - error.bench^{2}
+DL.arimax.rol.h1.b <- error.arimax.rol.h1.b^{2} - error.bench^{2}
 
-DL.ets.rec.h1.b <- error.ets.rec.h1.b^{2} - error.bench^{2}
+DL.ets.rol.h1.b <- error.ets.rol.h1.b^{2} - error.bench^{2}
 
-DL.var.rec.h1.b <- error.var.rec.h1.b^{2} - error.bench^{2}
+DL.var.rol.h1.b <- error.var.rol.h1.b^{2} - error.bench^{2}
 
-DL.favar.rec.h1.b <- error.favar.rec.h1.b^{2} - error.bench^{2}
+DL.favar.rol.h1.b <- error.favar.rol.h1.b^{2} - error.bench^{2}
 
 ### h=2 
 
@@ -3715,17 +3698,17 @@ DL.favar.rec.h2 <- error.favar.rec.h2^{2} - error.bench[-1,]^{2}
 
 # Esquema rolling. 
 
-DL.arima.rec.h2 <- error.arima.rec.h2^{2} - error.bench[-1,]^{2}
+DL.arima.rol.h2 <- error.arima.rol.h2^{2} - error.bench[-1,]^{2}
 
-DL.arimax.rec.h2 <- error.arimax.rec.h2^{2} - error.bench[-1,]^{2}
+DL.arimax.rol.h2 <- error.arimax.rol.h2^{2} - error.bench[-1,]^{2}
 
-DL.ets.rec.h2 <- error.ets.rec.h2^{2} - error.bench[-1,]^{2}
+DL.ets.rol.h2 <- error.ets.rol.h2^{2} - error.bench[-1,]^{2}
 
-DL.adl.rec.h2 <- error.adl.rec.h2^{2} - error.bench[-1,]^{2}
+DL.adl.rol.h2 <- error.adl.rol.h2^{2} - error.bench[-1,]^{2}
 
-DL.var.rec.h2 <- error.var.rec.h2^{2} - error.bench[-1,]^{2}
+DL.var.rol.h2 <- error.var.rol.h2^{2} - error.bench[-1,]^{2}
 
-DL.favar.rec.h2 <- error.favar.rec.h2^{2} - error.bench[-1,]^{2}
+DL.favar.rol.h2 <- error.favar.rol.h2^{2} - error.bench[-1,]^{2}
 
 # Bagging 
 
@@ -3755,15 +3738,15 @@ DL.favar.rec.h2.b <- error.favar.rec.h2.b^{2} - error.bench[-1,]^{2}
 
 # Esquema rolling. 
 
-DL.arima.rec.h2.b <- error.arima.rec.h2.b^{2} - error.bench[-1,]^{2}
+DL.arima.rol.h2.b <- error.arima.rol.h2.b^{2} - error.bench[-1,]^{2}
 
-DL.arimax.rec.h2.b <- error.arimax.rec.h2.b^{2} - error.bench[-1,]^{2}
+DL.arimax.rol.h2.b <- error.arimax.rol.h2.b^{2} - error.bench[-1,]^{2}
 
-DL.ets.rec.h2.b <- error.ets.rec.h2.b^{2} - error.bench[-1,]^{2}
+DL.ets.rol.h2.b <- error.ets.rol.h2.b^{2} - error.bench[-1,]^{2}
 
-DL.var.rec.h2.b <- error.var.rec.h2.b^{2} - error.bench[-1,]^{2}
+DL.var.rol.h2.b <- error.var.rol.h2.b^{2} - error.bench[-1,]^{2}
 
-DL.favar.rec.h2.b <- error.favar.rec.h2.b^{2} - error.bench[-1,]^{2}
+DL.favar.rol.h2.b <- error.favar.rol.h2.b^{2} - error.bench[-1,]^{2}
 
 ### h = 7 
 
@@ -3797,17 +3780,17 @@ DL.favar.rec.h7 <- error.favar.rec.h7^{2}  - error.bench[7:58,]^{2}
 
 # Esquema rolling. 
 
-DL.arima.rec.h7 <- error.arima.rec.h7^{2}  - error.bench[7:58,]^{2}
+DL.arima.rol.h7 <- error.arima.rol.h7^{2}  - error.bench[7:58,]^{2}
 
-DL.arimax.rec.h7 <- error.arimax.rec.h7^{2}  - error.bench[7:58,]^{2}
+DL.arimax.rol.h7 <- error.arimax.rol.h7^{2}  - error.bench[7:58,]^{2}
 
-DL.ets.rec.h7 <- error.ets.rec.h7^{2}  - error.bench[7:58,]^{2}
+DL.ets.rol.h7 <- error.ets.rol.h7^{2}  - error.bench[7:58,]^{2}
 
-DL.adl.rec.h7 <- error.adl.rec.h7^{2}  - error.bench[7:58,]^{2}
+DL.adl.rol.h7 <- error.adl.rol.h7^{2}  - error.bench[7:58,]^{2}
 
-DL.var.rec.h7 <- error.var.rec.h7^{2}  - error.bench[7:58,]^{2}
+DL.var.rol.h7 <- error.var.rol.h7^{2}  - error.bench[7:58,]^{2}
 
-DL.favar.rec.h7 <- error.favar.rec.h7^{2}  - error.bench[7:58,]^{2}
+DL.favar.rol.h7 <- error.favar.rol.h7^{2}  - error.bench[7:58,]^{2}
 
 # Bagging 
 
@@ -3837,15 +3820,15 @@ DL.favar.rec.h7.b <- error.favar.rec.h7.b^{2}  - error.bench[7:58,]^{2}
 
 # Esquema rolling.
 
-DL.arima.rec.h7.b.b <- error.arima.rec.h7.b^{2}  - error.bench[7:58,]^{2}
+DL.arima.rol.h7.b <- error.arima.rol.h7.b^{2}  - error.bench[7:58,]^{2}
 
-DL.arimax.rec.h7 <- error.arimax.rec.h7.b^{2}  - error.bench[7:58,]^{2}
+DL.arimax.rol.h7.b <- error.arimax.rol.h7.b^{2}  - error.bench[7:58,]^{2}
 
-DL.ets.rec.h7.b <- error.ets.rec.h7.b^{2}  - error.bench[7:58,]^{2}
+DL.ets.rol.h7.b <- error.ets.rol.h7.b^{2}  - error.bench[7:58,]^{2}
 
-DL.var.rec.h7.b <- error.var.rec.h7.b^{2}  - error.bench[7:58,]^{2}
+DL.var.rol.h7.b <- error.var.rol.h7.b^{2}  - error.bench[7:58,]^{2}
 
-DL.favar.rec.h7.b <- error.favar.rec.h7.b^{2}  - error.bench[7:58,]^{2}
+DL.favar.rol.h7.b <- error.favar.rol.h7.b^{2}  - error.bench[7:58,]^{2}
 
 # Realizamos el test de Diebold Mariano, ajustamos por NW para cuando h>1.
 
@@ -3876,13 +3859,13 @@ AC[19,5]<-round(summary(lm(DL.favar.rec.h1~1))$coefficients[3],4)
 
 # Bagging.
 
-AC[35,5]<-round(summary(lm(DL.arima.rol.h1.b~1))$coefficients[3],4)
+AC[20,5]<-round(summary(lm(DL.arima.rol.h1.b~1))$coefficients[3],4)
 AC[21,5]<-round(summary(lm(DL.arimax.f.h1.b~1))$coefficients[3],4)
 AC[22,5]<-round(summary(lm(DL.ets.f.h1.b~1))$coefficients[3],4)
 AC[23,5]<-round(summary(lm(DL.var.f.h1.b~1))$coefficients[3],4)
 AC[24,5]<-round(summary(lm(DL.favar.f.h1.b~1))$coefficients[3],4)
 
-AC[25,5]<-round(summary(lm(DL.arima.rec.h1,b~1))$coefficients[3],4)
+AC[25,5]<-round(summary(lm(DL.arima.rec.h1.b~1))$coefficients[3],4)
 AC[26,5]<-round(summary(lm(DL.arimax.rec.h1.b~1))$coefficients[3],4)
 AC[27,5]<-round(summary(lm(DL.ets.rec.h1.b~1))$coefficients[3],4)
 AC[28,5]<-round(summary(lm(DL.var.rec.h1.b~1))$coefficients[3],4)
@@ -3899,7 +3882,7 @@ AC[34,5]<-round(summary(lm(DL.favar.rol.h1.b~1))$coefficients[3],4)
 AC[2,6]<-round(summary(lm(DL.arima.f.h1~1))$coefficients[4],4)
 AC[3,6]<-round(summary(lm(DL.arimax.f.h1~1))$coefficients[4],4)
 AC[4,6]<-round(summary(lm(DL.ets.f.h1~1))$coefficients[4],4)
-AC[5,6]<-round(summary(lm(DL.adl.f.h1.h1~1))$coefficients[4],4)
+AC[5,6]<-round(summary(lm(DL.adl.f.h1~1))$coefficients[4],4)
 AC[6,6]<-round(summary(lm(DL.var.f.h1~1))$coefficients[4],4)
 AC[7,6]<-round(summary(lm(DL.favar.f.h1~1))$coefficients[4],4)
 
@@ -3910,9 +3893,9 @@ AC[11,6]<-round(summary(lm(DL.adl.rec.h1~1))$coefficients[4],4)
 AC[12,6]<-round(summary(lm(DL.var.rec.h1~1))$coefficients[4],4)
 AC[13,6]<-round(summary(lm(DL.favar.rec.h1~1))$coefficients[4],4)
 
-AC[14,6]<-round(summary(lm(DL.arima.rol.h12~1))$coefficients[4],4)
-AC[15,6]<-round(summary(lm(DL.arimax.rol.h12~1))$coefficients[4],4)
-AC[16,6]<-round(summary(lm(DL.ets.rol.h12~1))$coefficients[4],4)
+AC[14,6]<-round(summary(lm(DL.arima.rol.h1~1))$coefficients[4],4)
+AC[15,6]<-round(summary(lm(DL.arimax.rol.h1~1))$coefficients[4],4)
+AC[16,6]<-round(summary(lm(DL.ets.rol.h1~1))$coefficients[4],4)
 AC[17,6]<-round(summary(lm(DL.adl.rec.h1~1))$coefficients[4],4)
 AC[18,6]<-round(summary(lm(DL.var.rec.h1~1))$coefficients[4],4)
 AC[19,6]<-round(summary(lm(DL.arima.f.h1.b~1))$coefficients[4],4)
@@ -3923,13 +3906,13 @@ AC[20,6]<-round(summary(lm(DL.arima.f.h1.b~1))$coefficients[4],4)
 AC[21,6]<-round(summary(lm(DL.arimax.f.h1.b~1))$coefficients[4],4)
 AC[22,6]<-round(summary(lm(DL.ets.f.h1.b~1))$coefficients[4],4)
 AC[23,6]<-round(summary(lm(DL.var.f.h1.b~1))$coefficients[4],4)
-AC[24,6]<-round(summary(lm(DL.favar.rec.h1,b~1))$coefficients[4],4)
+AC[24,6]<-round(summary(lm(DL.favar.rec.h1.b~1))$coefficients[4],4)
 
 AC[25,6]<-round(summary(lm(DL.arima.rec.h1.b~1))$coefficients[4],4)
 AC[26,6]<-round(summary(lm(DL.arimax.rec.h1.b~1))$coefficients[4],4)
 AC[27,6]<-round(summary(lm(DL.ets.rec.h1.b~1))$coefficients[4],4)
 AC[28,6]<-round(summary(lm(DL.var.rec.h1.b~1))$coefficients[4],4)
-AC[29,6]<-round(summary(lm(DL.favar.rol.h1.b~1))$coefficients[4],4)
+AC[29,6]<-round(summary(lm(DL.favar.rec.h1.b~1))$coefficients[4],4)
 
 AC[30,6]<-round(summary(lm(DL.arima.rol.h1.b~1))$coefficients[4],4)
 AC[31,6]<-round(summary(lm(DL.arimax.rol.h1.b~1))$coefficients[4],4)
@@ -3964,13 +3947,13 @@ AC1[19,5]<-round(summary(lm(DL.favar.rec.h2~1))$coefficients[3],4)
 
 # Bagging.
 
-AC1[35,5]<-round(summary(lm(DL.arima.rol.h2.b~1))$coefficients[3],4)
+AC1[20,5]<-round(summary(lm(DL.arima.rol.h2.b~1))$coefficients[3],4)
 AC1[21,5]<-round(summary(lm(DL.arimax.f.h2.b~1))$coefficients[3],4)
 AC1[22,5]<-round(summary(lm(DL.ets.f.h2.b~1))$coefficients[3],4)
 AC1[23,5]<-round(summary(lm(DL.var.f.h2.b~1))$coefficients[3],4)
 AC1[24,5]<-round(summary(lm(DL.favar.f.h2.b~1))$coefficients[3],4)
 
-AC1[25,5]<-round(summary(lm(DL.arima.rec.h2,b~1))$coefficients[3],4)
+AC1[25,5]<-round(summary(lm(DL.arima.rec.h2.b~1))$coefficients[3],4)
 AC1[26,5]<-round(summary(lm(DL.arimax.rec.h2.b~1))$coefficients[3],4)
 AC1[27,5]<-round(summary(lm(DL.ets.rec.h2.b~1))$coefficients[3],4)
 AC1[28,5]<-round(summary(lm(DL.var.rec.h2.b~1))$coefficients[3],4)
@@ -4058,13 +4041,13 @@ AC4[19,5]<-round(summary(lm(DL.favar.rec.h7~1))$coefficients[3],4)
 
 # Bagging.
 
-AC4[35,5]<-round(summary(lm(DL.arima.rol.h7.b~1))$coefficients[3],4)
+AC4[20,5]<-round(summary(lm(DL.arima.rol.h7.b~1))$coefficients[3],4)
 AC4[21,5]<-round(summary(lm(DL.arimax.f.h7.b~1))$coefficients[3],4)
 AC4[22,5]<-round(summary(lm(DL.ets.f.h7.b~1))$coefficients[3],4)
 AC4[23,5]<-round(summary(lm(DL.var.f.h7.b~1))$coefficients[3],4)
 AC4[24,5]<-round(summary(lm(DL.favar.f.h7.b~1))$coefficients[3],4)
 
-AC4[25,5]<-round(summary(lm(DL.arima.rec.h7,b~1))$coefficients[3],4)
+AC4[25,5]<-round(summary(lm(DL.arima.rec.h7.b~1))$coefficients[3],4)
 AC4[26,5]<-round(summary(lm(DL.arimax.rec.h7.b~1))$coefficients[3],4)
 AC4[27,5]<-round(summary(lm(DL.ets.rec.h7.b~1))$coefficients[3],4)
 AC4[28,5]<-round(summary(lm(DL.var.rec.h7.b~1))$coefficients[3],4)
@@ -4125,20 +4108,38 @@ AC4[32,6]<-round(coeftest(lm(DL.ets.rol.h7.b~1), vcov = NeweyWest(lm(DL.ets.rol.
 AC4[33,6]<-round(coeftest(lm(DL.var.rol.h7.b~1), vcov = NeweyWest(lm(DL.var.rol.h7.b~1)))[4],4)
 AC4[34,6]<-round(coeftest(lm(DL.favar.rol.h7.b~1), vcov = NeweyWest(lm(DL.favar.rol.h7.b~1)))[4],4)
 
-# Medidas de accuracy comparables 
+# Exportamos las tablas.
+
+# Para h=1
+
+colnames(AC) <- c("Modelo", "RMSE", "MAE", "MAPE", "DM", "p-val")
+stargazer(AC[1:nrow(AC),], type = "text")
+
+# Para h=2
+
+colnames(AC1) <- c("Modelo", "RMSE", "MAE", "MAPE", "DM", "p-val")
+AC1[1,1:ncol(AC1)] <- AC[1,1:ncol(AC)]
+stargazer(AC1[1:nrow(AC1),], type = "text")
+
+# Para h=3
+
+colnames(AC4) <- c("Modelo", "RMSE", "MAE", "MAPE", "DM", "p-val")
+AC4[1,1:ncol(AC4)] <- AC[1,1:ncol(AC)]
+stargazer(AC4[1:nrow(AC4),], type = "text")
 
 
+### MEDIDAS DE ACCURACY COMPARABLES.
 
-### MEDIDAS DE ACCURACY 
+# En esta sección ajustaremos la cantidad de observaciones de los pronósticos
+# para comparar todos los modelos.
 
-AC<-matrix(NA,34,6)
+AC<-matrix(NA,34,4)
 colnames(AC) <- c("Modelo", "MAPE", "MAE", "RMSE")
 AC2<-matrix(NA,34,1)
 
+# Tabla 1
 
-# TABLA 1
-
-#medidas de accuracy y test de DM de los pronosticos con esquema fijo y h=1
+# Medidas de accuracy y test de DM de los pronósticos con esquema fijo y h=1.
 
 AC[1,1]<-"AR(1)" 
 AC2[1,1]<-"1"
@@ -4162,7 +4163,7 @@ AC[7,1]<- "FAVAR fijo"
 AC2[7,1]<-"1"
 AC[7,2:4]<-round(accuracy(pr.f.h1[7:58,6], out.of.sample[7:58,2])[c(2:3,5)],4)
 
-# medidas de accuracy de los pronósticos con esquema rolling y h=1
+# Medidas de accuracy de los pronósticos con esquema rolling y h=1.
 
 AC[8,1]<-"ARIMA rolling" 
 AC2[8,1]<-"1"
@@ -4183,9 +4184,7 @@ AC[13,1]<- "FAVAR rolling"
 AC2[13,1]<-"1"
 AC[13,2:4]<-round(accuracy(pr.rol.h1[7:58,6], out.of.sample[7:58,2])[c(2:3,5)],4)
 
-
-#  medidas de accuracy de los pronósticos con esquema recursivo y h=1
-
+#  Medidas de accuracy de los pronósticos con esquema recursivo y h=1.
 
 AC[14,1]<-"ARIMA recursivo" 
 AC2[14,1]<-"1"
@@ -4206,9 +4205,7 @@ AC[19,1]<- "FAVAR recursivo"
 AC2[19,1]<-"1"
 AC[19,2:4]<-round(accuracy(pr.rec.h1[7:58,6], out.of.sample[7:58,2])[c(2:3,5)],4)
 
-
 # Medidas de accuracy de los pronósticos con esquema fijo, h = 1 y series boots. 
-
 
 AC[20,1]<-"ARIMA fijo bagged" 
 AC2[20,1]<-"1"
@@ -4263,8 +4260,11 @@ AC2[34,1]<-"1"
 AC[34,2:4]<-round(accuracy(pr.rol.h1.b[7:58,4], out.of.sample[7:58,2])[c(2:3,5)],4)
 
 
-# TABLA 2 
+# Tabla 2
 
+AC1<-matrix(NA,34,4)
+colnames(AC1) <- c("Modelo", "MAPE", "MAE", "RMSE")
+AC3<-matrix(NA,34,1)
 
 AC1[2,1]<-"ARIMA fijo" 
 AC3[2,1]<-"2"
@@ -4381,8 +4381,11 @@ AC1[34,1]<- "FAVAR rolling bagged"
 AC3[34,1]<-"2"
 AC1[34,2:4]<-round(accuracy(pr.rol.h2.b[6:57,5], out.of.sample[7:58,2])[c(2:3,5)],4)
 
+# Tabla 3.
 
-# TABLA 3.
+AC4<-matrix(NA,34,4)
+colnames(AC4) <- c("Modelo", "MAPE", "MAE", "RMSE")
+AC5<-matrix(NA,34,1)
 
 AC4[2,1]<-"ARIMA fijo" 
 AC5[2,1]<-"2"
@@ -4499,16 +4502,22 @@ AC4[34,1]<- "FAVAR rolling bagged"
 AC5[34,1]<-"2"
 AC4[34,2:4]<-round(accuracy(pr.rol.h7.b[,5], out.of.sample[7:58,2])[c(2:3,5)],4)
 
+# Exportamos.
 
+# Para h=1
+colnames(AC) <- c("Modelo", "RMSE", "MAE", "MAPE")
+stargazer(AC[1:nrow(AC),], type = "text")
 
+# Para h=2
 
+colnames(AC1) <- c("Modelo", "RMSE", "MAE", "MAPE")
+AC1[1,1:ncol(AC1)] <- AC[1,1:ncol(AC)]
+stargazer(AC1[1:nrow(AC1),], type = "text")
 
-
-
-
-
-
-
+# Para h = 3
+colnames(AC4) <- c("Modelo", "RMSE", "MAE", "MAPE")
+AC4[1,1:ncol(AC4)] <- AC[1,1:ncol(AC)]
+stargazer(AC4[1:nrow(AC4),], type = "text")
 
 #### Test de Giacomini Rossi ####
 
@@ -4762,7 +4771,6 @@ error.favar.rol.h7.b.sq <- (out.of.sample[7:58,2]-pr.rol.h7.b[,4])^2
 # Ahora graficamos.
 
 library(murphydiagram)
-library(reshape)
 library(dplyr)
 
 # Pronósticos h=1 fijo.
