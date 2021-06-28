@@ -16,6 +16,9 @@ setwd(dir)
 
 colores <- c("#00ABC5","#cfb0b4" ,"#ff3c84","#FF7F32", "#edf71c", "#941cf7")
 
+colores2 <- c("#f5fa7b", "#3cffb7", "#ffdaaa", "#fa66f3",
+              "#f84a42","#9e9d9c", "#c3f842", "#3cff56")
+
 nuestra.paleta <- function(){
   set.seed(444)
   plot(rnorm(100,0,1), rnorm(100,0,1)+1)
@@ -840,29 +843,36 @@ colnames(vd) <- c("id", "Dólar", "Res. BCRA", "Casos Arg.Rel.",
 
 vd_panel <- melt(vd, id = c("id"))
 
+
+
+
 ggplot(vd_panel, aes(fill=variable, y=value, x=id)) + 
   geom_bar(position="fill", stat="identity") + 
   theme_minimal() + 
-  xlab("Horizonte") + 
-  ylab("Porcentaje explicado") +
   scale_x_discrete(limits=1:7, labels = c("1", "2", "3", "4",
                                            "5", "6", "7")) +
-  scale_fill_manual("Variables:", values = c("Dólar" = "chartreuse2", 
-                                             "Res. BCRA" = "orangered2", 
-                                             "Casos Arg.Rel." = "#00AFBB", 
-                                             "Muertes Arg. Rel." = "darkorchid2",
-                                             "Temp. Min." = "chartreuse2", 
-                                             "Temp. Max." = "orangered2", 
-                                             "Vacunas Arg." = "#00AFBB", 
-                                             "Muertes Arg." = "darkorchid2",
-                                             "Casos Arg." = "chartreuse2", 
-                                             "Base Mon." = "orangered2", 
-                                             "Tasa Int." = "#00AFBB", 
-                                             "Retweets" = "red",
-                                             "Favoritos" = "chartreuse2", 
-                                             "Sentimiento AF" = "orangered2"))+
-  ggtitle("Descomposición de varianza - Sentimiento")+
-  theme(plot.title = element_text(hjust = 0.5))
+  scale_fill_manual("", values = c("Dólar" = colores2[8], 
+                                             "Res. BCRA" = colores2[7], 
+                                             "Casos Arg.Rel." = colores2[6], 
+                                             "Muertes Arg. Rel." = colores2[5],
+                                             "Temp. Min." = colores2[4], 
+                                             "Temp. Max." = colores2[3], 
+                                             "Vacunas Arg." = colores2[2], 
+                                             "Muertes Arg." = colores2[1],
+                                             "Casos Arg." = colores[6], 
+                                             "Base Mon." = colores[5], 
+                                             "Tasa Int." = colores[4], 
+                                             "Retweets" = colores[3],
+                                             "Favoritos" = colores[2], 
+                                             "Sentimiento AF" = colores[1]))+
+  labs(x = "Horizonte", 
+       y = "Porcentaje explicado", 
+       title = "Descomposición de la varianza",
+       subtitle = "Sentimiento del presidente",
+       caption = "Fuente: elaboración propia") +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+  
 
 
 # Ahora, vamos a estimar un modelo FAVAR. Comenzamos aplicando la técnica de componentes
