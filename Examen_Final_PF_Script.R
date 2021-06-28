@@ -101,6 +101,9 @@ autoplot(twfav, ts.colour = colores[2]) +
         plot.title = element_text(hjust = 0.5)) + 
   labs(caption = "Fuente: elaboración propia") 
 
+ggsave(file="FAVs.eps", width=6.5, height=4, dpi=300)
+
+
 autoplot(twret, ts.colour = colores[3]) + 
   ggtitle("Evolución de los retweets que recibe AF en Twitter") + 
   xlab("Tiempo") + 
@@ -109,6 +112,8 @@ autoplot(twret, ts.colour = colores[3]) +
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5)) + 
   labs(caption = "Fuente: elaboración propia") 
+
+ggsave(file="RTs.eps", width=6.5, height=4, dpi=300)
 
 
 autoplot(reservasbcra, ts.colour = colores2[7]) + 
@@ -120,6 +125,8 @@ autoplot(reservasbcra, ts.colour = colores2[7]) +
         plot.title = element_text(hjust = 0.5)) + 
   labs(caption = "Fuente: elaboración propia con datos del BCRA") 
 
+ggsave(file="ReservasBCRA.eps", width=6.5, height=4, dpi=300)
+
 
 autoplot(tasaint, ts.colour = colores[4]) + 
   ggtitle("Evolución de la tasa de interés") + 
@@ -130,6 +137,7 @@ autoplot(tasaint, ts.colour = colores[4]) +
         plot.title = element_text(hjust = 0.5)) + 
   labs(caption = "Fuente: elaboración propia con datos del BCRA") 
 
+ggsave(file="TasaInt.eps", width=6.5, height=4, dpi=300)
 
 autoplot(basemon, ts.colour = colores[5]) + 
   ggtitle("Evolución de la base monetaria") + 
@@ -140,6 +148,7 @@ autoplot(basemon, ts.colour = colores[5]) +
         plot.title = element_text(hjust = 0.5)) + 
   labs(caption = "Fuente: elaboración propia con datos del BCRA") 
 
+ggsave(file="BaseMon.eps", width=6.5, height=4, dpi=300)
 
 autoplot(tcdolar, ts.colour = colores2[8]) + 
   ggtitle("Evolución del tipo de cambio") + 
@@ -150,9 +159,10 @@ autoplot(tcdolar, ts.colour = colores2[8]) +
         plot.title = element_text(hjust = 0.5)) + 
   labs(caption = "Fuente: elaboración propia con datos de Yahoo Finance")
 
+ggsave(file="Dolar.eps", width=6.5, height=4, dpi=300)
 
 autoplot(casosarg[51:483], ts.colour = colores[6]) + 
-  ggtitle("Evolución de la cantidad de casos de COVID-19 en Argentina") + 
+  ggtitle("Evolución de los de casos de COVID-19 en Argentina") + 
   xlab("Tiempo") + 
   ylab("Cantidad") + 
   theme_minimal() + 
@@ -160,15 +170,18 @@ autoplot(casosarg[51:483], ts.colour = colores[6]) +
         plot.title = element_text(hjust = 0.5)) + 
   labs(caption = "Fuente: elaboración propia con datos del Ministerio de Salud") 
 
+ggsave(file="CasosArg.eps", width=6.5, height=4, dpi=300)
 
 autoplot(muertosarg[51:483], ts.colour = colores2[1]) + 
-  ggtitle("Evolución de la cantidad de muertes por COVID-19 en Argentina") + 
+  ggtitle("Evolución de las de muertes por COVID-19 en Argentina") + 
   xlab("Tiempo") + 
   ylab("Cantidad") + 
   theme_minimal() + 
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5)) + 
   labs(caption = "Fuente: elaboración propia con datos del Ministerio de Salud") 
+
+ggsave(file="MuertesArg.eps", width=6.5, height=4, dpi=300)
 
 
 autoplot(vacunasarg[51:483], ts.colour = colores2[2]) + 
@@ -180,15 +193,18 @@ autoplot(vacunasarg[51:483], ts.colour = colores2[2]) +
         plot.title = element_text(hjust = 0.5)) + 
   labs(caption = "Fuente: elaboración propia con datos del Ministerio de Salud") 
 
+ggsave(file="Vacunas.eps", width=6.5, height=4, dpi=300)
+
 autoplot(maxtemp, ts.colour = colores2[3]) + 
   ggtitle("Temperatura máxima en Buenos Aires") + 
   xlab("Tiempo") + 
-  ylab("Pesos") + 
+  ylab("Grados centígrados") + 
   theme_minimal() + 
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5)) + 
   labs(caption = "Fuente: elaboración propia con datos de World Weather Online") 
 
+ggsave(file="TempMax.eps", width=6.5, height=4, dpi=300)
 
 autoplot(mintemp, ts.colour = colores2[4]) + 
   ggtitle("Temperatura mínima en Buenos Aires") + 
@@ -197,11 +213,12 @@ autoplot(mintemp, ts.colour = colores2[4]) +
   theme_minimal() + 
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5)) + 
-  labs(caption = "Fuente: elaboración propia con datos de World Weather Online") 
+  labs(caption = "Fuente: elaboración propia con datos de World Weather Online")
 
+ggsave(file="TempMin.eps", width=6.5, height=4, dpi=300)
 
 autoplot(muertes.arg.rel[51:483], ts.colour = colores2[5]) + 
-  ggtitle("Cantidad de muertes en Arg. relativa al resto del mundo") + 
+  ggtitle("Muertes por COVID-19 en Arg. relativas al resto del mundo") + 
   xlab("Tiempo") + 
   ylab("Cantidad") + 
   theme_minimal() + 
@@ -209,25 +226,18 @@ autoplot(muertes.arg.rel[51:483], ts.colour = colores2[5]) +
         plot.title = element_text(hjust = 0.5)) + 
   labs(caption = "Fuente: elaboración propia con datos del Ministerio de Salud y Our World in Data") 
 
+ggsave(file="MuertesRel.eps", width=6.5, height=4, dpi=300)
+
 autoplot(casos.arg.rel[51:483], ts.colour = colores2[6]) + 
-  ggtitle("Cantidad de casos en Arg. relativa al resto del mundo)")+ 
+  ggtitle("Casos de COVID-19 en Arg. relativos al resto del mundo)")+ 
   xlab("Tiempo")+ 
-  ylab("Pesos") + 
+  ylab("Cantidad") + 
   theme_minimal() + 
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5)) + 
   labs(caption = "Fuente: elaboración propia con datos del Ministerio de Salud y Our World in Data") 
 
-
-# Grafico mercado sintetico  (lo dejamos para el event study)
-
-#autoplot(sent_trends, ts.colour = colores[2]) + 
-  #ggtitle("Evolución de nuestro 'synthetic market'") + 
-  #xlab("Tiempo") + 
-  #ylab("Sentimiento") + 
-  #theme_minimal() + 
-  #theme(legend.position = "none",
-  #      plot.title = element_text(hjust = 0.5))
+ggsave(file="CasosRel.eps", width=6.5, height=4, dpi=300)
 
 
 # Creamos una función que devuelve el estadístico con su significatividad. 
@@ -524,39 +534,15 @@ serial.test(var.dl)
 
 # Ahora lo que haremos es interpretar económicamente al modelo VAR.
 
-# Para hacer esto primero haremos un test de restricciones, con el objetivo
-# de ver si las variables explicativas causan en el sentido de Granger
-# al sentimiento del presidente.
+# Comenzaremos estimando funciones de impulso respuesta.
 
-variables.var <- colnames(in.sample.d)[-1]
-
-causality(var.dl, cause = c("twfav"))
-
-
-# Como vimos en clase, este comando tiene dos tests. El primero de ellos
-# evalúa la hipótesis nula de no causalidad en el sentido de Granger. 
-
-
-# En nuestro caso, rechazamos esta hipótesis a niveles tradicionales
-# de significación. Esto nos dice que la tasa Badlar, los activos
-# externos netos y el tipo de cambio causan en el sentido de Granger
-# a la cantidad de dinero en la economía.
-# En el segundo test se hace una prueba de "causalidad instantánea", en la
-# que la H0 es que hay correlación nula entre los errores de las variables.
-# En este caso, solo rechazamos al 10%, es decir, que no hay una fuerte evidencia
-# de que la causalidad sea instánea. 
-
-# Para concluir, podemos decir que la información de que los "predictores" causan
-# en el sentido de Granger a M1 nos dice que estas variables tienen información
-# sobre nuestra variable de interés, lo que nos ayudará a la hora de pronosticar.
-
-
-
-# Ahora, las funciones de impulso-respuesta.
+set.seed(444)
 
 sent.fir <- irf(var.dl, impulse = variables.var, 
               response = "sentsmooth", n.ahead = 7,
-              ortho = FALSE, runs = 50)
+              ortho = FALSE, runs = 1000)
+
+# Hacemos una función que devuelve un df para cada una de las covariables.
 
 fir.cases <- function(variable){
   t <- as.data.frame(cbind(seq(0,7,1), sent.fir$irf[[variable]],
@@ -565,6 +551,8 @@ fir.cases <- function(variable){
   colnames(t) <- c("day","irf", "lower", "upper")
   return(t)
 }
+
+# Graficamos.
 
 ggplot(fir.cases("twfav") , aes(y = irf, x = day)) +
   theme_bw() + 
@@ -598,7 +586,7 @@ ggplot(fir.cases("twfav") , aes(y = irf, x = day)) +
        y = "Sentimiento del presidente", 
        caption = "Fuente: elaboración propia")
 
-ggplot(fir.cases("tasaint") , aes(y = irf, x = day)) +
+e1 <- ggplot(fir.cases("tasaint") , aes(y = irf, x = day)) +
   theme_bw() + 
   xlim(0,7) +
   ylim(-0.025,0.025)+
@@ -646,8 +634,7 @@ ggplot(fir.cases("casosarg") , aes(y = irf, x = day)) +
        y = "Sentimiento del presidente", 
        caption = "Fuente: elaboración propia")
 
-
-ggplot(fir.cases("muertosarg") , aes(y = irf, x = day)) +
+e2 <- ggplot(fir.cases("muertosarg") , aes(y = irf, x = day)) +
   theme_bw() + 
   xlim(0,7) +
   ylim(-0.0025,0.0025)+
@@ -658,7 +645,7 @@ ggplot(fir.cases("muertosarg") , aes(y = irf, x = day)) +
   geom_line(aes(y = lower, x = day), size = 1, color = colores[6], 
             linetype = "dashed")+
   theme(plot.title = element_text(hjust = 0.5))+
-  ggtitle("IRF de Muertes por COVID-19 en Argentina") +
+  ggtitle("IRF de muertes") +
   labs(x = "95 % Bootstrap CI, 1000 runs", 
        y = "Sentimiento del presidente", 
        caption = "Fuente: elaboración propia")
@@ -695,7 +682,7 @@ ggplot(fir.cases("maxtemp") , aes(y = irf, x = day)) +
        y = "Sentimiento del presidente", 
        caption = "Fuente: elaboración propia")
 
-ggplot(fir.cases("mintemp") , aes(y = irf, x = day)) +
+e6 <- ggplot(fir.cases("mintemp") , aes(y = irf, x = day)) +
   theme_bw() + 
   xlim(0,7) +
   ylim(-0.02,0.02)+
@@ -711,7 +698,7 @@ ggplot(fir.cases("mintemp") , aes(y = irf, x = day)) +
        y = "Sentimiento del presidente", 
        caption = "Fuente: elaboración propia")
 
-ggplot(fir.cases("casos.arg.rel") , aes(y = irf, x = day)) +
+e3 <- ggplot(fir.cases("casos.arg.rel") , aes(y = irf, x = day)) +
   theme_bw() + 
   xlim(0,7) +
   ylim(-6,6)+
@@ -722,13 +709,13 @@ ggplot(fir.cases("casos.arg.rel") , aes(y = irf, x = day)) +
   geom_line(aes(y = lower, x = day), size = 1, color = colores[3], 
             linetype = "dashed")+
   theme(plot.title = element_text(hjust = 0.5))+
-  ggtitle("IRF de Casos COVID-19 Relativos") +
+  ggtitle("IRF de casos relativos") +
   labs(x = "95 % Bootstrap CI, 1000 runs", 
        y = "Sentimiento del presidente", 
        caption = "Fuente: elaboración propia")
 
 
-ggplot(fir.cases("muertes.arg.rel") , aes(y = irf, x = day)) +
+e4 <- ggplot(fir.cases("muertes.arg.rel") , aes(y = irf, x = day)) +
   theme_bw() + 
   xlim(0,7) +
   ylim(-3.5,3)+
@@ -738,10 +725,11 @@ ggplot(fir.cases("muertes.arg.rel") , aes(y = irf, x = day)) +
   geom_line(aes(y = irf, x = day), size = 1, color = "black") +
   geom_line(aes(y = lower, x = day), size = 1, color = colores[4], 
             linetype = "dashed")+
-  xlab("95 % Bootstrap CI, 1000 runs") +
-  ylab("Sentimiento del presidente") + 
   theme(plot.title = element_text(hjust = 0.5))+
-  ggtitle("IRF de Muertes por COVID-19 Relativos")
+  ggtitle("IRF de muertes relativas")+
+  labs(x = "95 % Bootstrap CI, 1000 runs", 
+       y = "Sentimiento del presidente", 
+       caption = "Fuente: elaboración propia")
 
 ggplot(fir.cases("reservas.est") , aes(y = irf, x = day)) +
   theme_bw() + 
@@ -759,8 +747,7 @@ ggplot(fir.cases("reservas.est") , aes(y = irf, x = day)) +
        y = "Sentimiento del presidente", 
        caption = "Fuente: elaboración propia")
 
-
-ggplot(fir.cases("dolar.est") , aes(y = irf, x = day)) +
+e5 <- ggplot(fir.cases("dolar.est") , aes(y = irf, x = day)) +
   theme_bw() + 
   xlim(0,7) +
   ylim(-0.01,0.01)+
@@ -776,15 +763,13 @@ ggplot(fir.cases("dolar.est") , aes(y = irf, x = day)) +
        y = "Sentimiento del presidente", 
        caption = "Fuente: elaboración propia")
 
+# Exportamos las que tienen resultados interesantes.
 
+library(gridExtra)
 
+grid.arrange(e2, e3, e4, nrow = 1, ncol = 3)
 
-
-
-
-variables.var
-
-
+grid.arrange(e1, e5,e6 ,nrow = 1, ncol = 3)
 
 # Descomposición de la varianza.
 
