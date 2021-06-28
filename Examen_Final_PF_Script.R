@@ -536,6 +536,8 @@ serial.test(var.dl)
 
 # Comenzaremos estimando funciones de impulso respuesta.
 
+variables.var <- colnames(in.sample.d)
+
 set.seed(444)
 
 sent.fir <- irf(var.dl, impulse = variables.var, 
@@ -570,7 +572,7 @@ ggplot(fir.cases("twfav") , aes(y = irf, x = day)) +
        y = "Sentimiento del presidente", 
        caption = "Fuente: elaboración propia")
 
-ggplot(fir.cases("twfav") , aes(y = irf, x = day)) +
+ggplot(fir.cases("twret") , aes(y = irf, x = day)) +
   theme_bw() + 
   xlim(0,7) +
   ylim(-0.01,0.01)+
@@ -597,7 +599,7 @@ e1 <- ggplot(fir.cases("tasaint") , aes(y = irf, x = day)) +
   geom_line(aes(y = lower, x = day), size = 1, color = colores[3], 
             linetype = "dashed")+
   theme(plot.title = element_text(hjust = 0.5))+
-  ggtitle("IRF de Tasa de interés") +
+  ggtitle("IRF de tasa de interés") +
   labs(x = "95 % Bootstrap CI, 1000 runs", 
        y = "Sentimiento del presidente", 
        caption = "Fuente: elaboración propia")
@@ -693,7 +695,7 @@ e6 <- ggplot(fir.cases("mintemp") , aes(y = irf, x = day)) +
   geom_line(aes(y = lower, x = day), size = 1, color = colores[2], 
             linetype = "dashed")+
   theme(plot.title = element_text(hjust = 0.5))+
-  ggtitle("IRF de Temperatura Mínima") +
+  ggtitle("IRF de temp. mínima") +
   labs(x = "95 % Bootstrap CI, 1000 runs", 
        y = "Sentimiento del presidente", 
        caption = "Fuente: elaboración propia")
@@ -758,7 +760,7 @@ e5 <- ggplot(fir.cases("dolar.est") , aes(y = irf, x = day)) +
   geom_line(aes(y = lower, x = day), size = 1, color = colores[6], 
             linetype = "dashed")+
   theme(plot.title = element_text(hjust = 0.5))+
-  ggtitle("IRF del Tipo de Cambio") +
+  ggtitle("IRF del tipo de cambio") +
   labs(x = "95 % Bootstrap CI, 1000 runs", 
        y = "Sentimiento del presidente", 
        caption = "Fuente: elaboración propia")
@@ -769,7 +771,11 @@ library(gridExtra)
 
 grid.arrange(e2, e3, e4, nrow = 1, ncol = 3)
 
+ggsave(file="FirEpid.eps", width=6.5, height=4, dpi=300)
+
 grid.arrange(e1, e5,e6 ,nrow = 1, ncol = 3)
+
+ggsave(file="FirResto.eps", width=6.5, height=4, dpi=300)
 
 # Descomposición de la varianza.
 
@@ -793,16 +799,12 @@ vd <- as.data.frame(cbind(seq(1,7,1),
                           var.decomp$sentsmooth[,2],
                           var.decomp$sentsmooth[,1]))
 
-colnames(vd) <- c("id", rev(c("sentsmooth", variables.var)))
-
 colnames(vd) <- c("id", "Dólar", "Res. BCRA", "Casos Arg.Rel.", 
                   "Muertes Arg. Rel.", "Temp. Min.", "Temp. Max.",
                   "Vacunas Arg.", "Muertes Arg.", "Casos Arg.", "Base Mon.",
                   "Tasa Int.", "Retweets", "Favoritos", "Sentimiento AF")
 
 vd_panel <- melt(vd, id = c("id"))
-
-
 
 
 ggplot(vd_panel, aes(fill=variable, y=value, x=id)) + 
@@ -832,7 +834,7 @@ ggplot(vd_panel, aes(fill=variable, y=value, x=id)) +
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5))
   
-
+ggsave(file="VarDecomp.eps", width=5.5, height=4, dpi=300)
 
 # Ahora, vamos a estimar un modelo FAVAR. Comenzamos aplicando la técnica de componentes
 # principales a nuestras variables explicativas.
@@ -6328,3 +6330,5 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        caption = "Nota: valores negativos reflejan un mejor desempeño de la versión bagging. \
        Fuente: elaboración propia")
 
+
+rm(list = ls())
