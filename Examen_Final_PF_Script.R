@@ -436,37 +436,21 @@ library(dynlm)
 
 # Creamos las dummies. 
 
-data$mes <- substr(data$time, 6,7)
-num <- as.data.frame(table(substr(data$time, 6,7)))[,1]
-
-for (i in num){
-  var.names <- paste("mes",i, sep = "")
-  data[var.names] <- ifelse(data$mes == i,1,0)
-}
-
-data_1 <- subset(data, select = -c(mes))
-
-data.in.sample.dum <- data_1[1:425,-c(1)]
-
 # Seleccionamos el orden del ADL. 
 
 order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + casosarg + muertosarg +
-                            vacunasarg + maxtemp + mintemp + muertes.arg.rel + casos.arg.rel |
-                            mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
-                            mes07 + mes08 + mes09 +  mes10 + mes11, 
-                          data = data.in.sample.dum, max_order = 5)
+                            vacunasarg + maxtemp + mintemp + muertes.arg.rel + casos.arg.rel, 
+                          data = in.sample[,-1], max_order = 5)
 
 order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + casosarg + muertosarg +
                             vacunasarg + maxtemp + mintemp + muertes.arg.rel + casos.arg.rel, 
-                          data = data.in.sample.dum, max_order = 5)
+                          data = data.in.sample[,-1], max_order = 5)
 
 # Ahora estimamos el modelo.
 
 adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                  casosarg + muertosarg + vacunasarg + maxtemp + 
-                 mintemp + muertes.arg.rel + casos.arg.rel|
-                 mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
-                 mes07 + mes08 + mes09 +  mes10 + mes11, 
+                 mintemp + muertes.arg.rel + casos.arg.rel, 
                data = data.in.sample.dum, order = as.vector(order.adl.dl$best_order))
 
 # Estimamos el ADL pero con la función dynlm.
@@ -490,9 +474,6 @@ model <- lm(rnorm(100,0,1) ~ rnorm(100,20,3))
 stargazer(arima.to.table, arimax.to.table, model, adl.1,
           align = TRUE, 
           dep.var.labels = c("SentIndex", "SentIndex", "SentIndex", "SentIndex"),
-          omit = c("mes01", "mes02", "mes03", "mes04",
-                   "mes05", "mes06", "mes07", "mes08",
-                   "mes09", "mes10", "mes11"),
           keep.stat = c("n", "ll", "rsq"),
           no.space = TRUE,
           type = "latex")
@@ -928,34 +909,25 @@ for(i in 1:58){
 
 # ADL. Seleccionamos el orden. 
 
-data_1.1 < -ts(data_1,frequency = 365, start = c(2019,12))
-
-data_dum.1<-data_1.1[1:425,-c(1,27)]
 
 order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                             casosarg + muertosarg + vacunasarg + maxtemp + 
-                            mintemp + muertes.arg.rel + casos.arg.rel|
-                            mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
-                            mes07 + mes08 + mes09 +  mes10 + mes11, 
-                          data = data_dum.1, max_order = 8)
+                            mintemp + muertes.arg.rel + casos.arg.rel, 
+                          data = in.sample[,-1], max_order = 8)
 
 count <- 2
 
 for(i in 1:58){
-  temp2 <-window(data_1.1[,-c(1,27)],start = c(2019,12), end = 2020.195 + (i-1)/365)
+  temp2 <-window(data1[,-1],start = c(2019,12), end = 2020.195 + (i-1)/365)
   colnames(temp2) <- c("sentsmooth","twfav", "twret", "reservasbcra", "tasaint", "basemon", "tcdolar", "casosarg",          
                        "muertosarg", "vacunasarg", "maxtemp", "mintemp",
-                       "muertes.arg.rel", "casos.arg.rel",     
-                       "mes01", "mes02", "mes03", "mes04", "mes05", "mes06",
-                       "mes07", "mes08", "mes09", "mes10", "mes11")
+                       "muertes.arg.rel", "casos.arg.rel")
           
   # El orden del ADL es el conseguido al aplicar el modelo al período in-sample.
   
   adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                    casosarg + muertosarg + vacunasarg + maxtemp + 
-                   mintemp + muertes.arg.rel + casos.arg.rel|
-                   mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
-                   mes07 + mes08 + mes09 +  mes10 + mes11, 
+                   mintemp + muertes.arg.rel + casos.arg.rel, 
                  data = temp2, order = as.vector(order.adl.dl$best_order))
   
   # Estimamos el ADL pero con la función dynlm.
@@ -1056,32 +1028,22 @@ for(i in 1:58){
 
 # ADL.
 
-data_1.1<-ts(data_1,frequency = 365, start = c(2019,12))
-
-data_dum.1<-data_1.1[1:425,-c(1,27)]
-
 count <- 2
 for(i in 1:58){
-  temp2 <-window(data_1.1[,-c(1,27)], start = c(2019,12), end = 2020.195 + (i-1)/365)
+  temp2 <-window(data1[,-1], start = c(2019,12), end = 2020.195 + (i-1)/365)
   colnames(temp2) <- c("sentsmooth","twfav", "twret", "reservasbcra", "tasaint", "basemon", "tcdolar", "casosarg",          
-                       "muertosarg", "vacunasarg", "maxtemp", "mintemp","muertes.arg.rel", "casos.arg.rel",     
-                       "mes01", "mes02", "mes03", "mes04", "mes05", "mes06",
-                       "mes07", "mes08", "mes09", "mes10", "mes11")
+                       "muertosarg", "vacunasarg", "maxtemp", "mintemp","muertes.arg.rel", "casos.arg.rel")
   
   # Actualizamos el orden del ADL
   
   order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                               casosarg + muertosarg + vacunasarg + maxtemp + 
-                              mintemp + muertes.arg.rel + casos.arg.rel|
-                              mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
-                              mes07 + mes08 + mes09 +  mes10 + mes11, 
+                              mintemp + muertes.arg.rel + casos.arg.rel, 
                             data = temp2, max_order = 5)
   
   adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                    casosarg + muertosarg + vacunasarg + maxtemp + 
-                   mintemp + muertes.arg.rel + casos.arg.rel|
-                   mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
-                   mes07 + mes08 + mes09 +  mes10 + mes11, 
+                   mintemp + muertes.arg.rel + casos.arg.rel, 
                  data = temp2, order = as.vector(order.adl.dl$best_order))
   
   # Estimamos el ADL pero con la función dynlm
@@ -1177,33 +1139,24 @@ for(i in 1:58){
 
 #ADL. 
 
-data_1.1<-ts(data_1,frequency = 365, start = c(2019,12))
-
-data_dum.1<-data_1.1[1:425,-c(1,27)]
 
 count <- 2
 
 for(i in 1:58){
-  temp2 <-window(data_1.1[,-c(1,27)], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+  temp2 <-window(data1[,-1], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
   colnames(temp2) <- c("sentsmooth","twfav", "twret", "reservasbcra", "tasaint", "basemon", "tcdolar", "casosarg",          
-                       "muertosarg", "vacunasarg", "maxtemp", "mintemp", "muertes.arg.rel", "casos.arg.rel",     
-                       "mes01", "mes02", "mes03", "mes04", "mes05", "mes06",
-                       "mes07", "mes08", "mes09", "mes10", "mes11")
+                       "muertosarg", "vacunasarg", "maxtemp", "mintemp", "muertes.arg.rel", "casos.arg.rel")
   
   # Actualizamos el orden del ADL
   
   order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                               casosarg + muertosarg + vacunasarg + maxtemp + 
-                              mintemp + muertes.arg.rel + casos.arg.rel|
-                              mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
-                              mes07 + mes08 + mes09 +  mes10 + mes11, 
+                              mintemp + muertes.arg.rel + casos.arg.rel, 
                             data = temp2, max_order = 5)
   
   adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                    casosarg + muertosarg + vacunasarg + maxtemp + 
-                   mintemp + muertes.arg.rel + casos.arg.rel|
-                   mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
-                   mes07 + mes08 + mes09 +  mes10 + mes11, 
+                   mintemp + muertes.arg.rel + casos.arg.rel, 
                  data = temp2, order = as.vector(order.adl.dl$best_order))
   
   # Estimamos el ADL pero con la función dynlm
@@ -1222,7 +1175,7 @@ reservas.est <- diff(data1[,5])
 
 dolar.est <- diff(data1[,8])
 
-data.diff<-cbind(data1[-1,-c(1,5,8,16,17,18,19,20,21,22,23,24,25,26,27,28)], reservas.est, dolar.est)
+data.diff<-cbind(data1[-1,-1], reservas.est, dolar.est)
 
 h <- 1
 
@@ -1231,7 +1184,7 @@ for(i in 1:58){
   a<-VARselect(data.diff, lag.max = 13, type = "const")$selection[1]
   f5 <- VAR(temp2, p = a, type = "trend")
   forecast1<- forecast(f5, h=h)
-  pr.rol.h1[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
+  pr.rol.h1[i,5] <- forecast1$forecast$data1..1...1..sentsmooth$mean[h]
 }
 
 # Importamos.
@@ -1306,33 +1259,25 @@ for(i in 1:57){
 
 # ADL.
 
-data_1.1<-ts(data_1,frequency = 365, start = c(2019,12))
 
-data_dum.1<-data_1.1[1:425,-c(1,27)]
 
 order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                             casosarg + muertosarg + vacunasarg + maxtemp + 
-                            mintemp + muertes.arg.rel + casos.arg.rel|
-                            mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
-                            mes07 + mes08 + mes09 +  mes10 + mes11, 
-                          data = data_dum.1, max_order = 8)
+                            mintemp + muertes.arg.rel + casos.arg.rel, 
+                          data = in.sample[,-1], max_order = 5)
 
 count <- 2
 for(i in 1:57){
-  temp2 <-window(data_1.1[,-c(1,27)],start = c(2019,12), end = 2020.195 + (i-1)/365)
+  temp2 <-window(data1[,-1],start = c(2019,12), end = 2020.195 + (i-1)/365)
   colnames(temp2) <- c("sentsmooth","twfav", "twret", "reservasbcra", "tasaint", "basemon", "tcdolar", "casosarg",          
                        "muertosarg", "vacunasarg", "maxtemp", "mintemp",
-                       "muertes.arg.rel", "casos.arg.rel",     
-                       "mes01", "mes02", "mes03", "mes04", "mes05", "mes06",
-                       "mes07", "mes08", "mes09", "mes10", "mes11")
+                       "muertes.arg.rel", "casos.arg.rel")
   
   # El orden del ADL es el conseguido al aplicar el modelo al período in-sample 
   
   adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                    casosarg + muertosarg + vacunasarg + maxtemp + 
-                   mintemp + muertes.arg.rel + casos.arg.rel|
-                   mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
-                   mes07 + mes08 + mes09 +  mes10 + mes11, 
+                   mintemp + muertes.arg.rel + casos.arg.rel, 
                  data = temp2, order = as.vector(order.adl.dl$best_order))
   
   # Estimamos el ADL pero con la función dynlm
@@ -1351,13 +1296,13 @@ reservas.est <- diff(data1[,5])
 
 dolar.est <- diff(data1[,8])
 
-data.diff<-cbind(data1[-1,-c(1,5,8,16,17,18,19,20,21,22,23,24,25,26,27,28)], reservas.est, dolar.est)
+data.diff<-cbind(data1[-1,-1], reservas.est, dolar.est)
 
 for(i in 1:57){ 
   temp2<-window(data.diff, start = c(2019,12), end = 2020.195 + (i-1)/365)
   f5 <- VAR(temp2, p = 6, type = "trend")
   forecast1<- forecast(f5, h=h)
-  pr.f.h2[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
+  pr.f.h2[i,5] <- forecast1$forecast$data1..1...1..sentsmooth$mean[h]
 }
 
 # Importamos.
@@ -1427,33 +1372,24 @@ for(i in 1:57){
 
 # ADL.
 
-data_1.1<-ts(data_1,frequency = 365, start = c(2019,12))
-
-data_dum.1<-data_1.1[1:425,-c(1,27)]
 
 count <- 2
 
 for(i in 1:57){
-  temp2 <-window(data_1.1[,-c(1,27)], start = c(2019,12), end = 2020.195 + (i-1)/365)
+  temp2 <-window(data1[,-1], start = c(2019,12), end = 2020.195 + (i-1)/365)
   colnames(temp2) <- c("sentsmooth","twfav", "twret", "reservasbcra", "tasaint", "basemon", "tcdolar", "casosarg",          
-                       "muertosarg", "vacunasarg", "maxtemp", "mintemp","muertes.arg.rel", "casos.arg.rel",     
-                       "mes01", "mes02", "mes03", "mes04", "mes05", "mes06",
-                       "mes07", "mes08", "mes09", "mes10", "mes11")
+                       "muertosarg", "vacunasarg", "maxtemp", "mintemp","muertes.arg.rel", "casos.arg.rel")
   
   # Actualizamos el orden del ADL
   
   order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                               casosarg + muertosarg + vacunasarg + maxtemp + 
-                              mintemp +  muertes.arg.rel + casos.arg.rel|
-                              mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
-                              mes07 + mes08 + mes09 +  mes10 + mes11, 
+                              mintemp +  muertes.arg.rel + casos.arg.rel, 
                             data = temp2, max_order = 5)
   
   adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                    casosarg + muertosarg + vacunasarg + maxtemp + 
-                   mintemp  + muertes.arg.rel + casos.arg.rel|
-                   mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
-                   mes07 + mes08 + mes09 +  mes10 + mes11, 
+                   mintemp  + muertes.arg.rel + casos.arg.rel, 
                  data = temp2, order = as.vector(order.adl.dl$best_order))
   
   # Estimamos el ADL pero con la función dynlm
@@ -1552,33 +1488,25 @@ for(i in 1:57){
 
 # ADL.
 
-data_1.1<-ts(data_1,frequency = 365, start = c(2019,12))
 
-data_dum.1<-data_1.1[1:425,-c(1,27)]
 
 count <- 2
 
 for(i in 1:57){
-  temp2 <-window(data_1.1[,-c(1,27)], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+  temp2 <-window(data1[,-1], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
   colnames(temp2) <- c("sentsmooth","twfav", "twret", "reservasbcra", "tasaint", "basemon", "tcdolar", "casosarg",          
-                       "muertosarg", "vacunasarg", "maxtemp", "mintemp", "muertes.arg.rel", "casos.arg.rel",     
-                       "mes01", "mes02", "mes03", "mes04", "mes05", "mes06",
-                       "mes07", "mes08", "mes09", "mes10", "mes11")
+                       "muertosarg", "vacunasarg", "maxtemp", "mintemp", "muertes.arg.rel", "casos.arg.rel")
   
   # Actualizamos el orden del ADL
   
   order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                               casosarg + muertosarg + vacunasarg + maxtemp + 
-                              mintemp  + muertes.arg.rel + casos.arg.rel|
-                              mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
-                              mes07 + mes08 + mes09 +  mes10 + mes11, 
+                              mintemp  + muertes.arg.rel + casos.arg.rel, 
                             data = temp2, max_order = 5)
   
   adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                    casosarg + muertosarg + vacunasarg + maxtemp + 
-                   mintemp + muertes.arg.rel + casos.arg.rel|
-                   mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
-                   mes07 + mes08 + mes09 +  mes10 + mes11, 
+                   mintemp + muertes.arg.rel + casos.arg.rel, 
                  data = temp2, order = as.vector(order.adl.dl$best_order))
   
   # Estimamos el ADL pero con la función dynlm
@@ -1679,33 +1607,26 @@ for(i in 1:52){
 
 # ADL.
 
-data_1.1<-ts(data_1,frequency = 365, start = c(2019,12))
-
-data_dum.1<-data_1.1[1:425,-c(1,27)]
 
 order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                             casosarg + muertosarg + vacunasarg + maxtemp + 
                             mintemp + muertes.arg.rel + casos.arg.rel|
                             mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
                             mes07 + mes08 + mes09 +  mes10 + mes11, 
-                          data = data_dum.1, max_order = 8)
+                          data = in.sample[,-1], max_order = 5)
 count <- 2
 
 for(i in 1:52){
-  temp2 <-window(data_1.1[,-c(1,27)],start = c(2019,12), end = 2020.195 + (i-1)/365)
+  temp2 <-window(data1[,-1],start = c(2019,12), end = 2020.195 + (i-1)/365)
   colnames(temp2) <- c("sentsmooth","twfav", "twret", "reservasbcra", "tasaint", "basemon", "tcdolar", "casosarg",          
                        "muertosarg", "vacunasarg", "maxtemp", "mintemp",
-                       "muertes.arg.rel", "casos.arg.rel",     
-                       "mes01", "mes02", "mes03", "mes04", "mes05", "mes06",
-                       "mes07", "mes08", "mes09", "mes10", "mes11")
+                       "muertes.arg.rel", "casos.arg.rel")
   
   # El orden del ADL es el conseguido al aplicar el modelo al período in sample 
   
   adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                    casosarg + muertosarg + vacunasarg + maxtemp + 
-                   mintemp + muertes.arg.rel + casos.arg.rel|
-                   mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
-                   mes07 + mes08 + mes09 +  mes10 + mes11, 
+                   mintemp + muertes.arg.rel + casos.arg.rel, 
                  data = temp2, order = as.vector(order.adl.dl$best_order))
   
   # Estimamos el ADL pero con la función dynlm
@@ -1802,33 +1723,23 @@ for(i in 1:52){
 
 # ADL.
 
-data_1.1<-ts(data_1,frequency = 365, start = c(2019,12))
-
-data_dum.1<-data_1.1[1:425,-c(1,27)]
-
 count <- 2
 
 for(i in 1:52){
-  temp2 <-window(data_1.1[,-c(1,27)], start = c(2019,12), end = 2020.195 + (i-1)/365)
+  temp2 <-window(data1[,-1], start = c(2019,12), end = 2020.195 + (i-1)/365)
   colnames(temp2) <- c("sentsmooth","twfav", "twret", "reservasbcra", "tasaint", "basemon", "tcdolar", "casosarg",          
-                       "muertosarg", "vacunasarg", "maxtemp", "mintemp","muertes.arg.rel", "casos.arg.rel",     
-                       "mes01", "mes02", "mes03", "mes04", "mes05", "mes06",
-                       "mes07", "mes08", "mes09", "mes10", "mes11")
+                       "muertosarg", "vacunasarg", "maxtemp", "mintemp","muertes.arg.rel", "casos.arg.rel")
   
   # Actualizamos el orden del ADL
   
   order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                               casosarg + muertosarg + vacunasarg + maxtemp + 
-                              mintemp  + muertes.arg.rel + casos.arg.rel|
-                              mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
-                              mes07 + mes08 + mes09 +  mes10 + mes11, 
+                              mintemp  + muertes.arg.rel + casos.arg.rel, 
                             data = temp2, max_order = 5)
   
   adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                    casosarg + muertosarg + vacunasarg + maxtemp + 
-                   mintemp  + muertes.arg.rel + casos.arg.rel|
-                   mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
-                   mes07 + mes08 + mes09 +  mes10 + mes11, 
+                   mintemp  + muertes.arg.rel + casos.arg.rel, 
                  data = temp2, order = as.vector(order.adl.dl$best_order))
   
   # Estimamos el ADL pero con la función dynlm
@@ -1925,33 +1836,23 @@ for(i in 1:52){
 
 # ADL.
 
-data_1.1<-ts(data_1,frequency = 365, start = c(2019,12))
-
-data_dum.1<-data_1.1[1:425,-c(1,27)]
-
 count <- 2
 
 for(i in 1:52){
-  temp2 <-window(data_1.1[,-c(1,27)], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+  temp2 <-window(data1[,-1], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
   colnames(temp2) <- c("sentsmooth","twfav", "twret", "reservasbcra", "tasaint", "basemon", "tcdolar", "casosarg",          
-                       "muertosarg", "vacunasarg", "maxtemp", "mintemp", "muertes.arg.rel", "casos.arg.rel",     
-                       "mes01", "mes02", "mes03", "mes04", "mes05", "mes06",
-                       "mes07", "mes08", "mes09", "mes10", "mes11")
+                       "muertosarg", "vacunasarg", "maxtemp", "mintemp", "muertes.arg.rel", "casos.arg.rel")
   
   # Actualizamos el orden del ADL
   
   order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                               casosarg + muertosarg + vacunasarg + maxtemp + 
-                              mintemp  + muertes.arg.rel + casos.arg.rel|
-                              mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
-                              mes07 + mes08 + mes09 +  mes10 + mes11, 
+                              mintemp  + muertes.arg.rel + casos.arg.rel, 
                             data = temp2, max_order = 5)
   
   adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                    casosarg + muertosarg + vacunasarg + maxtemp + 
-                   mintemp  + muertes.arg.rel + casos.arg.rel|
-                   mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
-                   mes07 + mes08 + mes09 +  mes10 + mes11, 
+                   mintemp  + muertes.arg.rel + casos.arg.rel, 
                  data = temp2, order = as.vector(order.adl.dl$best_order))
   
   # Estimamos el ADL pero con la función dynlm
