@@ -1,8 +1,7 @@
-## Importamos algunas de las librer?as que vamos a usar.
+
+# Importamos algunas de las librerías que vamos a usar.
 
 library(devtools)
-library(ggfortify)
-library(dplyr)
 
 options(scipen=999)
 
@@ -16,6 +15,17 @@ setwd(dir)
 # Definimos la paleta de colores que vamos a usar.
 
 colores <- c("#00ABC5","#cfb0b4" ,"#ff3c84","#FF7F32", "#edf71c", "#941cf7")
+
+nuestra.paleta <- function(){
+  set.seed(444)
+  plot(rnorm(100,0,1), rnorm(100,0,1)+1)
+  abline(h = 4, col = colores[1], lwd = 5)
+  abline(h = 3, col = colores[2], lwd = 5)
+  abline(h = 2, col = colores[3], lwd = 5)
+  abline(h = 1, col = colores[4], lwd = 5)
+  abline(h = 0, col = colores[5], lwd = 5)
+  abline(h = -1, col = colores[6], lwd = 5)
+}
 
 # Abrimos la base de datos.
 
@@ -60,14 +70,24 @@ for (i in colnames(data)[-(1)]){
 # Graficamos nuestra serie de interés.
 
 library(ggplot2)
+library(ggfortify)
+library(forecast)
 
 autoplot(sentsmooth, ts.colour = colores[1]) + 
-  ggtitle("Evolución sentimental de Alberto Fernández") + 
+  ggtitle("Evolución del sentimiento de Alberto Fernández") + 
   xlab("Tiempo") + 
   ylab("Sentimiento") + 
   theme_minimal() + 
   theme(legend.position = "none",
-        plot.title = element_text(hjust = 0.5))
+        plot.title = element_text(hjust = 0.5)) + 
+  labs(x = "Tiempo", 
+       y = "Sentimiento", 
+       title = "Evolución del sentimiento de Alberto Fernández",
+       caption = "Fuente: elaboración propia")
+
+ggsave(file="Sentimiento_AF.eps", width=6.5, height=4, dpi=300)
+
+
 
 # Grafico mercado sintetico  (lo dejamos para el event study)
 
@@ -216,10 +236,6 @@ in.sample <- data[1:425,]
 out.of.sample <- data[426:483,]
 
 ## Estimación de los modelos ##
-
-# Cargamos la librería.
-
-library(forecast)
 
 # Estimamos un modelo ARIMA. 
 
@@ -387,6 +403,8 @@ PCA1$sdev^2
 
 # Como hay 4 componentes cuyo autovalor es superior a 1, los usaremos.
 
+library(dplyr)
+
 PC.is <- scale(in.sample[,3:15])%*%PCA1$rotation
 
 # Aplicamos los componentes principales a toda la base de datos (no solo el período in-sample).
@@ -529,21 +547,30 @@ for(i in 1:58){
 # Los importaremos directamente con el link. Sin embargo, de querer verificar todos los archivos
 # sugerimos visitar el repositorio de Github cuya dirección se encuentra al comienzo del script.
 
-pr.f.h1 <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/normales/pr.f.h1.csv")
+pr.f.h1 <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/pr.f.h1.csv")
 pr.f.h1 <- pr.f.h1[,-c(1:3)]
 pr.f.h1<-ts(pr.f.h1,frequency = 365, start = c(2020,11))
 
 # Graficamos los pronósticos.
 
-autoplot(ts.union(out.of.sample[,2], pr.f.h1[,1], pr.f.h1[,2],pr.f.h1[,3],pr.f.h1[,4],pr.f.h1[,5], pr.f.h1[,6]), size = 0.7) +
-  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"), 
-                     values = c("#4b4b4b", colores[1], colores[2],colores[3], colores[4], colores[5], colores[6]), 
-                     ncol(2))+
-  ggtitle("Pronósticos fijos con h = 1") +
-  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+autoplot(ts.union(out.of.sample[,2], pr.f.h1[,1], pr.f.h1[,2],pr.f.h1[,3],
+                  pr.f.h1[,4],pr.f.h1[,5], pr.f.h1[,6]), size = 0.7) +
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX",
+                                           "ETS","ADL","VAR", "FAVAR"), 
+                     values = c("#4b4b4b", colores[1], colores[2],colores[3],
+                                colores[4], colores[5], colores[6]))+
   theme_minimal() +  
-  theme(legend.position = c(0.85,0.80), plot.title = element_text(hjust = 0.5))
+  theme(legend.position = "bottom", 
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) +
+  labs(x = "Tiempo", 
+       y = "Sentimiento del presidente", 
+       title = "Pronósticos con esquema fijo",
+       subtitle = "Un paso adelante (h=1)",
+       caption = "Fuente: elaboración propia") +
+  guides(colour = guide_legend(nrow = 1))
 
+ggsave(file="pr.f.h1.eps", width=6.5, height=4, dpi=300)
 
 #### Esquema recursivo ####
 
@@ -641,21 +668,31 @@ for(i in 1:58){
 
 # Importamos los pronósticos.
 
-pr.rec.h1 <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/normales/pr.rec.h1.csv")
+pr.rec.h1 <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/pr.rec.h1.csv")
 pr.rec.h1 <- pr.rec.h1[,-(1:3)]
 pr.rec.h1 <- ts(pr.rec.h1, frequency = 365, start = c(2020,11))
 
-
 # Gráficamos.
 
-autoplot(ts.union(out.of.sample[,2], pr.rec.h1[,1], pr.rec.h1[,2],pr.rec.h1[,3],pr.rec.h1[,4],pr.rec.h1[,5], pr.rec.h1[,6]), size = 0.7) + 
-  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"),
-                     values = c("#4b4b4b", colores[1], colores[2],colores[3], colores[4], colores[5], colores[6])) +
-  ggtitle("Pronósticos recursivos con h = 1") + 
-  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+autoplot(ts.union(out.of.sample[,2], pr.rec.h1[,1], pr.rec.h1[,2],pr.rec.h1[,3],
+                  pr.rec.h1[,4],pr.rec.h1[,5], pr.rec.h1[,6]), size = 0.7) + 
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX",
+                                           "ETS","ADL","VAR", "FAVAR"), 
+                     values = c("#4b4b4b", colores[1], colores[2],colores[3],
+                                colores[4], colores[5], colores[6]))+
   theme_minimal() +  
-  theme(legend.position = "bottom", plot.title = element_text(hjust = 0.5))
+  theme(legend.position = "bottom", 
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) +
+  labs(x = "Tiempo", 
+       y = "Sentimiento del presidente", 
+       title = "Pronósticos con esquema recursivo",
+       subtitle = "Un paso adelante (h=1)",
+       caption = "Fuente: elaboración propia") +
+  guides(colour = guide_legend(nrow = 1))
 
+ggsave(file="pr.rec.h1.eps", width=6.5, height=4, dpi=300)
+  
 
 #### Esquema rolling ####
 
@@ -755,19 +792,30 @@ for(i in 1:58){
 
 # Importamos.
 
-pr.rol.h1 <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/normales/pr.rol.h1.csv")
+pr.rol.h1 <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/pr.rol.h1.csv")
 pr.rol.h1 <- pr.rol.h1[,-(1:3)]
 pr.rol.h1 <- ts(pr.rol.h1, frequency = 365, start = c(2020,11))
 
 # Graficamos.
 
-autoplot(ts.union(out.of.sample[,2], pr.rol.h1[,1], pr.rol.h1[,2],pr.rol.h1[,3],pr.rol.h1[,4],pr.rol.h1[,5], pr.rol.h1[,6]), size = 0.7) + 
-  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"),
-                     values = c("black", colores[1], colores[2],colores[3], colores[4], colores[5], colores[6])) +
-  ggtitle("Pronósticos rolling con h = 1") + 
-  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+autoplot(ts.union(out.of.sample[,2], pr.rol.h1[,1], pr.rol.h1[,2],pr.rol.h1[,3],
+                  pr.rol.h1[,4],pr.rol.h1[,5], pr.rol.h1[,6]), size = 0.7) + 
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX",
+                                           "ETS","ADL","VAR", "FAVAR"), 
+                     values = c("#4b4b4b", colores[1], colores[2],colores[3],
+                                colores[4], colores[5], colores[6]))+
   theme_minimal() +  
-  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+  theme(legend.position = "bottom", 
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) +
+  labs(x = "Tiempo", 
+       y = "Sentimiento del presidente", 
+       title = "Pronósticos con esquema 'rolling'",
+       subtitle = "Un paso adelante (h=1)",
+       caption = "Fuente: elaboración propia") +
+  guides(colour = guide_legend(nrow = 1))
+
+ggsave(file="pr.rol.h1.eps", width=6.5, height=4, dpi=300)
 
 
 #### h = 2 ####
@@ -870,19 +918,30 @@ for(i in 1:57){
 
 # Importamos.
 
-pr.f.h2 <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/normales/pr.f.h2.csv")
+pr.f.h2 <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/pr.f.h2.csv")
 pr.f.h2 <- pr.f.h2[,-(1:3)]
 pr.f.h2 <- ts(pr.f.h2, frequency = 365, start = c(2020,11))
 
 # Graficamos.
 
-autoplot(ts.union(out.of.sample[2:58,2], pr.f.h2[,1], pr.f.h2[,2],pr.f.h2[,3],pr.f.h2[,4],pr.f.h2[,5], pr.f.h2[,6]), size = 0.7) +
-  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"), 
-                     values = c("#4b4b4b", colores[1], colores[2],colores[3], colores[4], colores[5], colores[6]))+
-  ggtitle("Pronósticos fijos con h = 2") +
-  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+autoplot(ts.union(out.of.sample[2:58,2], pr.f.h2[,1], pr.f.h2[,2],pr.f.h2[,3],
+                  pr.f.h2[,4],pr.f.h2[,5], pr.f.h2[,6]), size = 0.7) +
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX",
+                                           "ETS","ADL","VAR", "FAVAR"), 
+                     values = c("#4b4b4b", colores[1], colores[2],colores[3],
+                                colores[4], colores[5], colores[6]))+
   theme_minimal() +  
-  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+  theme(legend.position = "bottom", 
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) +
+  labs(x = "Tiempo", 
+       y = "Sentimiento del presidente", 
+       title = "Pronósticos con esquema fijo",
+       subtitle = "Dos pasos adelante (h=2)",
+       caption = "Fuente: elaboración propia") +
+  guides(colour = guide_legend(nrow = 1))
+
+ggsave(file="pr.f.h2.eps", width=6.5, height=4, dpi=300)
 
 
 #### Esquema recursivo ####
@@ -983,19 +1042,30 @@ for(i in 1:57){
 
 # Importamos.
 
-pr.rec.h2 <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/normales/pr.rec.h2.csv")
+pr.rec.h2 <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/pr.rec.h2.csv")
 pr.rec.h2 <- pr.rec.h2[,-(1:3)]
 pr.rec.h2 <- ts(pr.rec.h2, frequency = 365, start = c(2020,11))
 
 # Graficamos.
 
-autoplot(ts.union(out.of.sample[2:58,2], pr.rec.h2[,1], pr.rec.h2[,2],pr.rec.h2[,3],pr.rec.h2[,4],pr.rec.h2[,5], pr.rec.h2[,6]), size = 0.7) + 
-  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"),
-                     values =  c("#4b4b4b", colores[1], colores[2],colores[3], colores[4], colores[5], colores[6])) +
-  ggtitle("Pronósticos recursivos con h = 2") + 
-  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+autoplot(ts.union(out.of.sample[2:58,2], pr.rec.h2[,1], pr.rec.h2[,2],pr.rec.h2[,3],
+                  pr.rec.h2[,4],pr.rec.h2[,5], pr.rec.h2[,6]), size = 0.7) + 
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX",
+                                           "ETS","ADL","VAR", "FAVAR"), 
+                     values = c("#4b4b4b", colores[1], colores[2],colores[3],
+                                colores[4], colores[5], colores[6]))+
   theme_minimal() +  
-  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+  theme(legend.position = "bottom", 
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) +
+  labs(x = "Tiempo", 
+       y = "Sentimiento del presidente", 
+       title = "Pronósticos con esquema recursivo",
+       subtitle = "Dos pasos adelante (h=2)",
+       caption = "Fuente: elaboración propia") +
+  guides(colour = guide_legend(nrow = 1))
+
+ggsave(file="pr.rec.h2.eps", width=6.5, height=4, dpi=300)
 
 
 #### Esquema rolling ####
@@ -1096,19 +1166,30 @@ for(i in 1:57){
 
 # Importamos.
 
-pr.rol.h2 <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/normales/pr.rol.h2.csv")
+pr.rol.h2 <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/pr.rol.h2.csv")
 pr.rol.h2 <- pr.rol.h2[,-(1:3)]
 pr.rol.h2 <- ts(pr.rol.h2, frequency = 365, start = c(2020,11))
 
 # Graficamos.
 
-autoplot(ts.union(out.of.sample[2:58,2], pr.rol.h2[,1], pr.rol.h2[,2],pr.rol.h2[,3],pr.rol.h2[,4],pr.rol.h2[,5], pr.rol.h2[,6]), size = 0.7) + 
-  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"),
-                     values = c("#4b4b4b", colores[1], colores[2],colores[3], colores[4], colores[5], colores[6])) +
-  ggtitle("Pronósticos rolling con h = 2") + 
-  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+autoplot(ts.union(out.of.sample[2:58,2], pr.rol.h2[,1], pr.rol.h2[,2],pr.rol.h2[,3],
+                  pr.rol.h2[,4],pr.rol.h2[,5], pr.rol.h2[,6]), size = 0.7) + 
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX",
+                                           "ETS","ADL","VAR", "FAVAR"), 
+                     values = c("#4b4b4b", colores[1], colores[2],colores[3],
+                                colores[4], colores[5], colores[6]))+
   theme_minimal() +  
-  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+  theme(legend.position = "bottom", 
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) +
+  labs(x = "Tiempo", 
+       y = "Sentimiento del presidente", 
+       title = "Pronósticos con esquema 'rolling'",
+       subtitle = "Dos pasos adelante (h=2)",
+       caption = "Fuente: elaboración propia") +
+  guides(colour = guide_legend(nrow = 1))
+
+ggsave(file="pr.rol.h2.eps", width=6.5, height=4, dpi=300)
 
 
 #### h = 7 ####
@@ -1212,19 +1293,30 @@ for(i in 1:52){
 
 # Importamos.
 
-pr.f.h7 <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/normales/pr.f.h7.csv")
+pr.f.h7 <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/pr.f.h7.csv")
 pr.f.h7 <- pr.f.h7[,-(1:3)]
 pr.f.h7 <- ts(pr.f.h7, frequency = 365, start = c(2020,11))
 
 # Graficamos.
 
-autoplot(ts.union(out.of.sample[7:58,2], pr.f.h7[,1], pr.f.h7[,2], pr.f.h7[,3], pr.f.h7[,4], pr.f.h7[,5], pr.f.h7[,6]), size = 0.7) +
-  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"), 
-                     values = c("#4b4b4b", colores[1], colores[2],colores[3], colores[4], colores[5], colores[6]))+
-  ggtitle("Pronósticos fijos con h = 7") +
-  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+autoplot(ts.union(out.of.sample[7:58,2], pr.f.h7[,1], pr.f.h7[,2], pr.f.h7[,3],
+                  pr.f.h7[,4], pr.f.h7[,5], pr.f.h7[,6]), size = 0.7) +
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX",
+                                           "ETS","ADL","VAR", "FAVAR"), 
+                     values = c("#4b4b4b", colores[1], colores[2],colores[3],
+                                colores[4], colores[5], colores[6]))+
   theme_minimal() +  
-  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+  theme(legend.position = "bottom", 
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) +
+  labs(x = "Tiempo", 
+       y = "Sentimiento del presidente", 
+       title = "Pronósticos con esquema fijo",
+       subtitle = "Siete pasos adelante (h=7)",
+       caption = "Fuente: elaboración propia") +
+  guides(colour = guide_legend(nrow = 1))
+
+ggsave(file="pr.f.h7.eps", width=6.5, height=4, dpi=300)
 
 #### Esquema recursivo ####
 
@@ -1264,7 +1356,7 @@ for(i in 1:52){
   
 }
 
-#ADL.
+# ADL.
 
 data_1.1<-ts(data_1,frequency = 365, start = c(2019,12))
 
@@ -1325,20 +1417,30 @@ for(i in 1:52){
 
 # Importamos.
 
-pr.rec.h7 <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/normales/pr.rec.h7.csv")
+pr.rec.h7 <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/pr.rec.h7.csv")
 pr.rec.h7 <- pr.rec.h7[,-(1:3)]
 pr.rec.h7 <- ts(pr.rec.h7, frequency = 365, start = c(2020,11))
 
 # Graficamos.
 
-autoplot(ts.union(out.of.sample[7:58,2], pr.rec.h7[,1], pr.rec.h7[,2],pr.rec.h7[,3],pr.rec.h7[,4],pr.rec.h7[,5], pr.rec.h7[,6]), size = 0.7) + 
-  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"),
-                     values = c("#4b4b4b", colores[1], colores[2],colores[3], colores[4], colores[5], colores[6])) +
-  ggtitle("Pronósticos recursivos con h = 7") + 
-  xlab("Tiempo") + ylab("Sentimiento Alberto") +
+autoplot(ts.union(out.of.sample[7:58,2], pr.rec.h7[,1], pr.rec.h7[,2],pr.rec.h7[,3],
+                  pr.rec.h7[,4],pr.rec.h7[,5], pr.rec.h7[,6]), size = 0.7) + 
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX",
+                                           "ETS","ADL","VAR", "FAVAR"), 
+                     values = c("#4b4b4b", colores[1], colores[2],colores[3],
+                                colores[4], colores[5], colores[6]))+
   theme_minimal() +  
-  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+  theme(legend.position = "bottom", 
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) +
+  labs(x = "Tiempo", 
+       y = "Sentimiento del presidente", 
+       title = "Pronósticos con esquema recursivo",
+       subtitle = "Siete pasos adelante (h=7)",
+       caption = "Fuente: elaboración propia") +
+  guides(colour = guide_legend(nrow = 1))
 
+ggsave(file="pr.f.h7.eps", width=6.5, height=4, dpi=300)
 
 #### Esquema rolling ####
 
@@ -1438,20 +1540,30 @@ for(i in 1:52){
 
 # Importamos.
 
-pr.rol.h7 <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/normales/pr.rol.h7.csv")
+pr.rol.h7 <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/pr.rol.h7.csv")
 pr.rol.h7 <- pr.rol.h7[,-(1:3)]
 pr.rol.h7 <- ts(pr.rol.h7, frequency = 365, start = c(2020,11))
 
 # Graficamos.
 
-autoplot(ts.union(out.of.sample[7:58,2], pr.rol.h7[,1], pr.rol.h7[,2],pr.rol.h7[,3],pr.rol.h7[,4],pr.rol.h7[,5], pr.rol.h7[,6]), size = 0.7) + 
-  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR"),
-                     values = c("#4b4b4b", colores[1], colores[2],colores[3], colores[4], colores[5], colores[6])) +
-  ggtitle("Pronósticos rolling con h = 7") + 
-  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+autoplot(ts.union(out.of.sample[7:58,2], pr.rol.h7[,1], pr.rol.h7[,2],pr.rol.h7[,3],
+                  pr.rol.h7[,4],pr.rol.h7[,5], pr.rol.h7[,6]), size = 0.7) + 
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX",
+                                           "ETS","ADL","VAR", "FAVAR"), 
+                     values = c("#4b4b4b", colores[1], colores[2],colores[3],
+                                colores[4], colores[5], colores[6]))+
   theme_minimal() +  
-  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+  theme(legend.position = "bottom", 
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) +
+  labs(x = "Tiempo", 
+       y = "Sentimiento del presidente", 
+       title = "Pronósticos con esquema 'rolling'",
+       subtitle = "Siete pasos adelante (h=7)",
+       caption = "Fuente: elaboración propia") +
+  guides(colour = guide_legend(nrow = 1))
 
+ggsave(file="pr.rol.h7.eps", width=6.5, height=4, dpi=300)
 
 #### Pronósticos con Bagging ####
 
@@ -1463,11 +1575,18 @@ autoplot(ts.union(out.of.sample[7:58,2], pr.rol.h7[,1], pr.rol.h7[,2],pr.rol.h7[
 
 library(quantmod)
 
+# Plantamos la semilla para poder replicar resultados.
+
 set.seed(444)
+
+# Aquí extraemos las muestras de las variables de nuestra base.
+
 for (i in 2:15) {
   a <- bld.mbb.bootstrap(data[,i], 100) %>% as.data.frame() %>% ts(start=c(2019,12), frequency=365)
   assign(paste("data.bag.",i,sep = ""),ts(a, frequency = 365, start = c(2019,12)))
 }
+
+# Aquí extraemos las muestras de los componentes principales.
 
 for (i in 1:4) {
   b <- bld.mbb.bootstrap(PC[,i], 100) %>% as.data.frame() %>% ts(start=c(2019,12), frequency=365)
@@ -1564,12 +1683,22 @@ pr.f.h1.b <- ts(pr.f.h1.b, frequency = 365, start = c(2020,11))
 # Graficamos.
 
 autoplot(ts.union(out.of.sample[1:58,2], pr.f.h1.b[,1], pr.f.h1.b[,2], pr.f.h1.b[,3], pr.f.h1.b[,4], pr.f.h1.b[,5]), size = 0.7) + 
-  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS", "FAVAR", "VAR"),
-                     values = c("black", colores[1], colores[2], colores[3], colores[4]), colores[5]) +
-  ggtitle("Pronósticos bagging h=1, esquema fijo") + 
-  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX",
+                                           "ETS","VAR", "FAVAR"), 
+                     values = c("#4b4b4b", colores[1], colores[2],colores[3],
+                                colores[5], colores[6]))+
   theme_minimal() +  
-  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+  theme(legend.position = "bottom", 
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) +
+  labs(x = "Tiempo", 
+       y = "Sentimiento del presidente", 
+       title = "Pronósticos 'bagged' con esquema fijo",
+       subtitle = "Un paso adelante (h=1)",
+       caption = "Fuente: elaboración propia") +
+  guides(colour = guide_legend(nrow = 1))
+
+ggsave(file="pr.f.h1.b.eps", width=6.5, height=4, dpi=300)
 
 
 #### h = 2 ####
@@ -1649,13 +1778,24 @@ pr.f.h2.b <- ts(pr.f.h2.b, frequency = 365, start = c(2020,11))
 
 # Graficamos.
 
-autoplot(ts.union(out.of.sample[1:58,2], pr.f.h2.b[,1], pr.f.h2.b[,2], pr.f.h2.b[,3], pr.f.h2.b[,4], pr.f.h2.b[,5]), size = 0.7) + 
-  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS", "FAVAR", "VAR"),
-                     values = c("black", colores[1], colores[2], colores[3], colores[4], colores[5])) +
-  ggtitle("Pronósticos baggind h=2, esquema fijo") + 
-  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+autoplot(ts.union(out.of.sample[2:58,2], pr.f.h2.b[,1], pr.f.h2.b[,2], pr.f.h2.b[,3],
+                  pr.f.h2.b[,4], pr.f.h2.b[,5]), size = 0.7) + 
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX",
+                                           "ETS","VAR", "FAVAR"), 
+                     values = c("#4b4b4b", colores[1], colores[2],colores[3],
+                                colores[5], colores[6]))+
   theme_minimal() +  
-  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+  theme(legend.position = "bottom", 
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) +
+  labs(x = "Tiempo", 
+       y = "Sentimiento del presidente", 
+       title = "Pronósticos 'bagged' con esquema fijo",
+       subtitle = "Dos pasos adelante (h=2)",
+       caption = "Fuente: elaboración propia") +
+  guides(colour = guide_legend(nrow = 1))
+
+ggsave(file="pr.f.h2.b.eps", width=6.5, height=4, dpi=300)
 
 
 #### h = 7 ####
@@ -1736,13 +1876,24 @@ pr.f.h7.b <- ts(pr.f.h7.b, frequency = 365, start = c(2020,11))
 
 # Graficamos.
 
-autoplot(ts.union(out.of.sample[7:58,2], pr.f.h7.b[,1], pr.f.h7.b[,2], pr.f.h7.b[,3], pr.f.h7.b[,4], pr.f.h7.b[,5]), size = 0.7) + 
-  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","FAVAR", "VAR"),
-                     values = c("black", colores[1], colores[2], colores[3], colores[4], colores[5])) +
-  ggtitle("Pronósticos bagging h=7, esquema fijo") + 
-  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+autoplot(ts.union(out.of.sample[7:58,2], pr.f.h7.b[,1], pr.f.h7.b[,2], pr.f.h7.b[,3],
+                  pr.f.h7.b[,4], pr.f.h7.b[,5]), size = 0.7) + 
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX",
+                                           "ETS","VAR", "FAVAR"), 
+                     values = c("#4b4b4b", colores[1], colores[2],colores[3],
+                                colores[5], colores[6]))+
   theme_minimal() +  
-  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+  theme(legend.position = "bottom", 
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) +
+  labs(x = "Tiempo", 
+       y = "Sentimiento del presidente", 
+       title = "Pronósticos 'bagged' con esquema fijo",
+       subtitle = "Siete pasos adelante (h=7)",
+       caption = "Fuente: elaboración propia") +
+  guides(colour = guide_legend(nrow = 1))
+
+ggsave(file="pr.f.h7.b.eps", width=6.5, height=4, dpi=300)
 
 
 #### Esquema recursivo ####
@@ -1822,15 +1973,23 @@ pr.rec.h1.b <- ts(pr.rec.h1.b, frequency = 365, start = c(2020,11))
 
 # Graficamos.
 
-#### VER#####
-
 autoplot(ts.union(out.of.sample[1:58, 2], pr.rec.h1.b[,1], pr.rec.h1.b[,2], pr.rec.h1.b[,3], pr.rec.h1[,4], pr.rec.h1[,5]), size = 0.7) + 
-  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS", "FAVAR, VAR"),
-                     values = c("black", colores[1], colores[2], colores[3], colores[4]), colores[5]) +
-  ggtitle("Pronósticos bagging h=1, esquema recursivo") + 
-  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX",
+                                           "ETS","VAR", "FAVAR"), 
+                     values = c("#4b4b4b", colores[1], colores[2],colores[3],
+                                colores[5], colores[6]))+
   theme_minimal() +  
-  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+  theme(legend.position = "bottom", 
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) +
+  labs(x = "Tiempo", 
+       y = "Sentimiento del presidente", 
+       title = "Pronósticos 'bagged' con esquema recursivo",
+       subtitle = "Un paso adelante (h=1)",
+       caption = "Fuente: elaboración propia") +
+  guides(colour = guide_legend(nrow = 1))
+
+ggsave(file="pr.rec.h1.b.eps", width=6.5, height=4, dpi=300)
 
 #### h = 2 ####
 
@@ -1910,12 +2069,23 @@ pr.rec.h2.b <- ts(pr.rec.h2.b, frequency = 365, start = c(2020,11))
 # Graficamos.
 
 autoplot(ts.union(out.of.sample[2:58,2], pr.rec.h2.b[,1], pr.rec.h2.b[,2], pr.rec.h2.b[,3], pr.rec.h2.b[,4], pr.rec.h2.b[,5]), size = 0.7) + 
-  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS", "FAVAR", "VAR"),
-                     values = c("black", colores[1], colores[2], colores[3], colores[4], colores[5])) +
-  ggtitle("Pronósticos bagging h=2, esquema recursivo") + 
-  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX",
+                                           "ETS","VAR", "FAVAR"), 
+                     values = c("#4b4b4b", colores[1], colores[2],colores[3],
+                                colores[5], colores[6]))+
   theme_minimal() +  
-  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+  theme(legend.position = "bottom", 
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) +
+  labs(x = "Tiempo", 
+       y = "Sentimiento del presidente", 
+       title = "Pronósticos 'bagged' con esquema recursivo",
+       subtitle = "Dos pasos adelante (h=2)",
+       caption = "Fuente: elaboración propia") +
+  guides(colour = guide_legend(nrow = 1))
+
+ggsave(file="pr.f.h2.b.eps", width=6.5, height=4, dpi=300)
+
 
 
 #### h = 7 ####
@@ -1998,12 +2168,22 @@ pr.rec.h7.b <- ts(pr.rec.h7.b, frequency = 365, start = c(2020,11))
 # Graficamos.
 
 autoplot(ts.union(out.of.sample[7:58,2], pr.rec.h7.b[,1], pr.rec.h7.b[,2], pr.rec.h7.b[,3], pr.rec.h7.b[,4], pr.rec.h7.b[,5]), size = 0.7) + 
-  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","FAVAR", "VAR"),
-                     values = c("black", colores[1], colores[2], colores[3], colores[4], colores[5])) +
-  ggtitle("Pronósticos bagging h=7, esquema recursivo") + 
-  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX",
+                                           "ETS","VAR", "FAVAR"), 
+                     values = c("#4b4b4b", colores[1], colores[2],colores[3],
+                                colores[5], colores[6]))+
   theme_minimal() +  
-  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+  theme(legend.position = "bottom", 
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) +
+  labs(x = "Tiempo", 
+       y = "Sentimiento del presidente", 
+       title = "Pronósticos 'bagged' con esquema recursivo",
+       subtitle = "Siete pasos adelante (h=7)",
+       caption = "Fuente: elaboración propia") +
+  guides(colour = guide_legend(nrow = 1))
+
+ggsave(file="pr.rec.h7.b.eps", width=6.5, height=4, dpi=300)
 
 
 #### Esquema rolling ####
@@ -2089,13 +2269,25 @@ pr.rol.h1.b <- ts(pr.rol.h1.b, frequency = 365, start = c(2020,11))
 
 # Graficamos.
 
-autoplot(ts.union(out.of.sample[,2], pr.rol.h1.b[,1], pr.rol.h1.b[,2], pr.rol.h1.b[,3], pr.rol.h1[,4], pr.rol.h1[,5]), size = 0.7) + 
-  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS", "FAVAR, VAR"),
-                     values = c("black", colores[1], colores[2], colores[3], colores[4], colores[5])) +
-  ggtitle("Pronósticos bagging h=1, esquema rolling") + 
-  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+autoplot(ts.union(out.of.sample[,2], pr.rol.h1.b[,1], pr.rol.h1.b[,2], 
+                  pr.rol.h1.b[,3], pr.rol.h1[,4], pr.rol.h1[,5]), size = 0.7) + 
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX",
+                                           "ETS","VAR", "FAVAR"), 
+                     values = c("#4b4b4b", colores[1], colores[2],colores[3],
+                                colores[5], colores[6]))+
   theme_minimal() +  
-  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+  theme(legend.position = "bottom", 
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) +
+  labs(x = "Tiempo", 
+       y = "Sentimiento del presidente", 
+       title = "Pronósticos 'bagged' con esquema 'rolling'",
+       subtitle = "Un paso adelante (h=1)",
+       caption = "Fuente: elaboración propia") +
+  guides(colour = guide_legend(nrow = 1))
+
+ggsave(file="pr.rol.h1.b.eps", width=6.5, height=4, dpi=300)
+
 
 #### h = 2 ####
 
@@ -2179,13 +2371,25 @@ pr.rol.h2.b <- ts(pr.rol.h2.b, frequency = 365, start = c(2020,11))
 
 # Graficamos.
 
-autoplot(ts.union(out.of.sample[2:58,2], pr.rol.h2.b[,1], pr.rol.h2.b[,2], pr.rol.h2.b[,3], pr.rol.h2.b[,4], pr.rol.h2.b[,5]), size = 0.7) + 
-  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS", "FAVAR", "VAR"),
-                     values = c("black", colores[1], colores[2], colores[3], colores[4], colores[5])) +
-  ggtitle("Pronósticos bagging h=2, esquema rolling") + 
-  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+autoplot(ts.union(out.of.sample[2:58,2], pr.rol.h2.b[,1], pr.rol.h2.b[,2],
+                  pr.rol.h2.b[,3], pr.rol.h2.b[,4], pr.rol.h2.b[,5]), size = 0.7) + 
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX",
+                                           "ETS","VAR", "FAVAR"), 
+                     values = c("#4b4b4b", colores[1], colores[2],colores[3],
+                                colores[5], colores[6]))+
   theme_minimal() +  
-  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+  theme(legend.position = "bottom", 
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) +
+  labs(x = "Tiempo", 
+       y = "Sentimiento del presidente", 
+       title = "Pronósticos 'bagged' con esquema 'rolling'",
+       subtitle = "Dos pasos adelante (h=2)",
+       caption = "Fuente: elaboración propia") +
+  guides(colour = guide_legend(nrow = 1))
+
+ggsave(file="pr.rol.h2.b.eps", width=6.5, height=4, dpi=300)
+
 
 #### h = 7 ####
 
@@ -2267,12 +2471,22 @@ pr.rol.h7.b <- ts(pr.rol.h7.b, frequency = 365, start = c(2020,11))
 # Graficamos.
 
 autoplot(ts.union(out.of.sample[7:58,2], pr.rol.h7.b[,1], pr.rol.h7.b[,2], pr.rol.h7.b[,3], pr.rol.h7.b[,4], pr.rol.h7.b[,5]), size = 0.7) + 
-  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","FAVAR", "VAR"),
-                     values = c("black", colores[1], colores[2], colores[3], colores[4], colores[5])) +
-  ggtitle("Pronósticos bagging h=7, esquema rolling") + 
-  xlab("Tiempo") + ylab("Sentimiento Alberto")+
+  scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX",
+                                           "ETS","VAR", "FAVAR"), 
+                     values = c("#4b4b4b", colores[1], colores[2],colores[3],
+                                colores[5], colores[6]))+
   theme_minimal() +  
-  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+  theme(legend.position = "bottom", 
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) +
+  labs(x = "Tiempo", 
+       y = "Sentimiento del presidente", 
+       title = "Pronósticos 'bagged' con esquema 'rolling'",
+       subtitle = "Siete pasos adelante (h=7)",
+       caption = "Fuente: elaboración propia") +
+  guides(colour = guide_legend(nrow = 1))
+
+ggsave(file="pr.rol.h7.b.eps", width=6.5, height=4, dpi=300)
 
 
 #### Medidas de Accuracy ####
@@ -2651,7 +2865,7 @@ AC4[34,2:4]<-round(accuracy(pr.rol.h7.b[,5], out.of.sample[7:58,2])[c(2:3,5)],4)
 
 # Para esto generamos los pronósticos que resultan al utilizar el modelo AR(1).
 
-pr.bench <- ts(matrix(nrow = 58, ncol = 1, 0), frequency = 365, start=c(2019,12))
+pr.bench <- ts(matrix(nrow = 58, ncol = 1, 0), frequency = 365, start=c(2020,11))
 
 for (i in 1:58) {
   temp <- window(data1[,2], start = c(2019,12), end = 2020.195 + (i-1)/365)
@@ -2668,7 +2882,7 @@ for (i in 1:58) {
 
 # Esquema fijo.
 
-error.bench <- out.of.sample[,2]-pr.bench
+error.bench <- out.of.sample[,2]- pr.bench
 
 error.arima.f.h1 <- out.of.sample[,2]-pr.f.h1[,1]
 
@@ -3695,6 +3909,7 @@ error.favar.rol.h7.b.sq <- (out.of.sample[7:58,2]-pr.rol.h7.b[,4])^2
 # Ahora graficamos.
 
 library(murphydiagram)
+library(reshape)
 
 # Pronósticos h=1 fijo.
 
@@ -3727,8 +3942,6 @@ colnames(dm.1) <- c("time", "dmstat1", "dmstat2", "dmstat3", "dmstat4",
                    "dmstat5", "dmstat6")
 
 dm.1 <- melt(dm.1, id=c("time"))
-
-colores <- c("#00ABC5","#cfb0b4" ,"#ff3c84","#FF7F32", "#edf71c", "#941cf7")
 
 ggplot(aes(x = time , y = value, group = variable, color = variable),
        data = dm.1) +
