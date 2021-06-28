@@ -1,11 +1,11 @@
 ## Importamos algunas de las librer?as que vamos a usar.
 
-library(xts)
 library(ggplot2)
 library(devtools)
 library(ggfortify)
 library(dplyr)
 
+options(scipen=999)
 
 # Seteamos el directorio.
 
@@ -14,10 +14,9 @@ dir <- "C:\\Users\\Abi\\Downloads"
 
 setwd(dir)
 
+# Definimos la paleta de colores que vamos a usar.
 
-# Definimos la paleta de colores.
-
-colores <- c("#00ABC5", "#f7941c", "#edf71c", "#ff3c84","#f75144")
+colores <- c("#00ABC5","#cfb0b4" ,"#ff3c84","#FF7F32", "#edf71c", "#941cf7")
 
 # Abrimos la base de datos.
 
@@ -25,46 +24,41 @@ data <- read.csv("Data_Final_PF2.csv")
 data <- data[,-2]
 data <- na.omit(data)
 rownames(data) <- data$time
-
-options(scipen=999)
-
-
 colnames(data)
 data <- data[,-c(12,13,14,18,19,20,21,22,23)]
 
+# Construimos las nuevas variables.
 
-# Construimos nuevas variables 
-
-#Las muertes en Argentina respecto de las muertes en el resto del mundo 
+# Las muertes en Argentina respecto de las muertes en el resto del mundo. 
 
 data$muertes.arg.rel <- data$muertosarg/data$muertesmundo
 
-# Ponemos cero donde hay NA
+# Ponemos cero donde hay NA (porque no había pandemia).
 
 data$muertes.arg.rel<-ifelse(is.na(data$muertes.arg.rel),0,data$muertes.arg.rel)
 
-#Los casos en Argentina respecto de los casos en el resto del mundo 
+# Los casos en Argentina respecto de los casos en el resto del mundo.
 
 data$casos.arg.rel <- data$casosarg/data$casosmundo
 
-#, Ponemos cero donde hay NA
+# Ponemos cero donde hay NA.
 
 data$casos.arg.rel<-ifelse(is.na(data$casos.arg.rel),0,data$casos.arg.rel)
 
-
 # Borramos las variables 'nominales' del resto del mundo, el sentimiento de Alberto Fernandez sin 
-# el suavizado, y las variables del sentimiento de mercado de Twitter 
+# el suavizado, y las variables del sentimiento de mercado de Twitter. 
 
 data <- data[, -c(2,15,16,17,18)]
 
 # Ahora generamos un objeto de series de tiempo para cada una de las variables.
 
+library(xts)
+
 for (i in colnames(data)[-(1)]){
     assign(i, xts(data[[i]], order.by=as.Date(rownames(data),"%Y-%m-%d")) )
 }
 
-
-# Grafico de nuestra serie de interes.
+# Graficamos nuestra serie de interés.
 
 autoplot(sentsmooth, ts.colour = colores[1]) + 
   ggtitle("Evolución sentimental de Alberto Fernández") + 
@@ -73,8 +67,6 @@ autoplot(sentsmooth, ts.colour = colores[1]) +
   theme_minimal() + 
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5))
-
-# VER 
 
 # Grafico mercado sintetico  (lo dejamos para el event study)
 
@@ -87,7 +79,7 @@ autoplot(sentsmooth, ts.colour = colores[1]) +
   #      plot.title = element_text(hjust = 0.5))
 
 
-# Creamos una función que devuelve el estadístico con su significatividad 
+# Creamos una función que devuelve el estadístico con su significatividad. 
 
 stars <- function(estadistico, criticalvector){
   if (estadistico < criticalvector[1]){
@@ -105,7 +97,6 @@ stars <- function(estadistico, criticalvector){
   }
 }
 
-
 stars2 <- function(estadistico, criticalvector){
   if (estadistico > criticalvector[1]){
     return(paste(round(estadistico,2), "***", sep = "")) 
@@ -122,12 +113,13 @@ stars2 <- function(estadistico, criticalvector){
   }
 }
 
+# Hacemos un loop para calcular los test de raíz unitaria para cada una de las variables.
 
 library(urca)
 library(stargazer)
 
 results <- matrix(nrow = 16,ncol = 4, NA)
-r = 1
+r <- 1
 for (i in colnames(data)[-(1)]){
   results[r,1] <- i
   series <- xts(data[[i]], order.by=as.Date(rownames(data),"%Y-%m-%d"))
@@ -138,18 +130,34 @@ for (i in colnames(data)[-(1)]){
   results[r,3] <- stars(test@teststat[1], test@cval[1,])
   test <- ur.df(series, type = c("drift"))
   results[r,4] <- stars(test@teststat[1], test@cval[1,])
-  r = r+1
+  r <- r+1
 }
 colnames(results) <- c("Variable", "None","Trend","Drift")
 
-
-# Descargamos la tabla 
+# Agregamos a mano aquellas variables que tenemos que diferenciar.
+r <- 15
+for (i in c("reservasbcra", "tcdolar")){
+  results[r,1] <- paste("L1", i, sep = " ")
+  series <- xts(data[[i]], order.by=as.Date(rownames(data),"%Y-%m-%d"))
+  series <- diff(series)
+  series <- na.omit(series)
+  test <- ur.df(series, type = c("none"))
+  results[r,2] <- stars(test@teststat[1], test@cval[1,])
+  test <- ur.df(series, type = c("trend"))
+  results[r,3] <- stars(test@teststat[1], test@cval[1,])
+  test <- ur.df(series, type = c("drift"))
+  results[r,4] <- stars(test@teststat[1], test@cval[1,])
+  r <- r+1
+}
+# Exportamos la tabla.
 
 stargazer(results , type = "latex", dep.var.labels.include = FALSE,
           notes = "Nota: *** significativo al 1%, ** significativo al 5%, * significativo al 10%")
 
-results1 <- matrix(nrow = 25,ncol = 3, NA)
-r = 1
+# Hacemos el test de Phillips-Perron.
+
+results1 <- matrix(nrow = 16,ncol = 3, NA)
+r <- 1
 for (i in colnames(data)[-(1)]){
   results1[r,1] <- i
   series <- xts(data[[i]], order.by=as.Date(rownames(data),"%Y-%m-%d"))
@@ -158,19 +166,33 @@ for (i in colnames(data)[-(1)]){
   results1[r,2] <- stars(test@teststat[1], test@cval[1,])
   test <- ur.pp(series, type = c("Z-tau"), model=c("trend"), lags=c("long"))
   results1[r,3] <- stars(test@teststat[1], test@cval[1,])
-  r = r+1
+  r <- r+1
 }
 colnames(results1) <- c("Variable", "Constant", "Trend")
 
-# Descargamos la tabla 
+# Diferenciamos y agregamos a nuestra tabla.
 
-library(stargazer)
+r <- 15
+for (i in c("reservasbcra", "tcdolar")){
+  results1[r,1] <- paste("L1", i, sep = " ")
+  series <- xts(data[[i]], order.by=as.Date(rownames(data),"%Y-%m-%d"))
+  series <- diff(series)
+  series <- na.omit(series)
+  test <- ur.pp(series, type = c("Z-tau"), model=c("constant"), lags=c("long"))
+  results1[r,2] <- stars(test@teststat[1], test@cval[1,])
+  test <- ur.pp(series, type = c("Z-tau"), model=c("trend"), lags=c("long"))
+  results1[r,3] <- stars(test@teststat[1], test@cval[1,])
+  r <- r+1
+}
+# Exportamos la tabla.
 
 stargazer(results1 , type = "latex", dep.var.labels.include = FALSE,
           notes = "Nota: *** significativo al 1%, ** significativo al 5%, * significativo al 10%")
 
-results2 <- matrix(nrow = 25,ncol = 3, NA)
-r = 1
+# Por último, hacemos el test KPSS.
+
+results2 <- matrix(nrow = 14,ncol = 3, NA)
+r <- 1
 for (i in colnames(data)[-(1)]){
   results2[r,1] <- i
   series <- xts(data[[i]], order.by=as.Date(rownames(data),"%Y-%m-%d"))
@@ -179,27 +201,26 @@ for (i in colnames(data)[-(1)]){
   results2[r,2] <- stars2(test@teststat[1], test@cval[1,])
   test <- ur.kpss(series, type = c("tau"), lags=c("short"))
   results2[r,3] <- stars2(test@teststat[1], test@cval[1,])
-  r = r+1
+  r <- r+1
 }
 colnames(results2) <- c("Variable", "Constant", "Trend")
 
 stargazer(results2 , type = "latex", dep.var.labels.include = FALSE,
           notes = "Nota: *** significativo al 1%, ** significativo al 5%, * significativo al 10%")
 
-# Definimos la ventana in-sample y out-of-sample
+# Definimos la ventana in-sample y out-of-sample.
 
 in.sample <- data[1:425,]
 
 out.of.sample <- data[426:483,]
 
+## Estimación de los modelos ##
 
-# Estimacion de los modelos 
-
-# Cargamos la libreria
+# Cargamos la librería.
 
 library(forecast)
 
-#Estimamos un modelo ARIMA 
+# Estimamos un modelo ARIMA. 
 
 arima.1 <- auto.arima(in.sample[,2])
 
@@ -217,8 +238,7 @@ test <- round(act1$p.value, 2)
 # podemos decir que los residuos no están correlacionados.
 # Modelo valido, pval = 0.1405
 
-# Estimamos un modelo ETS
-
+# Estimamos un modelo ETS.
 
 ets.1 <- ets(in.sample[,2])
 
@@ -230,16 +250,15 @@ test2 <- round(act2$p.value, 2)
 
 # Como H0 es ausencia de autocorrelación y rechazamos la hipótesis
 # podemos decir que los residuos están correlacionados.
-# Modelo no valido, pval = 0.00000411
+# Modelo no valido, pval = 0.000004111937.
 
 # Estimamos un modelo ARIMAX 
 
-# Usaremos el sentimiento de Alberto Fernandez 
+# Usaremos el sentimiento de Alberto Fernández. 
 # como variable explicada e introduciremos al resto de nuestras variables
-# como regresores exogenos
+# como regresores exógenos.
 
-# Utilizamos el mismo modelo ARIMAX seleccionado previamente.
-
+# Utilizamos el mismo modelo ARIMA seleccionado previamente.
 
 arimax.1 <- Arima(in.sample[,2], order = c(5,0,1),
                      xreg = as.matrix(in.sample[,3:length(in.sample)]))
@@ -247,19 +266,18 @@ arimax.1 <- Arima(in.sample[,2], order = c(5,0,1),
 arimax.to.table <- arima(in.sample[,2],order = c(5,0,1),
                          xreg = as.matrix(in.sample[,4:length(in.sample)]))
 
-
 act3 <- Box.test(arimax.1$residuals, lag = 13, type = c("Ljung-Box"))
 
 test3 <- round(act3$p.value, 2)
 
-# El p valor nos da 0.6, con lo cual validamos el modelo 
+# El p-valor nos da 0.6359, con lo cual validamos el modelo.
 
-# Estimamos un modelo ADL 
+# Estimamos un modelo ADL. 
 
 library(ARDL)
 library(dynlm)
 
-# Creamos las dummies 
+# Creamos las dummies. 
 
 data$mes <- substr(data$time, 6,7)
 num <- as.data.frame(table(substr(data$time, 6,7)))[,1]
@@ -273,7 +291,7 @@ data_1 <- subset(data, select = -c(mes))
 
 data.in.sample.dum <- data_1[1:425,-c(1)]
 
-# Seleccionamos el orden del ADL 
+# Seleccionamos el orden del ADL. 
 
 order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + casosarg + muertosarg +
                             vacunasarg + maxtemp + mintemp + muertes.arg.rel + casos.arg.rel |
@@ -281,7 +299,11 @@ order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + 
                             mes07 + mes08 + mes09 +  mes10 + mes11, 
                           data = data.in.sample.dum, max_order = 5)
 
-# Ahora estimamos el modelo:
+order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + casosarg + muertosarg +
+                            vacunasarg + maxtemp + mintemp + muertes.arg.rel + casos.arg.rel, 
+                          data = data.in.sample.dum, max_order = 5)
+
+# Ahora estimamos el modelo.
 
 adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                  casosarg + muertosarg + vacunasarg + maxtemp + 
@@ -290,21 +312,21 @@ adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + t
                  mes07 + mes08 + mes09 +  mes10 + mes11, 
                data = data.in.sample.dum, order = as.vector(order.adl.dl$best_order))
 
-# Estimamos el ADL pero con la función dynlm
+# Estimamos el ADL pero con la función dynlm.
 
 adl <- adl.dl$full_formula
 adl.1 <- dynlm(adl, data = adl.dl$data)
 
-# Comprobamos que tiene los mismos coeficientes
+# Comprobamos que tiene los mismos coeficientes.
 
 identical(adl.dl$coefficients, adl.1$coefficients)
 
-# Test
+# Test.
 
 act4 <- Box.test(adl.1$residuals, lag = 13, type = c("Ljung-Box"))
 test4 <- round(act4$p.value, 4)
 
-# el p valor nos da 0.0083
+# El p-valor nos da 0.0083.
 
 model <- lm(rnorm(100,0,1) ~ rnorm(100,20,3))
 
@@ -318,66 +340,11 @@ stargazer(arima.to.table, arimax.to.table, model, adl.1,
           no.space = TRUE,
           type = "latex")
 
-
-
-# Estimamos un modelo MCE
-
-# VER: creo que lo deberiamos sacar porque no tiene sentido probar cointegracion entre variables
-# I(0) 
-
-library(egcm)
-
-# Evaluamos cointegración con el test de E&G entre la variable sentsmooth y las demás variables consideradas 
-
-# Creamos una función para mostrar la significatividad de los p valores 
-
-stars3<-function(x){
-  if (x < 0.01){
-    return(paste(x,"***", sep = ""))
-  }else{
-    if (x < 0.05){
-    return(paste(x,"**", sep = ""))
-  }else{
-    if (x < 0.1){
-    return(paste(x,"*", sep = ""))  
-  }else{
-    return(paste(x,"", sep = ""))
-  }
-}
-}
-}
-
-
-Test.cointEG <- matrix(nrow = 13,ncol = 2, NA)
-r=1
-for (i in 1:13) {
-  Test.cointEG[,1] <- colnames(data)[3:15]
-  j <- egcm(in.sample[,2], in.sample[,2+i], urtest = 'adf', i1test = 'adf')
-  Test.cointEG[i,2]<-stars3(round(j[["r.p"]],4))
-}
-
-colnames(Test.cointEG) <- c("Variable", "p valor")
-
-# Descargamos la tabla de los test de E&G
-
-stargazer(Test.cointEG, no.space = TRUE, type = "latex")
-
-
-# Modelo de corrección de errores.
-
-
-library(ecm)
-
-ecm(sentsmooth, twfav, lags = 1)
-
-summary(lm(sentsmooth ~ twfav))
-
-
-# Estimamos un modelo VAR 
+# Continuamos estimando un modelo VAR.
 
 library(vars)
 
-#nos quedamos con el período in sample que tiene todas las variables estacionarias 
+# Nos quedamos con el período in-sample que tiene todas las variables estacionarias.
 
 reservas.est <- diff(in.sample[,5])
 
@@ -385,63 +352,35 @@ dolar.est <- diff(in.sample[,8])
 
 in.sample.d <- cbind(in.sample[-1,-c(5,8)],reservas.est, dolar.est)
 
-#[,3_17]
-
 in.sample.d <- in.sample.d[,2:15]
+
+# Elegimos el orden.
 
 var.d <- VARselect(in.sample.d, type ="const")
 
 var.d$selection
 
-
 # El orden de rezagos óptimos, de acuerdo al criterio de FPE, es 6.
+
 # Estimamos:
 
 # VER: si estimamos el var con constante, tendencia, las dos o ninguna
 
 var.dl <- VAR(in.sample.d, p = 6, type = "const")
 
-# Par
+# Vemos si podemos validar el modelo.
 
 serial.test(var.dl) 
-
 
 # Rechazamos la hipótesis nula de que los residuos están
 # incorrelacionados. Por lo tanto, no podemos validar el modelo. 
 
-# VER: lo del VEC lo podriamos eliminar porque las series son I(0)
-
-# Estimamos un modelo VEC 
-
-#Estimamos un modelo VAR en niveles 
-
-# El orden de rezagos óptimos, de acuerdo al criterio de FPE, es 1.
-# Estimamos:
-
-var.l <- VAR(in.sample[,3:16], p = 1, type = "both", season = 12)
-
-# Ahora, corremos el test de normalidad en los residuos:
-
-normality.test(var.l, multivariate.only = TRUE)
-
-jct.t.e <-ca.jo(in.sample[,c(3,4,5)],type = "eigen", ecdet = "trend", 
-              spec = "transitory", K=2)
-
-summary(jct.t.e)
-
-jct.t.t <-ca.jo(in.sample[,c(3,4,5)],type = "trace", ecdet = "trend", 
-              spec = "transitory", K=2)
-
-summary(jct.t.t)
-
-# Estan las 3 cointegradas. Resultados de ambos tests.
-
-
-# Ahora, un FAVAR.
+# Ahora, vamos a estimar un modelo FAVAR. Comenzamos aplicando la técnica de componentes
+# principales a nuestras variables explicativas.
 
 PCA1 <- prcomp(in.sample[,3:15], scale =TRUE) 
 
-# Veremos los autovalores para evaluar qué cantidad de componentes utilizaremos
+# Veremos los autovalores para evaluar qué cantidad de componentes utilizaremos.
 
 PCA1$sdev^2
 
@@ -449,26 +388,28 @@ PCA1$sdev^2
 
 PC.is <- scale(in.sample[,3:15])%*%PCA1$rotation
 
-
-### prueba 
+# Aplicamos los componentes principales a toda la base de datos (no solo el período in-sample).
 
 PC <- scale(data[,3:15])%*%PCA1$rotation
 
-
-# Ahora estimamos el modelo FAVAR.
+# Ahora elegimos el orden.
 
 favar.data <- cbind(in.sample[,2], PC.is[,1:4])
 
 VARselect(favar.data, lag.max = 10, type = c("both"))
 
+# Con el mismo criterio que antes, seleccionamos p=8.
+
 favar<- VAR(favar.data, p= 8, type = "both")
 summary(favar)
 
-# Correlacion
+# Probamos autocorrelación en los residuos.
 
 serial.test(favar) 
 
 favar$varresult$X
+
+# No rechazamos al 1%. Exportamos la tabla.
 
 stargazer(var.dl$varresult$sentsmooth, favar$varresult$X,
           align = TRUE, 
@@ -482,20 +423,20 @@ stargazer(var.dl$varresult$sentsmooth, favar$varresult$X,
           type = "latex")
 
 
+#### Pronósticos ####
 
-## PRONOSTICOS 
+#### h = 1 ####
 
-#Esquema fijo 
-
-
-# h=1 
+#### Esquema fijo ####
 
 data1 <- ts(data, frequency = 365, start = c(2019,12))
-PC<-ts(PC[,1:4], frequency = 365, start = c(2019,12))
+PC <- ts(PC[,1:4], frequency = 365, start = c(2019,12))
 
 pr.f.h1 <- ts(matrix(0, 58, 6), frequency = 365, start=c(2020,11))
 colnames(pr.f.h1) <- c("ARIMA", "ARIMAX", "ETS", "ADL","VAR", "FAVAR")
-h<-1
+
+h <- 1
+
 for(i in 1:58){
   temp <- window(data1[,2], start = c(2019,12), end = 2020.195 + (i-1)/365)
   temp2 <- window(data1[,3:15], start = c(2019,12), end = 2020.195 + (i-1)/365)
@@ -522,11 +463,9 @@ for(i in 1:58){
   pr.f.h1[i,6] <- forecast4$forecast$temp$mean[h]
 }
 
-# ADL 
+# ADL. Seleccionamos el orden. 
 
-#Seleccionamos el orden del ADL 
-
-data_1.1<-ts(data_1,frequency = 365, start = c(2019,12))
+data_1.1 < -ts(data_1,frequency = 365, start = c(2019,12))
 
 data_dum.1<-data_1.1[1:425,-c(1,27)]
 
@@ -537,10 +476,8 @@ order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + 
                             mes07 + mes08 + mes09 +  mes10 + mes11, 
                           data = data_dum.1, max_order = 8)
 
-
-h<-1
-
 count <- 2
+
 for(i in 1:58){
   temp2 <-window(data_1.1[,-c(1,27)],start = c(2019,12), end = 2020.195 + (i-1)/365)
   colnames(temp2) <- c("sentsmooth","twfav", "twret", "reservasbcra", "tasaint", "basemon", "tcdolar", "casosarg",          
@@ -549,7 +486,7 @@ for(i in 1:58){
                        "mes01", "mes02", "mes03", "mes04", "mes05", "mes06",
                        "mes07", "mes08", "mes09", "mes10", "mes11")
           
-#el orden del ADL es el conseguido al aplicar el modelo al período in sample 
+  # El orden del ADL es el conseguido al aplicar el modelo al período in-sample.
   
   adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                    casosarg + muertosarg + vacunasarg + maxtemp + 
@@ -558,7 +495,7 @@ for(i in 1:58){
                    mes07 + mes08 + mes09 +  mes10 + mes11, 
                  data = temp2, order = as.vector(order.adl.dl$best_order))
   
-  # Estimamos el ADL pero con la función dynlm
+  # Estimamos el ADL pero con la función dynlm.
   
   adl<-adl.dl$full_formula
   adl.1 <- dynlm(adl, data = temp2)
@@ -568,42 +505,34 @@ for(i in 1:58){
   count = count + 1
 }
 
-library(forecast)
-
-library(vars)
-
-# Realizamos los pronósticos con el VAR 
-
-# Construimos la serie diferenciando las variables que son I(1)
+# Realizamos los pronósticos con el VAR. Construimos la serie 
+# diferenciando las variables que son I(1).
 
 reservas.est <- diff(data1[,5])
 
 dolar.est <- diff(data1[,8])
 
-data.diff<-cbind(data1[-1,-c(1,5,8,16,17,18,19,20,21,22,23,24,25,26,27,28)], reservas.est, dolar.est)
+data.diff<-cbind(data1[-1,-1], reservas.est, dolar.est)
 
-h<-1
+# Pronosticamos.
 
 for(i in 1:58){ 
-  temp2<-window(data.diff, start = c(2019,12), end = 2020.195 + (i-1)/365)
+  temp2 <- window(data.diff, start = c(2019,12), end = 2020.195 + (i-1)/365)
   f5 <- VAR(temp2, p = 6, type = "trend")
   forecast1<- forecast(f5, h=h)
-  pr.f.h1[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
+  pr.f.h1[i,5] <- forecast1$forecast$data1..1...1..sentsmooth$mean[h]
 }
 
-write.csv(cbind(out.of.sample[,1:2], pr.f.h1), "pr.f.h1.csv")
+# Comentario que se aplicará al resto de los pronósticos. Dado que los loops tardan mucho
+# tiempo en correr, descargaremos una base de datos con los valores pronosticados. 
+# Los importaremos directamente con el link. Sin embargo, de querer verificar todos los archivos
+# sugerimos visitar el repositorio de Github cuya dirección se encuentra al comienzo del script.
 
 pr.f.h1 <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/normales/pr.f.h1.csv")
 pr.f.h1 <- pr.f.h1[,-c(1:3)]
 pr.f.h1<-ts(pr.f.h1,frequency = 365, start = c(2020,11))
 
-
-# Grafico de los pronosticos con esquema fijo y h=1 
-
-# VER: los colores no se si quedan muuy bien #941cf7
-
-colores <- c("#00ABC5","#cfb0b4" ,"#ff3c84","#FF7F32", "#edf71c", "#941cf7")
-
+# Graficamos los pronósticos.
 
 autoplot(ts.union(out.of.sample[,2], pr.f.h1[,1], pr.f.h1[,2],pr.f.h1[,3],pr.f.h1[,4],pr.f.h1[,5], pr.f.h1[,6]), size = 0.7) +
   scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"), 
@@ -614,16 +543,8 @@ autoplot(ts.union(out.of.sample[,2], pr.f.h1[,1], pr.f.h1[,2],pr.f.h1[,3],pr.f.h
   theme_minimal() +  
   theme(legend.position = c(0.85,0.80), plot.title = element_text(hjust = 0.5))
 
-# VER prueba de graficos 
 
-out.of.sample.prueba <- ts(out.of.sample[,2], frequency = 365, start = c(2020,11))
-
-autoplot(out.of.sample.prueba, size=1)+
-  autolayer(pr.f.h1[,1])
-
-# fin de prueba 
-
-# ESQUEMA RECURSIVO 
+#### Esquema recursivo ####
 
 data1 <- ts(data, frequency = 365, start = c(2019,12))
 
@@ -631,7 +552,9 @@ PC<-ts(PC[,1:4], frequency = 365, start = c(2019,12))
 
 pr.rec.h1 <- ts(matrix(0, 58, 6), frequency = 365, start=c(2020,11))
 colnames(pr.rec.h1) <- c("ARIMA", "ARIMAX", "ETS", "ADL","VAR","FAVAR")
-h<-1
+
+h <- 1
+
 for(i in 1:58){
   temp<-window(data1[,2], start = c(2019,12), end = 2020.195 + (i-1)/365)
   temp2 <-window(data1[,3:15], start = c(2019,12), end = 2020.195 + (i-1)/365)
@@ -659,13 +582,12 @@ for(i in 1:58){
   pr.rec.h1[i,6] <- forecast4$forecast$temp$mean[h] 
 }
 
-#ADL 
+# ADL.
 
 data_1.1<-ts(data_1,frequency = 365, start = c(2019,12))
 
 data_dum.1<-data_1.1[1:425,-c(1,27)]
 
-h<-1
 count <- 2
 for(i in 1:58){
   temp2 <-window(data_1.1[,-c(1,27)], start = c(2019,12), end = 2020.195 + (i-1)/365)
@@ -700,35 +622,30 @@ for(i in 1:58){
   count = count + 1
 }
 
-
-# Realizamos los pronósticos con el VAR 
-
-# Construimos la serie diferenciando las variables que son I(1)
+# VAR.
 
 reservas.est <- diff(data1[,5])
 
 dolar.est <- diff(data1[,8])
 
-data.diff<-cbind(data1[-1,-c(1,5,8,16,17,18,19,20,21,22,23,24,25,26,27,28)], reservas.est, dolar.est)
-
-h<-1
+data.diff<-cbind(data1[-1,-1], reservas.est, dolar.est)
 
 for(i in 1:58){ 
   temp2<-window(data.diff, start = c(2019,12), end = 2020.195 + (i-1)/365)
   a<-VARselect(data.diff, lag.max = 13, type = "const")$selection[1]
   f5 <- VAR(temp2, p = a, type = "trend")
   forecast1<- forecast(f5, h=h)
-  pr.rec.h1[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
+  pr.rec.h1[i,5] <- forecast1$forecast$data1..1...1..sentsmooth$mean[h]
 }
 
-write.csv(cbind(out.of.sample[,1:2], pr.rec.h1), "pr.rec.h1.csv")
+# Importamos los pronósticos.
 
 pr.rec.h1 <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/normales/pr.rec.h1.csv")
 pr.rec.h1 <- pr.rec.h1[,-(1:3)]
 pr.rec.h1 <- ts(pr.rec.h1, frequency = 365, start = c(2020,11))
 
 
-# Gráfico con los pronósticos recursivos y h=1 
+# Gráficamos.
 
 autoplot(ts.union(out.of.sample[,2], pr.rec.h1[,1], pr.rec.h1[,2],pr.rec.h1[,3],pr.rec.h1[,4],pr.rec.h1[,5], pr.rec.h1[,6]), size = 0.7) + 
   scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"),
@@ -736,18 +653,19 @@ autoplot(ts.union(out.of.sample[,2], pr.rec.h1[,1], pr.rec.h1[,2],pr.rec.h1[,3],
   ggtitle("Pronósticos recursivos con h = 1") + 
   xlab("Tiempo") + ylab("Sentimiento Alberto")+
   theme_minimal() +  
-  theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
+  theme(legend.position = "bottom", plot.title = element_text(hjust = 0.5))
 
 
-
-# ESQUEMA ROLLING 
+#### Esquema rolling ####
 
 data1 <- ts(data, frequency = 365, start = c(2019,12))
 PC<-ts(PC[,1:4], frequency = 365, start = c(2019,12))
 
 pr.rol.h1 <- ts(matrix(0, 58, 6), frequency = 365, start=c(2020,11))
 colnames(pr.rec.h1) <- c("ARIMA", "ARIMAX", "ETS", "ADL","VAR","FAVAR")
+
 h<-1
+
 for(i in 1:58){
   temp<-window(data1[,2], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
   temp2 <-window(data1[,3:15], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
@@ -758,12 +676,12 @@ for(i in 1:58){
   forecast <- forecast(f1,h = h)
   pr.rol.h1[i,1] <- forecast$mean[h]
   
-  #ARIMAX
+  # ARIMAX
   f2 <- Arima(temp,model=auto.arima(temp), newxreg=temp2)
   forecast2 <- forecast(f2$fitted,h=h)
   pr.rol.h1[i,2] <- forecast2$mean[h]
   
-  #ETS 
+  # ETS 
   f3 <- ets(temp)
   pre <- forecast(f3, n.ahead=h)
   pr.rol.h1[i,3] <- pre$mean[h]
@@ -775,15 +693,14 @@ for(i in 1:58){
   pr.rol.h1[i,6] <- forecast4$forecast$temp$mean[h] 
 }
 
-
-#ADL 
+#ADL. 
 
 data_1.1<-ts(data_1,frequency = 365, start = c(2019,12))
 
 data_dum.1<-data_1.1[1:425,-c(1,27)]
 
-h<-1
 count <- 2
+
 for(i in 1:58){
   temp2 <-window(data_1.1[,-c(1,27)], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
   colnames(temp2) <- c("sentsmooth","twfav", "twret", "reservasbcra", "tasaint", "basemon", "tcdolar", "casosarg",          
@@ -817,10 +734,7 @@ for(i in 1:58){
   count = count + 1
 }
 
-
-# Realizamos los pronósticos con el VAR 
-
-# Construimos la serie diferenciando las variables que son I(1)
+# VAR.
 
 reservas.est <- diff(data1[,5])
 
@@ -828,7 +742,7 @@ dolar.est <- diff(data1[,8])
 
 data.diff<-cbind(data1[-1,-c(1,5,8,16,17,18,19,20,21,22,23,24,25,26,27,28)], reservas.est, dolar.est)
 
-h<-1
+h <- 1
 
 for(i in 1:58){ 
   temp2<-window(data.diff, start = 2019.033 + (i-1)/365, end = 2020.195 + (i-1)/365)
@@ -838,16 +752,13 @@ for(i in 1:58){
   pr.rol.h1[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
 }
 
-
-write.csv(cbind(out.of.sample[,1:2], pr.rol.h1), "pr.rol.h1.csv") ## correr esto
+# Importamos.
 
 pr.rol.h1 <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/normales/pr.rol.h1.csv")
 pr.rol.h1 <- pr.rol.h1[,-(1:3)]
 pr.rol.h1 <- ts(pr.rol.h1, frequency = 365, start = c(2020,11))
 
-
-
-# Gráfico con los pronósticos rolling y h=1 
+# Graficamos.
 
 autoplot(ts.union(out.of.sample[,2], pr.rol.h1[,1], pr.rol.h1[,2],pr.rol.h1[,3],pr.rol.h1[,4],pr.rol.h1[,5], pr.rol.h1[,6]), size = 0.7) + 
   scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"),
@@ -858,21 +769,20 @@ autoplot(ts.union(out.of.sample[,2], pr.rol.h1[,1], pr.rol.h1[,2],pr.rol.h1[,3],
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
 
-#### h = 2
+#### h = 2 ####
 
+#### Esquema fijo ####
 
-#Esquema fijo 
-
-# h=2
-
-# con lo cual, pierdo 1 observación
+# Con esta cantidad de pasos adelante, perdemos la primera observación.
 
 data1 <- ts(data, frequency = 365, start = c(2019,12))
 PC<-ts(PC[,1:4], frequency = 365, start = c(2019,12))
 
 pr.f.h2 <- ts(matrix(0, 57, 6), frequency = 365, start=c(2020,11))
 colnames(pr.f.h2) <- c("ARIMA", "ARIMAX", "ETS", "ADL","VAR","FAVAR")
+
 h<-2
+
 for(i in 1:57){
   temp<-window(data1[,2], start = c(2019,12), end = 2020.195 + (i-1)/365)
   temp2 <-window(data1[,3:15], start = c(2019,12), end = 2020.195 + (i-1)/365)
@@ -883,12 +793,12 @@ for(i in 1:57){
   forecast <- forecast(f1,h = h)
   pr.f.h2[i,1] <- forecast$mean[h]
   
-  #ARIMAX
+  # ARIMAX
   f2 <- Arima(temp,model=arima.1,xreg=temp2)
   forecast2 <- forecast(f2$fitted,h=h)
   pr.f.h2[i,2] <- forecast2$mean[h]
   
-  #ETS 
+  # ETS 
   f3 <- ets(temp, model=ets.1, use.initial.values=TRUE)
   pre <- forecast(f3, n.ahead=h)
   pr.f.h2[i,3] <- pre$mean[h]
@@ -901,9 +811,7 @@ for(i in 1:57){
   
 }
 
-#ADL 
-
-#Seleccionamos el orden del ADL 
+# ADL.
 
 data_1.1<-ts(data_1,frequency = 365, start = c(2019,12))
 
@@ -916,9 +824,6 @@ order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + 
                             mes07 + mes08 + mes09 +  mes10 + mes11, 
                           data = data_dum.1, max_order = 8)
 
-
-h<-2
-
 count <- 2
 for(i in 1:57){
   temp2 <-window(data_1.1[,-c(1,27)],start = c(2019,12), end = 2020.195 + (i-1)/365)
@@ -928,7 +833,7 @@ for(i in 1:57){
                        "mes01", "mes02", "mes03", "mes04", "mes05", "mes06",
                        "mes07", "mes08", "mes09", "mes10", "mes11")
   
-  #el orden del ADL es el conseguido al aplicar el modelo al período in sample 
+  # El orden del ADL es el conseguido al aplicar el modelo al período in-sample 
   
   adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                    casosarg + muertosarg + vacunasarg + maxtemp + 
@@ -947,21 +852,13 @@ for(i in 1:57){
   count = count + 1
 }
 
-library(forecast)
-
-library(vars)
-
-# Realizamos los pronósticos con el VAR 
-
-# Construimos la serie diferenciando las variables que son I(1)
+# VAR.
 
 reservas.est <- diff(data1[,5])
 
 dolar.est <- diff(data1[,8])
 
 data.diff<-cbind(data1[-1,-c(1,5,8,16,17,18,19,20,21,22,23,24,25,26,27,28)], reservas.est, dolar.est)
-
-h<-2
 
 for(i in 1:57){ 
   temp2<-window(data.diff, start = c(2019,12), end = 2020.195 + (i-1)/365)
@@ -970,19 +867,13 @@ for(i in 1:57){
   pr.f.h2[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
 }
 
+# Importamos.
+
 pr.f.h2 <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/normales/pr.f.h2.csv")
 pr.f.h2 <- pr.f.h2[,-(1:3)]
 pr.f.h2 <- ts(pr.f.h2, frequency = 365, start = c(2020,11))
 
-
-write.csv(cbind(out.of.sample[-1,1:2], pr.f.h2), "pr.f.h2.csv") ## correr esto
-
-
-# Grafico de los pronosticos con esquema fijo y h=2
-
-
-# eliminamos las primeras 6 observaciones del período out of sample debido a que la cantidad 
-# de pasos adelante que hicimos los pronósticos 
+# Graficamos.
 
 autoplot(ts.union(out.of.sample[2:58,2], pr.f.h2[,1], pr.f.h2[,2],pr.f.h2[,3],pr.f.h2[,4],pr.f.h2[,5], pr.f.h2[,6]), size = 0.7) +
   scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"), 
@@ -993,7 +884,7 @@ autoplot(ts.union(out.of.sample[2:58,2], pr.f.h2[,1], pr.f.h2[,2],pr.f.h2[,3],pr
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
 
-# ESQUEMA RECURSIVO 
+#### Esquema recursivo ####
 
 data1 <- ts(data, frequency = 365, start = c(2019,12))
 PC<-ts(PC[,1:4], frequency = 365, start = c(2019,12))
