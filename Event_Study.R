@@ -19,7 +19,9 @@ colores <- c("#00ABC5", "#f7941c", "#edf71c", "#ff3c84")
 data <- read.csv("Data_Final_PF2.csv")
 data <- data[,c(1,2,4,28)]
 data <- na.omit(data)
-rownames(data) <- data$time
+
+setwd("C:\\Users\\Tomas\\Desktop\\Pronosticos_Final\\Script\\Graficos")
+
 
 # Comenzamos graficando la serie de la evolución del sentimiento
 # del presidente con lo que sería el sentimiento de Twitter.
@@ -125,7 +127,7 @@ ba[4,3] <- round(mean(data$retpres[data$ev_vacunas_time>0]),4) #posterior
 
 # Exportamos.
 
-stargazer(ba, type = "text")
+stargazer(ba, type = "latex")
 
 # Estimación del modelo de mercado para cada evento (durante la ventana de estimación).
 
@@ -146,7 +148,7 @@ stargazer(modelo_anuncio, modelo_vicentin, modelo_maradona, modelo_vacunas,
           keep.stat = c("n", 'rsq'),
           no.space = TRUE,
           add.lines=list(c("Evento", "Cuarentena", "Vicentin", "Maradona", "Vacunas")),
-          type = "text")
+          type = "latex")
 
 # Ahora los retornos anormales
 
@@ -233,6 +235,9 @@ pvtest[3,3] <- round(test.np.maradona$p.value,4)
 pvtest[4,1] <- "Llegada de vacunas"
 pvtest[4,2] <- round(test.p.vacunas$p.value,4)
 pvtest[4,3] <- round(test.np.vacunas$p.value,4)
+
+stargazer(pvtest, type = "latex")
+
 
 # Analisis de sensibilidad.
 

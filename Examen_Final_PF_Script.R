@@ -4100,19 +4100,19 @@ AC4[34,6]<-round(coeftest(lm(DL.favar.rol.h7.b~1), vcov = NeweyWest(lm(DL.favar.
 # Para h=1
 
 colnames(AC) <- c("Modelo", "RMSE", "MAE", "MAPE", "DM", "p-val")
-stargazer(AC[1:nrow(AC),], type = "text")
+stargazer(AC[1:nrow(AC),], type = "latex")
 
 # Para h=2
 
 colnames(AC1) <- c("Modelo", "RMSE", "MAE", "MAPE", "DM", "p-val")
 AC1[1,1:ncol(AC1)] <- AC[1,1:ncol(AC)]
-stargazer(AC1[1:nrow(AC1),], type = "text")
+stargazer(AC1[1:nrow(AC1),], type = "latex")
 
-# Para h=3
+# Para h=7
 
 colnames(AC4) <- c("Modelo", "RMSE", "MAE", "MAPE", "DM", "p-val")
 AC4[1,1:ncol(AC4)] <- AC[1,1:ncol(AC)]
-stargazer(AC4[1:nrow(AC4),], type = "text")
+stargazer(AC4[1:nrow(AC4),], type = "latex")
 
 
 ### MEDIDAS DE ACCURACY COMPARABLES.
@@ -4493,18 +4493,18 @@ AC4[34,2:4]<-round(accuracy(pr.rol.h7.b[,5], out.of.sample[7:58,2])[c(2:3,5)],4)
 
 # Para h=1
 colnames(AC) <- c("Modelo", "RMSE", "MAE", "MAPE")
-stargazer(AC[1:nrow(AC),], type = "text")
+stargazer(AC[1:nrow(AC),], type = "latex")
 
 # Para h=2
 
 colnames(AC1) <- c("Modelo", "RMSE", "MAE", "MAPE")
 AC1[1,1:ncol(AC1)] <- AC[1,1:ncol(AC)]
-stargazer(AC1[1:nrow(AC1),], type = "text")
+stargazer(AC1[1:nrow(AC1),], type = "latex")
 
 # Para h = 3
 colnames(AC4) <- c("Modelo", "RMSE", "MAE", "MAPE")
 AC4[1,1:ncol(AC4)] <- AC[1,1:ncol(AC)]
-stargazer(AC4[1:nrow(AC4),], type = "text")
+stargazer(AC4[1:nrow(AC4),], type = "latex")
 
 #### Test de Giacomini Rossi ####
 
