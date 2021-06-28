@@ -1,6 +1,5 @@
 ## Importamos algunas de las librer?as que vamos a usar.
 
-library(ggplot2)
 library(devtools)
 library(ggfortify)
 library(dplyr)
@@ -59,6 +58,8 @@ for (i in colnames(data)[-(1)]){
 }
 
 # Graficamos nuestra serie de interés.
+
+library(ggplot2)
 
 autoplot(sentsmooth, ts.colour = colores[1]) + 
   ggtitle("Evolución sentimental de Alberto Fernández") + 
@@ -891,7 +892,9 @@ PC<-ts(PC[,1:4], frequency = 365, start = c(2019,12))
 
 pr.rec.h2 <- ts(matrix(0, 57, 6), frequency = 365, start=c(2020,11))
 colnames(pr.rec.h2) <- c("ARIMA", "ARIMAX", "ETS", "ADL","VAR", "FAVAR")
+
 h<-2
+
 for(i in 1:57){
   temp<-window(data1[,2], start = c(2019,12), end = 2020.195 + (i-1)/365)
   temp2 <-window(data1[,3:15], start = c(2019,12), end = 2020.195 + (i-1)/365)
@@ -902,12 +905,12 @@ for(i in 1:57){
   forecast <- forecast(f1,h = h)
   pr.rec.h2[i,1] <- forecast$mean[h]
   
-  #ARIMAX
+  # ARIMAX
   f2 <- Arima(temp,model=f1, newxreg=temp2)
   forecast2 <- forecast(f2$fitted,h=h)
   pr.rec.h2[i,2] <- forecast2$mean[h]
   
-  #ETS 
+  # ETS 
   f3 <- ets(temp)
   pre <- forecast(f3, n.ahead=h)
   pr.rec.h2[i,3] <- pre$mean[h]
@@ -917,19 +920,16 @@ for(i in 1:57){
   f4 <- VAR(cbind(temp, temp3), p = a, type= "trend")
   forecast4<-forecast(f4, h=h)
   pr.rec.h2[i,6] <- forecast4$forecast$temp$mean[h]
-  
-  
 }
 
-
-#ADL 
+# ADL.
 
 data_1.1<-ts(data_1,frequency = 365, start = c(2019,12))
 
 data_dum.1<-data_1.1[1:425,-c(1,27)]
 
-h<-2
 count <- 2
+
 for(i in 1:57){
   temp2 <-window(data_1.1[,-c(1,27)], start = c(2019,12), end = 2020.195 + (i-1)/365)
   colnames(temp2) <- c("sentsmooth","twfav", "twret", "reservasbcra", "tasaint", "basemon", "tcdolar", "casosarg",          
@@ -963,38 +963,31 @@ for(i in 1:57){
   count = count + 1
 }
 
-
-# Realizamos los pronósticos con el VAR 
-
-# Construimos la serie diferenciando las variables que son I(1)
+# VAR.
 
 reservas.est <- diff(data1[,5])
 
 dolar.est <- diff(data1[,8])
 
-data.diff<-cbind(data1[-1,-c(1,5,8,16,17,18,19,20,21,22,23,24,25,26,27,28)], reservas.est, dolar.est)
-
-h<-2
+data.diff<-cbind(data1[-1,-1], reservas.est, dolar.est)
 
 for(i in 1:57){ 
-  temp2<-window(data.diff, start = c(2019,12), end = 2020.195 + (i-1)/365)
+  temp2 <-window(data.diff, start = c(2019,12), end = 2020.195 + (i-1)/365)
   a<-VARselect(data.diff, lag.max = 13, type = "const")
   b<-a$selection
   c<-b[1]
   f5 <- VAR(temp2, p = c, type = "trend")
   forecast1<- forecast(f5, h=h)
-  pr.rec.h2[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
+  pr.rec.h2[i,5] <- forecast1$forecast$data1..1...1..sentsmooth$mean[h]
 }
 
-write.csv(cbind(out.of.sample[-1,1:2], pr.rec.h2), "pr.rec.h2.csv") ## correr esto
+# Importamos.
 
 pr.rec.h2 <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/normales/pr.rec.h2.csv")
 pr.rec.h2 <- pr.rec.h2[,-(1:3)]
 pr.rec.h2 <- ts(pr.rec.h2, frequency = 365, start = c(2020,11))
 
-
-
-# Gráfico con los pronósticos recursivos y h=2
+# Graficamos.
 
 autoplot(ts.union(out.of.sample[2:58,2], pr.rec.h2[,1], pr.rec.h2[,2],pr.rec.h2[,3],pr.rec.h2[,4],pr.rec.h2[,5], pr.rec.h2[,6]), size = 0.7) + 
   scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"),
@@ -1005,14 +998,16 @@ autoplot(ts.union(out.of.sample[2:58,2], pr.rec.h2[,1], pr.rec.h2[,2],pr.rec.h2[
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
 
-# ESQUEMA ROLLING 
+#### Esquema rolling ####
 
 data1 <- ts(data, frequency = 365, start = c(2019,12))
 PC<-ts(PC[,1:4], frequency = 365, start = c(2019,12))
 
 pr.rol.h2 <- ts(matrix(0, 57, 6), frequency = 365, start=c(2020,11))
 colnames(pr.rol.h2) <- c("ARIMA", "ARIMAX", "ETS", "ADL","VAR","FAVAR")
+
 h<-2
+
 for(i in 1:57){
   temp<-window(data1[,2], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
   temp2 <-window(data1[,3:15], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
@@ -1023,12 +1018,12 @@ for(i in 1:57){
   forecast <- forecast(f1,h = h)
   pr.rol.h2[i,1] <- forecast$mean[h]
   
-  #ARIMAX
+  # ARIMAX
   f2 <- Arima(temp,model=auto.arima(temp), newxreg=temp2)
   forecast2 <- forecast(f2$fitted,h=h)
   pr.rol.h2[i,2] <- forecast2$mean[h]
   
-  #ETS 
+  # ETS 
   f3 <- ets(temp)
   pre <- forecast(f3, n.ahead=h)
   pr.rol.h2[i,3] <- pre$mean[h]
@@ -1041,14 +1036,14 @@ for(i in 1:57){
   
 }
 
-#ADL 
+# ADL.
 
 data_1.1<-ts(data_1,frequency = 365, start = c(2019,12))
 
 data_dum.1<-data_1.1[1:425,-c(1,27)]
 
-h<-2
 count <- 2
+
 for(i in 1:57){
   temp2 <-window(data_1.1[,-c(1,27)], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
   colnames(temp2) <- c("sentsmooth","twfav", "twret", "reservasbcra", "tasaint", "basemon", "tcdolar", "casosarg",          
@@ -1073,7 +1068,6 @@ for(i in 1:57){
                  data = temp2, order = as.vector(order.adl.dl$best_order))
   
   # Estimamos el ADL pero con la función dynlm
-  
   adl<-adl.dl$full_formula
   adl.1 <- dynlm(adl, data = adl.dl$data)
   forecast2 <- predict(adl.1$fitted.values,h=h)
@@ -1082,18 +1076,13 @@ for(i in 1:57){
   count = count + 1
 }
 
-
-# Realizamos los pronósticos con el VAR 
-
-# Construimos la serie diferenciando las variables que son I(1)
+# VAR.
 
 reservas.est <- diff(data1[,5])
 
 dolar.est <- diff(data1[,8])
 
-data.diff<-cbind(data1[-1,-c(1,5,8,16,17,18,19,20,21,22,23,24,25,26,27,28)], reservas.est, dolar.est)
-
-h<-2
+data.diff<-cbind(data1[-1,-1], reservas.est, dolar.est)
 
 for(i in 1:57){ 
   temp2<-window(data.diff, start = 2019.033 + (i-1)/365, end = 2020.195 + (i-1)/365)
@@ -1102,16 +1091,16 @@ for(i in 1:57){
   c<-b[1]
   f5 <- VAR(temp2, p = c, type = "trend")
   forecast1<- forecast(f5, h=h)
-  pr.rol.h2[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
+  pr.rol.h2[i,5] <- forecast1$forecast$data1..1...1..sentsmooth$mean[h]
 }
+
+# Importamos.
 
 pr.rol.h2 <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/normales/pr.rol.h2.csv")
 pr.rol.h2 <- pr.rol.h2[,-(1:3)]
 pr.rol.h2 <- ts(pr.rol.h2, frequency = 365, start = c(2020,11))
 
-write.csv(cbind(out.of.sample[-1,1:2], pr.rol.h2), "pr.rol.h2.csv") ## correr esto
-
-# Gráfico con los pronósticos rolling y h=2
+# Graficamos.
 
 autoplot(ts.union(out.of.sample[2:58,2], pr.rol.h2[,1], pr.rol.h2[,2],pr.rol.h2[,3],pr.rol.h2[,4],pr.rol.h2[,5], pr.rol.h2[,6]), size = 0.7) + 
   scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"),
@@ -1122,18 +1111,20 @@ autoplot(ts.union(out.of.sample[2:58,2], pr.rol.h2[,1], pr.rol.h2[,2],pr.rol.h2[
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
 
-#### h = 7
+#### h = 7 ####
 
-#Esquema fijo 
+#### Esquema fijo ####
 
-# con lo cual, pierdo 6 observaciones 
+# Perdemos las primeras seis observaciones.
 
 data1 <- ts(data, frequency = 365, start = c(2019,12))
 PC<-ts(PC[,1:4], frequency = 365, start = c(2019,12))
 
 pr.f.h7 <- ts(matrix(0, 52, 6), frequency = 365, start=c(2020,11))
 colnames(pr.f.h7) <- c("ARIMA", "ARIMAX", "ETS", "ADL","VAR","FAVAR")
-h<-7
+
+h <- 7
+
 for(i in 1:52){
   temp<-window(data1[,2], start = c(2019,12), end = 2020.195 + (i-1)/365)
   temp2 <-window(data1[,3:15], start = c(2019,12), end = 2020.195 + (i-1)/365)
@@ -1144,12 +1135,12 @@ for(i in 1:52){
   forecast <- forecast(f1,h = 7)
   pr.f.h7[i,1] <- forecast$mean[7]
   
-  #ARIMAX
+  # ARIMAX
   f2 <- Arima(temp,model=arima.1,xreg=temp2)
   forecast2 <- forecast(f2$fitted,h=h)
   pr.f.h7[i,2] <- forecast2$mean[h]
   
-  #ETS 
+  # ETS 
   f3 <- ets(temp, model=ets.1, use.initial.values=TRUE)
   pre <- forecast(f3, n.ahead=h)
   pr.f.h7[i,3] <- pre$mean[h]
@@ -1161,12 +1152,7 @@ for(i in 1:52){
   pr.f.h7[i,6] <- forecast4$forecast$temp$mean[h]
 }
 
-
-# como perdemos las 6 primeras observaciones vamos a tener 52 pronósticos en vez de 58
-
-#ADL 
-
-#Seleccionamos el orden del ADL 
+# ADL.
 
 data_1.1<-ts(data_1,frequency = 365, start = c(2019,12))
 
@@ -1178,11 +1164,8 @@ order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + 
                             mes01 + mes02 + mes03 +  mes04 + mes05 + mes06 +
                             mes07 + mes08 + mes09 +  mes10 + mes11, 
                           data = data_dum.1, max_order = 8)
-
-
-h<-7
-
 count <- 2
+
 for(i in 1:52){
   temp2 <-window(data_1.1[,-c(1,27)],start = c(2019,12), end = 2020.195 + (i-1)/365)
   colnames(temp2) <- c("sentsmooth","twfav", "twret", "reservasbcra", "tasaint", "basemon", "tcdolar", "casosarg",          
@@ -1191,7 +1174,7 @@ for(i in 1:52){
                        "mes01", "mes02", "mes03", "mes04", "mes05", "mes06",
                        "mes07", "mes08", "mes09", "mes10", "mes11")
   
-  #el orden del ADL es el conseguido al aplicar el modelo al período in sample 
+  # El orden del ADL es el conseguido al aplicar el modelo al período in sample 
   
   adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                    casosarg + muertosarg + vacunasarg + maxtemp + 
@@ -1210,19 +1193,13 @@ for(i in 1:52){
   count = count + 1
 }
 
-library(forecast)
-
-library(vars)
-
-# Realizamos los pronósticos con el VAR 
-
-# Construimos la serie diferenciando las variables que son I(1)
+# VAR.
 
 reservas.est <- diff(data1[,5])
 
 dolar.est <- diff(data1[,8])
 
-data.diff<-cbind(data1[-1,-c(1,5,8,16,17,18,19,20,21,22,23,24,25,26,27,28)], reservas.est, dolar.est)
+data.diff<-cbind(data1[-1,-1], reservas.est, dolar.est)
 
 h<-7
 
@@ -1230,21 +1207,16 @@ for(i in 1:52){
   temp2<-window(data.diff, start = c(2019,12), end = 2020.195 + (i-1)/365)
   f5 <- VAR(temp2, p = 6, type = "trend")
   forecast1<- forecast(f5, h=h)
-  pr.f.h7[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
+  pr.f.h7[i,5] <- forecast1$forecast$data1..1...1..sentsmooth$mean[h]
 }
 
-write.csv(cbind(out.of.sample[7:58,1:2], pr.f.h7), "pr.f.h7.csv") ## correr esto
+# Importamos.
 
 pr.f.h7 <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/normales/pr.f.h7.csv")
 pr.f.h7 <- pr.f.h7[,-(1:3)]
 pr.f.h7 <- ts(pr.f.h7, frequency = 365, start = c(2020,11))
 
-
-# Grafico de los pronosticos con esquema fijo y h=7
-
-
-# eliminamos las primeras 6 observaciones del período out of sample debido a que la cantidad 
-# de pasos adelante que hicimos los pronósticos 
+# Graficamos.
 
 autoplot(ts.union(out.of.sample[7:58,2], pr.f.h7[,1], pr.f.h7[,2], pr.f.h7[,3], pr.f.h7[,4], pr.f.h7[,5], pr.f.h7[,6]), size = 0.7) +
   scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"), 
@@ -1254,15 +1226,16 @@ autoplot(ts.union(out.of.sample[7:58,2], pr.f.h7[,1], pr.f.h7[,2], pr.f.h7[,3], 
   theme_minimal() +  
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
-
-# ESQUEMA RECURSIVO 
+#### Esquema recursivo ####
 
 data1 <- ts(data, frequency = 365, start = c(2019,12))
 PC<-ts(PC[,1:4], frequency = 365, start = c(2019,12))
 
 pr.rec.h7 <- ts(matrix(0, 52, 6), frequency = 365, start=c(2020,11))
 colnames(pr.rec.h7) <- c("ARIMA", "ARIMAX", "ETS", "ADL","VAR","FAVAR")
+
 h<-7
+
 for(i in 1:52){
   temp<-window(data1[,2], start = c(2019,12), end = 2020.195 + (i-1)/365)
   temp2 <-window(data1[,3:15], start = c(2019,12), end = 2020.195 + (i-1)/365)
@@ -1273,12 +1246,12 @@ for(i in 1:52){
   forecast <- forecast(f1,h = h)
   pr.rec.h7[i,1] <- forecast$mean[h]
   
-  #ARIMAX
+  # ARIMAX
   f2 <- Arima(temp,model=f1, newxreg=temp2)
   forecast2 <- forecast(f2$fitted,h=h)
   pr.rec.h7[i,2] <- forecast2$mean[h]
   
-  #ETS 
+  # ETS 
   f3 <- ets(temp)
   pre <- forecast(f3, n.ahead=h)
   pr.rec.h7[i,3] <- pre$mean[h]
@@ -1291,15 +1264,14 @@ for(i in 1:52){
   
 }
 
-
-#ADL 
+#ADL.
 
 data_1.1<-ts(data_1,frequency = 365, start = c(2019,12))
 
 data_dum.1<-data_1.1[1:425,-c(1,27)]
 
-h<-7 
 count <- 2
+
 for(i in 1:52){
   temp2 <-window(data_1.1[,-c(1,27)], start = c(2019,12), end = 2020.195 + (i-1)/365)
   colnames(temp2) <- c("sentsmooth","twfav", "twret", "reservasbcra", "tasaint", "basemon", "tcdolar", "casosarg",          
@@ -1333,18 +1305,13 @@ for(i in 1:52){
   count = count + 1
 }
 
-
-# Realizamos los pronósticos con el VAR 
-
-# Construimos la serie diferenciando las variables que son I(1)
+# VAR.
 
 reservas.est <- diff(data1[,5])
 
 dolar.est <- diff(data1[,8])
 
-data.diff<-cbind(data1[-1,-c(1,5,8,16,17,18,19,20,21,22,23,24,25,26,27,28)], reservas.est, dolar.est)
-
-h<-7
+data.diff<-cbind(data1[-1,-1], reservas.est, dolar.est)
 
 for(i in 1:52){ 
   temp2<-window(data.diff, start = c(2019,12), end = 2020.195 + (i-1)/365)
@@ -1353,15 +1320,16 @@ for(i in 1:52){
   c<-b[1]
   f5 <- VAR(temp2, p = c, type = "trend")
   forecast1<- forecast(f5, h=h)
-  pr.rec.h7[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
+  pr.rec.h7[i,5] <- forecast1$forecast$data1..1...1..sentsmooth$mean[h]
 }
+
+# Importamos.
 
 pr.rec.h7 <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/normales/pr.rec.h7.csv")
 pr.rec.h7 <- pr.rec.h7[,-(1:3)]
 pr.rec.h7 <- ts(pr.rec.h7, frequency = 365, start = c(2020,11))
 
-
-# Gráfico con los pronósticos recursivos y h=7
+# Graficamos.
 
 autoplot(ts.union(out.of.sample[7:58,2], pr.rec.h7[,1], pr.rec.h7[,2],pr.rec.h7[,3],pr.rec.h7[,4],pr.rec.h7[,5], pr.rec.h7[,6]), size = 0.7) + 
   scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"),
@@ -1372,15 +1340,16 @@ autoplot(ts.union(out.of.sample[7:58,2], pr.rec.h7[,1], pr.rec.h7[,2],pr.rec.h7[
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
 
-# ESQUEMA ROLLING 
-
+#### Esquema rolling ####
 
 data1 <- ts(data, frequency = 365, start = c(2019,12))
 PC<-ts(PC[,1:4], frequency = 365, start = c(2019,12))
 
 pr.rol.h7 <- ts(matrix(0, 52, 6), frequency = 365, start=c(2020,11))
 colnames(pr.rol.h7) <- c("ARIMA", "ARIMAX", "ETS", "ADL","VAR", "FAVAR")
+
 h<-7
+
 for(i in 1:52){
   temp<-window(data1[,2], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
   temp2 <-window(data1[,3:15], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
@@ -1391,12 +1360,12 @@ for(i in 1:52){
   forecast <- forecast(f1,h = h)
   pr.rol.h7[i,1] <- forecast$mean[h]
   
-  #ARIMAX
+  # ARIMAX
   f2 <- Arima(temp,model=f1, newxreg=temp2)
   forecast2 <- forecast(f2$fitted,h=h)
   pr.rol.h7[i,2] <- forecast2$mean[h]
   
-  #ETS 
+  # ETS 
   f3 <- ets(temp)
   pre <- forecast(f3, n.ahead=h)
   pr.rol.h7[i,3] <- pre$mean[h]
@@ -1408,15 +1377,14 @@ for(i in 1:52){
   pr.rol.h7[i,6] <- forecast4$forecast$temp$mean[h]
 }
 
-
-#ADL 
+# ADL.
 
 data_1.1<-ts(data_1,frequency = 365, start = c(2019,12))
 
 data_dum.1<-data_1.1[1:425,-c(1,27)]
 
-h<-7
 count <- 2
+
 for(i in 1:52){
   temp2 <-window(data_1.1[,-c(1,27)], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
   colnames(temp2) <- c("sentsmooth","twfav", "twret", "reservasbcra", "tasaint", "basemon", "tcdolar", "casosarg",          
@@ -1450,18 +1418,13 @@ for(i in 1:52){
   count = count + 1
 }
 
-
-# Realizamos los pronósticos con el VAR 
-
-# Construimos la serie diferenciando las variables que son I(1)
+# VAR.
 
 reservas.est <- diff(data1[,5])
 
 dolar.est <- diff(data1[,8])
 
-data.diff<-cbind(data1[-1,-c(1,5,8,16,17,18,19,20,21,22,23,24,25,26,27,28)], reservas.est, dolar.est)
-
-h<-7
+data.diff<-cbind(data1[-1,-1], reservas.est, dolar.est)
 
 for(i in 1:52){ 
   temp2<-window(data.diff, start = 2019.033 + (i-1)/365, end = 2020.195 + (i-1)/365)
@@ -1470,15 +1433,16 @@ for(i in 1:52){
   c<-b[1]
   f5 <- VAR(temp2, p = c, type = "trend")
   forecast1<- forecast(f5, h=h)
-  pr.rol.h7[i,5] <- forecast1$forecast$data1..1...c.1..5..8..16..17..18..19..20..21..22..23..24..25...sentsmooth$mean[h]
+  pr.rol.h7[i,5] <- forecast1$forecast$data1..1...1..sentsmooth$mean[h]
 }
+
+# Importamos.
 
 pr.rol.h7 <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/normales/pr.rol.h7.csv")
 pr.rol.h7 <- pr.rol.h7[,-(1:3)]
 pr.rol.h7 <- ts(pr.rol.h7, frequency = 365, start = c(2020,11))
 
-
-# Gráfico con los pronósticos rolling y h=7
+# Graficamos.
 
 autoplot(ts.union(out.of.sample[7:58,2], pr.rol.h7[,1], pr.rol.h7[,2],pr.rol.h7[,3],pr.rol.h7[,4],pr.rol.h7[,5], pr.rol.h7[,6]), size = 0.7) + 
   scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","ADL","VAR"),
@@ -1489,16 +1453,13 @@ autoplot(ts.union(out.of.sample[7:58,2], pr.rol.h7[,1], pr.rol.h7[,2],pr.rol.h7[
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
 
-########### BAGGING ########################
+#### Pronósticos con Bagging ####
 
-#### FIJO ####
-# Realizamos bagging con los modelos arima, ets, var, adl con esquema fijo 
+# En esta sección haremos los pronósticos usando la técnica de bagging.
+# Extraeremos aleatoriamente 100 muestras bootstrap.
+# No haremos pronósticos con el modelo ADL dada la restriccion computacional.
 
-# h = 1
-
-# ARIMA 
-
-library(forecast)
+# Comenzamos extrayendo las muestras bootstrap.
 
 library(quantmod)
 
@@ -1513,9 +1474,16 @@ for (i in 1:4) {
   assign(paste("PC.bag.",i,sep = ""),ts(b, frequency = 365, start = c(2019,12)))
 }
 
+# Ahora continuamos con los pronósticos.
+
+#### Esquema fijo ####
+
+#### h = 1 ####
+
 pr.f.h1.b <- matrix(nrow=58,ncol=5, NA)
 
-h<-1
+h <- 1
+
 for(i in 1:58){
   pr.arima <- matrix(nrow=1,ncol=100,NA)
   pr.arimax <- matrix(nrow=1,ncol=100,NA)
@@ -1553,12 +1521,7 @@ for(i in 1:58){
 }
 
 
-# Realizamos los pronósticos con el VAR 
-
-# Construimos la serie diferenciando las variables que son I(1)
-
-
-h<-1
+# Realizamos los pronósticos con el VAR.
 
 for(i in 1:58){
   pr.var <- matrix(nrow=1,ncol=100,NA)
@@ -1573,10 +1536,8 @@ for(i in 1:58){
   print(paste("VAMOS:", i, "PERIODOS"))
 }
 
+# Realizamos los pronósticos para el FAVAR.
 
-# Realizamos los pronósticos para el FAVAR 
-
-h<-1
 for(i in 1:58){
     pr.favar <- matrix(nrow=1,ncol=100,NA)
   for (j in 1:100){
@@ -1595,9 +1556,12 @@ for(i in 1:58){
   print(i)
 }
 
- ### VER###
+# Importamos los pronósticos ya hechos.
+
 pr.f.h1.b <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/pr.f.h1.b.csv")
 pr.f.h1.b <- ts(pr.f.h1.b, frequency = 365, start = c(2020,11))
+
+# Graficamos.
 
 autoplot(ts.union(out.of.sample[1:58,2], pr.f.h1.b[,1], pr.f.h1.b[,2], pr.f.h1.b[,3], pr.f.h1.b[,4], pr.f.h1.b[,5]), size = 0.7) + 
   scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS", "FAVAR", "VAR"),
@@ -1607,15 +1571,13 @@ autoplot(ts.union(out.of.sample[1:58,2], pr.f.h1.b[,1], pr.f.h1.b[,2], pr.f.h1.b
   theme_minimal() +  
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
-# Exportamos los ponósticos 
 
-write.csv(pr.f.h1.b, "pr.f.h1.b.csv", row.names = FALSE)
-
-# h = 2 
+#### h = 2 ####
 
 pr.f.h2.b <- matrix(nrow=57,ncol=5, NA)
 
-h<-2
+h <- 2
+
 for(i in 1:57){
   pr.arima <- matrix(nrow=1,ncol=100,NA)
   pr.arimax <- matrix(nrow=1,ncol=100,NA)
@@ -1660,12 +1622,7 @@ for(i in 1:57){
   print(i)
 }
 
-
-# Realizamos los pronósticos con el VAR 
-
-# Construimos la serie diferenciando las variables que son I(1)
-
-h<-2
+# VAR.
 
 for(i in 1:57){
   pr.var <- matrix(nrow=1,ncol=100,NA)
@@ -1685,13 +1642,12 @@ for(i in 1:57){
   print(paste("VAMOS:", i, "PERIODOS"))
 }
 
-pr.f.h2.b <- ts(pr.f.h2.b, frequency = 365, start = c(2019,12))
+# Importamos.
 
 pr.f.h2.b <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/pr.f.h2.b.csv")
 pr.f.h2.b <- ts(pr.f.h2.b, frequency = 365, start = c(2020,11))
 
-
-# Realizamos el gráfico de los pronósticos 
+# Graficamos.
 
 autoplot(ts.union(out.of.sample[1:58,2], pr.f.h2.b[,1], pr.f.h2.b[,2], pr.f.h2.b[,3], pr.f.h2.b[,4], pr.f.h2.b[,5]), size = 0.7) + 
   scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS", "FAVAR", "VAR"),
@@ -1702,14 +1658,12 @@ autoplot(ts.union(out.of.sample[1:58,2], pr.f.h2.b[,1], pr.f.h2.b[,2], pr.f.h2.b
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
 
-write.csv(pr.f.h2.b, "pr.f.h2.b.csv", row.names = FALSE)
-
-
-# h = 7 
+#### h = 7 ####
 
 pr.f.h7.b <- matrix(nrow=52,ncol=5, NA)
 
-h<-7
+h <- 7
+
 for(i in 1:52){
   pr.arima <- matrix(nrow=1,ncol=100,NA)
   pr.arimax <- matrix(nrow=1,ncol=100,NA)
@@ -1756,12 +1710,7 @@ for(i in 1:52){
   print(i)
 }
 
-
-# Realizamos los pronósticos con el VAR 
-
-# Construimos la serie diferenciando las variables que son I(1)
-
-h <- 7
+# VAR
 
 for(i in 1:52){
   pr.var <- matrix(nrow=1,ncol=100,NA)
@@ -1780,10 +1729,12 @@ for(i in 1:52){
   print(paste("VAMOS:", i, "PERIODOS"))
 }
 
+# Importamos.
+
 pr.f.h7.b <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/pr.f.h7.b.csv")
 pr.f.h7.b <- ts(pr.f.h7.b, frequency = 365, start = c(2020,11))
 
-# Realizamos el gráfico de los pronósticos 
+# Graficamos.
 
 autoplot(ts.union(out.of.sample[7:58,2], pr.f.h7.b[,1], pr.f.h7.b[,2], pr.f.h7.b[,3], pr.f.h7.b[,4], pr.f.h7.b[,5]), size = 0.7) + 
   scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","FAVAR", "VAR"),
@@ -1793,27 +1744,15 @@ autoplot(ts.union(out.of.sample[7:58,2], pr.f.h7.b[,1], pr.f.h7.b[,2], pr.f.h7.b
   theme_minimal() +  
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
-write.csv(pr.f.h7.b, "pr.f.h7.b.csv", row.names = FALSE)
 
+#### Esquema recursivo ####
 
-#### RECURSIVO ####
-
-# Realizamos bagging con los modelos arima, ets, var, adl con esquema recursivo 
-
-# h = 1
-
-# ARIMA 
-
-library(forecast)
-library(quantmod)
-
-ptm <- proc.time()
-
+#### h = 1 ####
 
 pr.rec.h1.b <- matrix(nrow=58,ncol=5, NA)
 
+h <- 1
 
-h<-1
 for(i in 1:58){
   pr.arima <- matrix(nrow=1,ncol=100,NA)
   pr.arimax <- matrix(nrow=1,ncol=100,NA)
@@ -1860,11 +1799,7 @@ for(i in 1:58){
   print(i)
 }
 
-# Realizamos los pronósticos con el VAR 
-
-# Construimos la serie diferenciando las variables que son I(1)
-
-h<-1
+# VAR.
 
 for(i in 1:58){
   pr.var <- matrix(nrow=1,ncol=100,NA)
@@ -1880,13 +1815,14 @@ for(i in 1:58){
   print(paste("VAMOS:", i, "PERIODOS"))
 }
 
+# Importamos.
 
 pr.rec.h1.b <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/pr.rec.h1.b.csv")
 pr.rec.h1.b <- ts(pr.rec.h1.b, frequency = 365, start = c(2020,11))
 
+# Graficamos.
 
-write.csv(pr.rec.h1.b, "pr.rec.h1.b.csv", row.names = FALSE)
-### VER####
+#### VER#####
 
 autoplot(ts.union(out.of.sample[1:58, 2], pr.rec.h1.b[,1], pr.rec.h1.b[,2], pr.rec.h1.b[,3], pr.rec.h1[,4], pr.rec.h1[,5]), size = 0.7) + 
   scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS", "FAVAR, VAR"),
@@ -1896,11 +1832,12 @@ autoplot(ts.union(out.of.sample[1:58, 2], pr.rec.h1.b[,1], pr.rec.h1.b[,2], pr.r
   theme_minimal() +  
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
-
-# h = 2 
+#### h = 2 ####
 
 pr.rec.h2.b <- matrix(nrow=57,ncol=5, NA)
-h<-2
+
+h <- 2
+
 for(i in 1:57){
   pr.arima <- matrix(nrow=1,ncol=100,NA)
   pr.arimax <- matrix(nrow=1,ncol=100,NA)
@@ -1947,11 +1884,7 @@ for(i in 1:57){
   print(i)
 }
 
-# Realizamos los pronósticos con el VAR 
-
-# Construimos la serie diferenciando las variables que son I(1)
-
-h<-2
+# VAR.
 
 for(i in 1:57){
   pr.var <- matrix(nrow=1,ncol=100,NA)
@@ -1969,17 +1902,12 @@ for(i in 1:57){
   print(paste("VAMOS:", i, "PERIODOS"))
 }
 
-pr.rec.h2.b <- ts(pr.rec.h2.b, frequency = 365, start = c(2019,12))
-write.csv(pr.rec.h2.b, "pr.rec.h2.b.csv", row.names = FALSE)
+# Importamos.
 
 pr.rec.h2.b <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/pr.rec.h2.b.csv")
 pr.rec.h2.b <- ts(pr.rec.h2.b, frequency = 365, start = c(2020,11))
 
-
-
-
-# Realizamos el gráfico de los pronósticos 
-
+# Graficamos.
 
 autoplot(ts.union(out.of.sample[2:58,2], pr.rec.h2.b[,1], pr.rec.h2.b[,2], pr.rec.h2.b[,3], pr.rec.h2.b[,4], pr.rec.h2.b[,5]), size = 0.7) + 
   scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS", "FAVAR", "VAR"),
@@ -1990,13 +1918,11 @@ autoplot(ts.union(out.of.sample[2:58,2], pr.rec.h2.b[,1], pr.rec.h2.b[,2], pr.re
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
 
-# h = 7 
+#### h = 7 ####
 
 pr.rec.h7.b <- matrix(nrow=52,ncol=5, NA)
 
-h<-7
-
-
+h <- 7
 
 for(i in 1:52){
   pr.arima <- matrix(nrow=1,ncol=100,NA)
@@ -2018,12 +1944,12 @@ for(i in 1:52){
     forecast <- forecast(f1,h = h)
     pr.arima[1,j] <- forecast$mean[h]
     
-    #ARIMAX
+    # ARIMAX
     f2 <- Arima(temp,model=auto.arima(temp),newxreg=temp2)
     forecast2 <- forecast(f2$fitted,h=h)
     pr.arimax[1,j] <- forecast2$mean[h]
     
-    #ETS 
+    # ETS 
     f1 <- ets(temp)
     pre <- forecast(f1, n.ahead=h)
     pr.ets[1,j] <- pre$mean[h]
@@ -2044,14 +1970,7 @@ for(i in 1:52){
   print(i)
 }
 
-
-
-# Realizamos los pronósticos con el VAR 
-
-# Construimos la serie diferenciando las variables que son I(1)
-
-
-h <- 7
+# VAR.
 
 for(i in 1:52){
   pr.var <- matrix(nrow=1,ncol=100,NA)
@@ -2071,18 +1990,12 @@ for(i in 1:52){
   print(paste("VAMOS:", i, "PERIODOS"))
 }
 
-pr.rec.h7.b <- ts(pr.rec.h7.b, frequency = 365, start = c(2019,12))
-write.csv(pr.rec.h7.b, "pr.rec.h7.b.csv", row.names = FALSE)
+# Importamos.
 
 pr.rec.h7.b <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/pr.rec.h7.b.csv")
 pr.rec.h7.b <- ts(pr.rec.h7.b, frequency = 365, start = c(2020,11))
 
-
-
-
-# Realizamos el gráfico de los pronósticos 
-
-
+# Graficamos.
 
 autoplot(ts.union(out.of.sample[7:58,2], pr.rec.h7.b[,1], pr.rec.h7.b[,2], pr.rec.h7.b[,3], pr.rec.h7.b[,4], pr.rec.h7.b[,5]), size = 0.7) + 
   scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","FAVAR", "VAR"),
@@ -2093,21 +2006,14 @@ autoplot(ts.union(out.of.sample[7:58,2], pr.rec.h7.b[,1], pr.rec.h7.b[,2], pr.re
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
 
-#### ROLLING ####
-# Realizamos bagging con los modelos arima, ets, var, adl con esquema rolling
+#### Esquema rolling ####
 
-# h = 1
-
-# ARIMA 
-
-library(forecast)
-library(quantmod)
-
-set.seed(444)
+#### h = 1 ####
 
 pr.rol.h1.b <- matrix(nrow=58,ncol=5, NA)
 
-h<-1
+h <- 1
+
 for(i in 1:58){
   pr.arima <- matrix(nrow=1,ncol=100,NA)
   pr.arimax <- matrix(nrow=1,ncol=100,NA)
@@ -2155,17 +2061,7 @@ for(i in 1:58){
   print(i)
 }
 
-pr.rol.h1.b <- ts(pr.rol.h1.b, frequency = 365, start = c(2019,12))
-
-
-
-
-# Realizamos los pronósticos con el VAR 
-
-# Construimos la serie diferenciando las variables que son I(1)
-
-
-h<-1
+# VAR.
 
 for(i in 1:58){
   pr.var <- matrix(nrow=1,ncol=100,NA)
@@ -2186,14 +2082,12 @@ for(i in 1:58){
   print(paste("VAMOS:", i, "PERIODOS"))
 }
 
-
-write.csv(pr.rol.h1.b, "pr.rol.h1.b.csv", row.names = FALSE )
+# Importamos.
 
 pr.rol.h1.b <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/pr.rol.h1.b.csv")
 pr.rol.h1.b <- ts(pr.rol.h1.b, frequency = 365, start = c(2020,11))
 
-
-
+# Graficamos.
 
 autoplot(ts.union(out.of.sample[,2], pr.rol.h1.b[,1], pr.rol.h1.b[,2], pr.rol.h1.b[,3], pr.rol.h1[,4], pr.rol.h1[,5]), size = 0.7) + 
   scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS", "FAVAR, VAR"),
@@ -2203,14 +2097,12 @@ autoplot(ts.union(out.of.sample[,2], pr.rol.h1.b[,1], pr.rol.h1.b[,2], pr.rol.h1
   theme_minimal() +  
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
-# gráficos que comparen ets bagged contra ets 
-
-
-# h = 2 
+#### h = 2 ####
 
 pr.rol.h2.b <- matrix(nrow=57,ncol=5, NA)
 
-h<-2
+h <- 2
+
 for(i in 1:57){
   pr.arima <- matrix(nrow=1,ncol=100,NA)
   pr.arimax <- matrix(nrow=1,ncol=100,NA)
@@ -2260,14 +2152,7 @@ for(i in 1:57){
   print(i)
 }
 
-pr.rol.h2.b <- ts(pr.rol.h2.b, frequency = 365, start = c(2019,12)) #### VER corregir, el periodo out of sample empieza despues 
-
-
-# Realizamos los pronósticos con el VAR 
-
-# Construimos la serie diferenciando las variables que son I(1)
-
-h<-2
+# VAR.
 
 for(i in 1:57){
   pr.var <- matrix(nrow=1,ncol=100,NA)
@@ -2287,13 +2172,12 @@ for(i in 1:57){
   print(paste("VAMOS:", i, "PERIODOS"))
 }
 
+# Importamos.
+
 pr.rol.h2.b <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/pr.rol.h2.b.csv")
 pr.rol.h2.b <- ts(pr.rol.h2.b, frequency = 365, start = c(2020,11))
 
-
-
-# Realizamos el gráfico de los pronósticos 
-
+# Graficamos.
 
 autoplot(ts.union(out.of.sample[2:58,2], pr.rol.h2.b[,1], pr.rol.h2.b[,2], pr.rol.h2.b[,3], pr.rol.h2.b[,4], pr.rol.h2.b[,5]), size = 0.7) + 
   scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS", "FAVAR", "VAR"),
@@ -2303,12 +2187,12 @@ autoplot(ts.union(out.of.sample[2:58,2], pr.rol.h2.b[,1], pr.rol.h2.b[,2], pr.ro
   theme_minimal() +  
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
-
-# h = 7 
+#### h = 7 ####
 
 pr.rol.h7.b <- matrix(nrow=52,ncol=5, NA)
 
 h<- 7
+
 for(i in 1:52){
   pr.arima <- matrix(nrow=1,ncol=100,NA)
   pr.arimax <- matrix(nrow=1,ncol=100,NA)
@@ -2329,12 +2213,12 @@ for(i in 1:52){
     forecast <- forecast(f1,h = h)
     pr.arima[1,j] <- forecast$mean[h]
     
-    #ARIMAX
+    # ARIMAX
     f2 <- Arima(temp,model=auto.arima(temp),newxreg=temp2)
     forecast2 <- forecast(f2$fitted,h=h)
     pr.arimax[1,j] <- forecast2$mean[h]
     
-    #ETS 
+    # ETS 
     f1 <- ets(temp)
     pre <- forecast(f1, n.ahead=h)
     pr.ets[1,j] <- pre$mean[h]
@@ -2355,15 +2239,7 @@ for(i in 1:52){
   print(i)
 }
 
-pr.rol.h7.b <- ts(pr.rol.h7.b, frequency = 365, start = c(2019,12))
-
-
-# Realizamos los pronósticos con el VAR 
-
-# Construimos la serie diferenciando las variables que son I(1)
-
-
-h <- 7
+# VAR.
 
 for(i in 1:52){
   pr.var <- matrix(nrow=1,ncol=100,NA)
@@ -2383,12 +2259,12 @@ for(i in 1:52){
   print(paste("VAMOS:", i, "PERIODOS"))
 }
 
+# Importamos.
 
 pr.rol.h7.b <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/pr.rol.h7.b.csv")
 pr.rol.h7.b <- ts(pr.rol.h7.b, frequency = 365, start = c(2020,11))
 
-
-# Realizamos el gráfico de los pronósticos 
+# Graficamos.
 
 autoplot(ts.union(out.of.sample[7:58,2], pr.rol.h7.b[,1], pr.rol.h7.b[,2], pr.rol.h7.b[,3], pr.rol.h7.b[,4], pr.rol.h7.b[,5]), size = 0.7) + 
   scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX","ETS","FAVAR", "VAR"),
@@ -2399,17 +2275,20 @@ autoplot(ts.union(out.of.sample[7:58,2], pr.rol.h7.b[,1], pr.rol.h7.b[,2], pr.ro
   theme(legend.position = c(0.1,0.80), plot.title = element_text(hjust = 0.5))
 
 
+#### Medidas de Accuracy ####
 
-### MEDIDAS DE ACCURACY 
+# Hacemos matrices en las cuales vamos a guardar estas medidas de desempeño, 
+# acompañadas con el test de Diebold-Mariano.
+
+# Separamos las tablas en función de los pasos adelante de los pronósticos.
 
 AC<-matrix(NA,34,6)
 colnames(AC) <- c("Modelo", "MAPE", "MAE", "RMSE", "Estadístico","P-valor")
 AC2<-matrix(NA,34,1)
 
-
 # TABLA 1
 
-#medidas de accuracy y test de DM de los pronosticos con esquema fijo y h=1
+# Medidas de accuracy y test de DM de los pronósticos con esquema fijo y h=1.
 
 AC[1,1]<-"AR(1)" 
 AC2[1,1]<-"1"
@@ -2433,7 +2312,7 @@ AC[7,1]<- "FAVAR fijo"
 AC2[7,1]<-"1"
 AC[7,2:4]<-round(accuracy(pr.f.h1[,6], out.of.sample[,2])[c(2:3,5)],4)
 
-# medidas de accuracy de los pronósticos con esquema rolling y h=1
+# Medidas de accuracy de los pronósticos con esquema rolling y h=1.
 
 AC[8,1]<-"ARIMA rolling" 
 AC2[8,1]<-"1"
@@ -2454,9 +2333,7 @@ AC[13,1]<- "FAVAR rolling"
 AC2[13,1]<-"1"
 AC[13,2:4]<-round(accuracy(pr.rol.h1[,6], out.of.sample[,2])[c(2:3,5)],4)
 
-
-#  medidas de accuracy de los pronósticos con esquema recursivo y h=1
-
+# Medidas de accuracy de los pronósticos con esquema recursivo y h=1.
 
 AC[14,1]<-"ARIMA recursivo" 
 AC2[14,1]<-"1"
@@ -2477,9 +2354,7 @@ AC[19,1]<- "FAVAR recursivo"
 AC2[19,1]<-"1"
 AC[19,2:4]<-round(accuracy(pr.rec.h1[,6], out.of.sample[,2])[c(2:3,5)],4)
 
-
-# medidas de accuracy de los pronósticos con esquema fijo, h = 1 y series boots
-
+# Medidas de accuracy de los pronósticos con esquema fijo, h = 1 y series boots.
 
 AC[20,1]<-"ARIMA fijo bagged" 
 AC2[20,1]<-"1"
@@ -2497,7 +2372,7 @@ AC[24,1]<- "FAVAR fijo bagged"
 AC2[24,1]<-"1"
 AC[24,2:4]<-round(accuracy(pr.rec.h1.b[,4], out.of.sample[,2])[c(2:3,5)],4)
 
-# medidas de accuracy de los pronósticos con esquema rec, h = 1 y series boots
+# Medidas de accuracy de los pronósticos con esquema rec, h = 1 y series boots.
 
 AC[25,1]<-"ARIMA recursivo bagged" 
 AC2[25,1]<-"1"
@@ -2515,8 +2390,7 @@ AC[29,1]<- "FAVAR recursivo bagged"
 AC2[29,1]<-"1"
 AC[29,2:4]<-round(accuracy(pr.rec.h1.b[,4], out.of.sample[,2])[c(2:3,5)],4)
 
-# medidas de accuracy de los pronósticos con esquema rolling, h = 1 y series boots
-
+# Medidas de accuracy de los pronósticos con esquema rolling, h = 1 y series boots.
 
 AC[30,1]<-"ARIMA rolling bagged" 
 AC2[230,1]<-"1"
@@ -2534,9 +2408,7 @@ AC[34,1]<- "FAVAR rolling bagged"
 AC2[34,1]<-"1"
 AC[34,2:4]<-round(accuracy(pr.rol.h1.b[,4], out.of.sample[,2])[c(2:3,5)],4)
 
-
 # TABLA 2 
-
 
 AC1[2,1]<-"ARIMA fijo" 
 AC3[2,1]<-"2"
@@ -2557,7 +2429,7 @@ AC1[7,1]<- "FAVAR fijo"
 AC3[7,1]<-"2"
 AC1[7,2:4]<-round(accuracy(pr.f.h2[,6], out.of.sample[2:58,2])[c(2:3,5)],4)
 
-# medidas de accuracy de los pronósticos con esquema rolling y h=2
+# Medidas de accuracy de los pronósticos con esquema rolling y h=2.
 
 AC1[8,1]<-"ARIMA rolling" 
 AC3[8,1]<-"2"
@@ -2578,9 +2450,7 @@ AC1[13,1]<- "FAVAR rolling"
 AC3[13,1]<-"2"
 AC1[13,2:4]<-round(accuracy(pr.rol.h2[,6], out.of.sample[2:58,2])[c(2:3,5)],4)
 
-
-#  medidas de accuracy de los pronósticos con esquema recursivo y h=2
-
+# Medidas de accuracy de los pronósticos con esquema recursivo y h=2.
 
 AC1[14,1]<-"ARIMA recursivo" 
 AC3[14,1]<-"2"
@@ -2601,9 +2471,7 @@ AC1[19,1]<- "FAVAR recursivo"
 AC3[19,1]<-"2"
 AC1[19,2:4]<-round(accuracy(pr.rec.h2[,6], out.of.sample[2:58,2])[c(2:3,5)],4)
 
-
-# medidas de accuracy de los pronósticos con esquema fijo, h = 2 y series boots
-
+# Medidas de accuracy de los pronósticos con esquema fijo, h = 2 y series boots.
 
 AC1[20,1]<-"ARIMA fijo bagged" 
 AC3[20,1]<-"2"
@@ -2621,7 +2489,7 @@ AC1[24,1]<- "FAVAR fijo bagged"
 AC3[24,1]<-"2"
 AC1[24,2:4]<-round(accuracy(pr.rec.h2.b[,5], out.of.sample[2:58,2])[c(2:3,5)],4)
 
-# medidas de accuracy de los pronósticos con esquema rec, h = 1 y series boots
+# Medidas de accuracy de los pronósticos con esquema rec, h = 1 y series boots.
 
 AC1[25,1]<-"ARIMA recursivo bagged" 
 AC3[25,1]<-"2"
@@ -2639,8 +2507,7 @@ AC1[29,1]<- "FAVAR recursivo bagged"
 AC3[29,1]<-"2"
 AC1[29,2:4]<-round(accuracy(pr.rec.h2.b[,5], out.of.sample[2:58,2])[c(2:3,5)],4)
 
-# medidas de accuracy de los pronósticos con esquema rolling, h = 2 y series boots
-
+# Medidas de accuracy de los pronósticos con esquema rolling, h = 2 y series boots.
 
 AC1[30,1]<-"ARIMA rolling bagged" 
 AC3[30,1]<-"2"
@@ -2657,7 +2524,6 @@ AC1[33,2:4]<-round(accuracy(pr.rol.h2.b[,4], out.of.sample[2:58,2])[c(2:3,5)],4)
 AC1[34,1]<- "FAVAR rolling bagged"
 AC3[34,1]<-"2"
 AC1[34,2:4]<-round(accuracy(pr.rol.h2.b[,5], out.of.sample[2:58,2])[c(2:3,5)],4)
-
 
 # TABLA 3 
 
@@ -2680,7 +2546,7 @@ AC4[7,1]<- "FAVAR fijo"
 AC5[7,1]<-"2"
 AC4[7,2:4]<-round(accuracy(pr.f.h7[,6], out.of.sample[7:58,2])[c(2:3,5)],4)
 
-# medidas de accuracy de los pronósticos con esquema rolling y h=2
+# Medidas de accuracy de los pronósticos con esquema rolling y h=2.
 
 AC4[8,1]<-"ARIMA rolling" 
 AC5[8,1]<-"2"
@@ -2701,8 +2567,7 @@ AC4[13,1]<- "FAVAR rolling"
 AC5[13,1]<-"2"
 AC4[13,2:4]<-round(accuracy(pr.rol.h7[,6], out.of.sample[7:58,2])[c(2:3,5)],4)
 
-#  medidas de accuracy de los pronósticos con esquema recursivo y h=2
-
+# Medidas de accuracy de los pronósticos con esquema recursivo y h=2.
 
 AC4[14,1]<-"ARIMA recursivo" 
 AC5[14,1]<-"2"
@@ -2723,9 +2588,7 @@ AC4[19,1]<- "FAVAR recursivo"
 AC5[19,1]<-"2"
 AC4[19,2:4]<-round(accuracy(pr.rec.h7[,6], out.of.sample[7:58,2])[c(2:3,5)],4)
 
-
-# medidas de accuracy de los pronósticos con esquema fijo, h = 2 y series boots
-
+# Medidas de accuracy de los pronósticos con esquema fijo, h = 2 y series boots.
 
 AC4[20,1]<-"ARIMA fijo bagged" 
 AC5[20,1]<-"2"
@@ -2743,7 +2606,7 @@ AC4[24,1]<- "FAVAR fijo bagged"
 AC5[24,1]<-"2"
 AC4[24,2:4]<-round(accuracy(pr.rec.h7.b[,5], out.of.sample[7:58,2])[c(2:3,5)],4)
 
-# medidas de accuracy de los pronósticos con esquema rec, h = 1 y series boots
+# Medidas de accuracy de los pronósticos con esquema rec, h = 1 y series boots.
 
 AC4[25,1]<-"ARIMA recursivo bagged" 
 AC5[25,1]<-"2"
@@ -2761,8 +2624,7 @@ AC4[29,1]<- "FAVAR recursivo bagged"
 AC5[29,1]<-"2"
 AC4[29,2:4]<-round(accuracy(pr.rec.h7.b[,5], out.of.sample[7:58,2])[c(2:3,5)],4)
 
-# medidas de accuracy de los pronósticos con esquema rolling, h = 2 y series boots
-
+# Medidas de accuracy de los pronósticos con esquema rolling, h = 2 y series boots.
 
 AC4[30,1]<-"ARIMA rolling bagged" 
 AC5[30,1]<-"2"
@@ -2781,15 +2643,16 @@ AC5[34,1]<-"2"
 AC4[34,2:4]<-round(accuracy(pr.rol.h7.b[,5], out.of.sample[7:58,2])[c(2:3,5)],4)
 
 
-##### DIEBOLD MARIANO
+### Test de Diebold Mariano ###
 
-# Agregamos a la tabla el test de Diebold Mariano
+# Agregamos a la tabla el test de Diebold Mariano. 
 
-# Usamos como benchmark un AR(1)
+# Usamos como benchmark un AR(1).
 
-# Para esto generamos los pronósticos que resultan al utilizar el modelo AR(1)
+# Para esto generamos los pronósticos que resultan al utilizar el modelo AR(1).
 
 pr.bench <- ts(matrix(nrow = 58, ncol = 1, 0), frequency = 365, start=c(2019,12))
+
 for (i in 1:58) {
   temp <- window(data1[,2], start = c(2019,12), end = 2020.195 + (i-1)/365)
   f2 <- arima(temp, order=c(1,0,0))
@@ -2797,14 +2660,13 @@ for (i in 1:58) {
   pr.bench[i,1] <- forecast2$mean[1]
 }
 
-# Generamos los errores de pronósticos de todos los modelos utilizados 
+# Generamos los errores de pronósticos de todos los modelos utilizados. 
 
+# Separamos los casos según la cantidad de pasos adelante utilizados en cada pronóstico.
 
-# Separamos los casos según la cantidad de pasos adelante utilizados en cada pronóstico
+### h=1 ###
 
-### h=1 
-
-# Esquema fijo
+# Esquema fijo.
 
 error.bench <- out.of.sample[,2]-pr.bench
 
@@ -2820,9 +2682,9 @@ error.var.f.h1 <- out.of.sample[,2]-pr.f.h1[,5]
 
 error.favar.f.h1 <- out.of.sample[,2]-pr.f.h1[,6]
 
-# Esquema recursivo
+# Esquema recursivo.
 
-.h1 <- out.of.sample[,2]-pr.rec.h1[,1]
+error.arima.rec.h1 <- out.of.sample[,2]-pr.rec.h1[,1]
 
 error.arimax.rec.h1 <- out.of.sample[,2]-pr.rec.h1[,2]
 
@@ -2834,7 +2696,7 @@ error.var.rec.h1 <- out.of.sample[,2]-pr.rec.h1[,5]
 
 error.favar.rec.h1 <- out.of.sample[,2]-pr.rec.h1[,6]
 
-# Esquema rolling 
+# Esquema rolling.
 
 error.arima.rol.h1 <- out.of.sample[,2]-pr.rol.h1[,1]
 
@@ -2850,7 +2712,7 @@ error.favar.rol.h1 <- out.of.sample[,2]-pr.rol.h1[,6]
 
 # Bagging 
 
-# Esquema fijo bagged
+# Esquema fijo bagged.
 
 error.arima.f.h1.b <- out.of.sample[,2]-pr.f.h1.b[,1]
 
@@ -2862,9 +2724,9 @@ error.var.f.h1.b <- out.of.sample[,2]-pr.f.h1.b[,4]
 
 error.favar.f.h1.b <- out.of.sample[,2]-pr.f.h1.b[,5]
 
-# Esquema recursivo bagged
+# Esquema recursivo bagged.
 
-.h1.b <- out.of.sample[,2]-pr.rec.h1.b[,1]
+error.arima.f.h1.b <- out.of.sample[,2]-pr.rec.h1.b[,1]
 
 error.arimax.rec.h1.b <- out.of.sample[,2]-pr.rec.h1.b[,2]
 
@@ -2874,7 +2736,7 @@ error.var.rec.h1.b <- out.of.sample[,2]-pr.rec.h1.b[,4]
 
 error.favar.rec.h1.b <- out.of.sample[,2]-pr.rec.h1.b[,5]
 
-# Esquema rolling bagged
+# Esquema rolling bagged.
 
 error.arima.rol.h1.b <- out.of.sample[,2]-pr.rol.h1.b[,1]
 
@@ -2885,7 +2747,6 @@ error.ets.rol.h1.b <- out.of.sample[,2]-pr.rol.h1.b[,3]
 error.var.rol.h1.b <- out.of.sample[,2]-pr.rol.h1.b[,4]
 
 error.favar.rol.h1.b <- out.of.sample[,2]-pr.rol.h1.b[,5]
-
 
 ### h=2 
 
@@ -2901,7 +2762,7 @@ error.var.f.h2 <- out.of.sample[,2]-pr.f.h2[,5]
 
 error.favar.f.h2 <- out.of.sample[,2]-pr.f.h2[,6]
 
-# Esquema recursivo
+# Esquema recursivo.
 
 error.arima.rec.h2 <- out.of.sample[,2]-pr.rec.h2[,1]
 
@@ -2915,7 +2776,7 @@ error.var.rec.h2 <- out.of.sample[,2]-pr.rec.h2[,5]
 
 error.favar.rec.h2 <- out.of.sample[,2]-pr.rec.h2[,6]
 
-# Esquema rolling 
+# Esquema rolling. 
 
 error.arima.rol.h2 <- out.of.sample[,2]-pr.rol.h2[,1]
 
@@ -2931,7 +2792,7 @@ error.favar.rol.h2 <- out.of.sample[,2]-pr.rol.h2[,6]
 
 # Bagging 
 
-# Esquema fijo bagged
+# Esquema fijo bagged.
 
 error.arima.f.h2.b <- out.of.sample[,2]-pr.f.h2.b[,1]
 
@@ -2943,7 +2804,7 @@ error.var.f.h2.b <- out.of.sample[,2]-pr.f.h2.b[,4]
 
 error.favar.f.h2.b <- out.of.sample[,2]-pr.f.h2.b[,5]
 
-# Esquema recursivo bagged
+# Esquema recursivo bagged.
 
 error.arima.rec.h2.b <- out.of.sample[,2]-pr.rec.h2.b[,1]
 
@@ -2955,7 +2816,7 @@ error.var.rec.h2.b <- out.of.sample[,2]-pr.rec.h2.b[,4]
 
 error.favar.rec.h2.b <- out.of.sample[,2]-pr.rec.h2.b[,5]
 
-# Esquema rolling 
+# Esquema rolling.
 
 error.arima.rol.h2.b <- out.of.sample[,2]-pr.rol.h2.b[,1]
 
@@ -2966,7 +2827,6 @@ error.ets.rol.h2.b <- out.of.sample[,2]-pr.rol.h2.b[,3]
 error.var.rol.h2.b <- out.of.sample[,2]-pr.rol.h2.b[,4]
 
 error.favar.rol.h2.b <- out.of.sample[,2]-pr.rol.h2.b[,5]
-
 
 ### h=7
 
@@ -2982,7 +2842,7 @@ error.var.f.h7 <- out.of.sample[,2]-pr.f.h7[,5]
 
 error.favar.f.h7 <- out.of.sample[,2]-pr.f.h7[,6]
 
-# Esquema recursivo
+# Esquema recursivo.
 
 error.arima.rec.h7 <- out.of.sample[,2]-pr.rec.h7[,1]
 
@@ -2996,7 +2856,7 @@ error.var.rec.h7 <- out.of.sample[,2]-pr.rec.h7[,5]
 
 error.favar.rec.h7 <- out.of.sample[,2]-pr.rec.h7[,6]
 
-# Esquema rolling 
+# Esquema rolling. 
 
 error.arima.rol.h7 <- out.of.sample[,2]-pr.rol.h7[,1]
 
@@ -3010,9 +2870,9 @@ error.var.rol.h7 <- out.of.sample[,2]-pr.rol.h7[,5]
 
 error.favar.rol.h7 <- out.of.sample[,2]-pr.rol.h7[,6]
 
-# Bagging 
+# Bagging. 
 
-# Esquema fijo bagged
+# Esquema fijo bagged.
 
 error.arima.f.h7.b <- out.of.sample[,2]-pr.f.h7.b[,1]
 
@@ -3024,7 +2884,7 @@ error.var.f.h7.b <- out.of.sample[,2]-pr.f.h7.b[,5]
 
 error.favar.f.h7.b <- out.of.sample[,2]-pr.f.h7.b[,4]
 
-# Esquema recursivo bagged
+# Esquema recursivo bagged.
 
 error.arima.rec.h7.b <- out.of.sample[,2]-pr.rec.h7.b[,1]
 
@@ -3036,7 +2896,7 @@ error.var.rec.h7.b <- out.of.sample[,2]-pr.rec.h7.b[,5]
 
 error.favar.rec.h7.b <- out.of.sample[,2]-pr.rec.h7.b[,4]
 
-# Esquema rolling bagged
+# Esquema rolling bagged.
 
 error.arima.rol.h7.b <- out.of.sample[,2]-pr.rol.h7.b[,1]
 
@@ -3048,8 +2908,7 @@ error.var.rol.h7.b <- out.of.sample[,2]-pr.rol.h7.b[,5]
 
 error.favar.rol.h7.b <- out.of.sample[,2]-pr.rol.h7.b[,4]
 
-
-# Funciones de pérdida 
+# Funciones de pérdida.
 
 DL.arima.f.h1 <- error.arima.f.h1^{2} - error.bench^{2}
 
@@ -3063,7 +2922,7 @@ DL.var.f.h1 <- error.var.f.h1^{2} - error.bench^{2}
 
 DL.favar.f.h1 <- error.favar.f.h1^{2} - error.bench^{2}
 
-# Esquema recursivo 
+# Esquema recursivo.
 
 DL.arima.rec.h1 <- error.arima.rec.h1^{2} - error.bench^{2}
 
@@ -3077,7 +2936,7 @@ DL.var.rec.h1 <- error.var.rec.h1^{2} - error.bench^{2}
 
 DL.favar.rec.h1 <- error.favar.rec.h1^{2} - error.bench^{2}
 
-# Esquema rolling 
+# Esquema rolling.
 
 DL.arima.rec.h1 <- error.arima.rec.h1^{2} - error.bench^{2}
 
@@ -3103,7 +2962,7 @@ DL.var.f.h1.b <- error.var.f.h1.b^{2} - error.bench^{2}
 
 DL.favar.f.h1.b <- error.favar.f.h1.b^{2} - error.bench^{2}
 
-# Esquema recursivo 
+# Esquema recursivo.
 
 DL.arima.rec.h1.b <- error.arima.rec.h1.b^{2} - error.bench^{2}
 
@@ -3115,7 +2974,7 @@ DL.var.rec.h1.b <- error.var.rec.h1.b^{2} - error.bench^{2}
 
 DL.favar.rec.h1.b <- error.favar.rec.h1.b^{2} - error.bench^{2}
 
-# Esquema rolling 
+# Esquema rolling. 
 
 DL.arima.rec.h1.b <- error.arima.rec.h1.b^{2} - error.bench^{2}
 
@@ -3127,10 +2986,9 @@ DL.var.rec.h1.b <- error.var.rec.h1.b^{2} - error.bench^{2}
 
 DL.favar.rec.h1.b <- error.favar.rec.h1.b^{2} - error.bench^{2}
 
+### h=2 
 
-# h=2 
-
-# Esquema fijo 
+# Esquema fijo.
 
 DL.arima.f.h2 <- error.arima.f.h2^{2} - error.bench[-1,]^{2}
 
@@ -3144,7 +3002,7 @@ DL.var.f.h2 <- error.var.f.h2^{2} - error.bench[-1,]^{2}
 
 DL.favar.f.h2 <- error.favar.f.h2^{2} - error.bench[-1,]^{2}
 
-# Esquema recursivo 
+# Esquema recursivo.
 
 DL.arima.rec.h2 <- error.arima.rec.h2^{2} - error.bench[-1,]^{2}
 
@@ -3158,7 +3016,7 @@ DL.var.rec.h2 <- error.var.rec.h2^{2} - error.bench[-1,]^{2}
 
 DL.favar.rec.h2 <- error.favar.rec.h2^{2} - error.bench[-1,]^{2}
 
-# Esquema rolling 
+# Esquema rolling. 
 
 DL.arima.rec.h2 <- error.arima.rec.h2^{2} - error.bench[-1,]^{2}
 
@@ -3171,11 +3029,10 @@ DL.adl.rec.h2 <- error.adl.rec.h2^{2} - error.bench[-1,]^{2}
 DL.var.rec.h2 <- error.var.rec.h2^{2} - error.bench[-1,]^{2}
 
 DL.favar.rec.h2 <- error.favar.rec.h2^{2} - error.bench[-1,]^{2}
-
 
 # Bagging 
 
-# Esquema fijo 
+# Esquema fijo.
 
 DL.arima.f.h2.b <- error.arima.f.h2.b^{2} - error.bench[-1,]^{2}
 
@@ -3187,7 +3044,7 @@ DL.var.f.h2.b <- error.var.f.h2.b^{2} - error.bench[-1,]^{2}
 
 DL.favar.f.h2.b <- error.favar.f.h2.b^{2} - error.bench[-1,]^{2}
 
-# Esquema recursivo 
+# Esquema recursivo. 
 
 DL.arima.rec.h2.b <- error.arima.rec.h2.b^{2} - error.bench[-1,]^{2}
 
@@ -3199,7 +3056,7 @@ DL.var.rec.h2.b <- error.var.rec.h2.b^{2} - error.bench[-1,]^{2}
 
 DL.favar.rec.h2.b <- error.favar.rec.h2.b^{2} - error.bench[-1,]^{2}
 
-# Esquema rolling 
+# Esquema rolling. 
 
 DL.arima.rec.h2.b <- error.arima.rec.h2.b^{2} - error.bench[-1,]^{2}
 
@@ -3211,10 +3068,9 @@ DL.var.rec.h2.b <- error.var.rec.h2.b^{2} - error.bench[-1,]^{2}
 
 DL.favar.rec.h2.b <- error.favar.rec.h2.b^{2} - error.bench[-1,]^{2}
 
+### h = 7 
 
-# h = 7 
-
-# Esquema fijo 
+# Esquema fijo.
 
 DL.arima.f.h7 <- error.arima.f.h7^{2}  - error.bench^{2}
 
@@ -3228,7 +3084,7 @@ DL.var.f.h7 <- error.var.f.h7^{2}  - error.bench[7:58,]^{2}
 
 DL.favar.f.h7 <- error.favar.f.h7^{2}  - error.bench[7:58,]^{2}
 
-# Esquema recursivo 
+# Esquema recursivo.
 
 DL.arima.rec.h7 <- error.arima.rec.h7^{2}  - error.bench[7:58,]^{2}
 
@@ -3242,7 +3098,7 @@ DL.var.rec.h7 <- error.var.rec.h7^{2}  - error.bench[7:58,]^{2}
 
 DL.favar.rec.h7 <- error.favar.rec.h7^{2}  - error.bench[7:58,]^{2}
 
-# Esquema rolling 
+# Esquema rolling. 
 
 DL.arima.rec.h7 <- error.arima.rec.h7^{2}  - error.bench[7:58,]^{2}
 
@@ -3255,11 +3111,10 @@ DL.adl.rec.h7 <- error.adl.rec.h7^{2}  - error.bench[7:58,]^{2}
 DL.var.rec.h7 <- error.var.rec.h7^{2}  - error.bench[7:58,]^{2}
 
 DL.favar.rec.h7 <- error.favar.rec.h7^{2}  - error.bench[7:58,]^{2}
-
 
 # Bagging 
 
-# Esquema fijo 
+# Esquema fijo.
 
 DL.arima.f.h7.b <- error.arima.f.h7.b^{2}  - error.bench[7:58,]^{2}
 
@@ -3271,7 +3126,7 @@ DL.var.f.h7.b <- error.var.f.h7.b^{2}  - error.bench[7:58,]^{2}
 
 DL.favar.f.h7.b <- error.favar.f.h7.b^{2}  - error.bench[7:58,]^{2}
 
-# Esquema recursivo 
+# Esquema recursivo. 
 
 DL.arima.rec.h7.b <- error.arima.rec.h7.b^{2}  - error.bench[7:58,]^{2}
 
@@ -3283,7 +3138,7 @@ DL.var.rec.h7.b <- error.var.rec.h7.b^{2}  - error.bench[7:58,]^{2}
 
 DL.favar.rec.h7.b <- error.favar.rec.h7.b^{2}  - error.bench[7:58,]^{2}
 
-# Esquema rolling 
+# Esquema rolling.
 
 DL.arima.rec.h7.b.b <- error.arima.rec.h7.b^{2}  - error.bench[7:58,]^{2}
 
@@ -3295,12 +3150,11 @@ DL.var.rec.h7.b <- error.var.rec.h7.b^{2}  - error.bench[7:58,]^{2}
 
 DL.favar.rec.h7.b <- error.favar.rec.h7.b^{2}  - error.bench[7:58,]^{2}
 
-# Realizamos el test de Diebold Mariano, ajustamos por NW para cuando h>1
+# Realizamos el test de Diebold Mariano, ajustamos por NW para cuando h>1.
 
+#### h = 1 
 
-# h = 1 
-
-# estadístico 
+# Estadístico.
 
 AC[2,5]<-round(summary(lm(DL.arima.f.h1~1))$coefficients[3],4)
 AC[3,5]<-round(summary(lm(DL.arimax.f.h1~1))$coefficients[3],4)
@@ -3323,7 +3177,7 @@ AC[17,5]<-round(summary(lm(DL.adl.rec.h1~1))$coefficients[3],4)
 AC[18,5]<-round(summary(lm(DL.var.rec.h1~1))$coefficients[3],4)
 AC[19,5]<-round(summary(lm(DL.favar.rec.h1~1))$coefficients[3],4)
 
-# bagging
+# Bagging.
 
 AC[35,5]<-round(summary(lm(DL.arima.rol.h1.b~1))$coefficients[3],4)
 AC[21,5]<-round(summary(lm(DL.arimax.f.h1.b~1))$coefficients[3],4)
@@ -3343,7 +3197,7 @@ AC[32,5]<-round(summary(lm(DL.ets.rol.h1.b~1))$coefficients[3],4)
 AC[33,5]<-round(summary(lm(DL.var.rol.h1.b~1))$coefficients[3],4)
 AC[34,5]<-round(summary(lm(DL.favar.rol.h1.b~1))$coefficients[3],4)
 
-# p value 
+# P-value.
 
 AC[2,6]<-round(summary(lm(DL.arima.f.h1~1))$coefficients[4],4)
 AC[3,6]<-round(summary(lm(DL.arimax.f.h1~1))$coefficients[4],4)
@@ -3366,8 +3220,7 @@ AC[17,6]<-round(summary(lm(DL.adl.rec.h1~1))$coefficients[4],4)
 AC[18,6]<-round(summary(lm(DL.var.rec.h1~1))$coefficients[4],4)
 AC[19,6]<-round(summary(lm(DL.arima.f.h1.b~1))$coefficients[4],4)
 
-# bagging 
-
+# Bagging. 
 
 AC[20,6]<-round(summary(lm(DL.arima.f.h1.b~1))$coefficients[4],4)
 AC[21,6]<-round(summary(lm(DL.arimax.f.h1.b~1))$coefficients[4],4)
@@ -3387,12 +3240,9 @@ AC[32,6]<-round(summary(lm(DL.ets.rol.h1.b~1))$coefficients[4],4)
 AC[33,6]<-round(summary(lm(DL.var.rol.h1.b~1))$coefficients[4],4)
 AC[34,6]<-round(summary(lm(DL.favar.rol.h1.b~1))$coefficients[4],4)
 
+### h = 2
 
-
-#### h = 2
-
-# Estadístico 
-
+# Estadístico. 
 
 AC1[2,5]<-round(summary(lm(DL.arima.f.h2~1))$coefficients[3],4)
 AC1[3,5]<-round(summary(lm(DL.arimax.f.h2~1))$coefficients[3],4)
@@ -3415,7 +3265,7 @@ AC1[17,5]<-round(summary(lm(DL.adl.rec.h2~1))$coefficients[3],4)
 AC1[18,5]<-round(summary(lm(DL.var.rec.h2~1))$coefficients[3],4)
 AC1[19,5]<-round(summary(lm(DL.favar.rec.h2~1))$coefficients[3],4)
 
-# bagging
+# Bagging.
 
 AC1[35,5]<-round(summary(lm(DL.arima.rol.h2.b~1))$coefficients[3],4)
 AC1[21,5]<-round(summary(lm(DL.arimax.f.h2.b~1))$coefficients[3],4)
@@ -3435,10 +3285,9 @@ AC1[32,5]<-round(summary(lm(DL.ets.rol.h2.b~1))$coefficients[3],4)
 AC1[33,5]<-round(summary(lm(DL.var.rol.h2.b~1))$coefficients[3],4)
 AC1[34,5]<-round(summary(lm(DL.favar.rol.h2.b~1))$coefficients[3],4)
 
+# P-value.
 
-# p value 
-
-# esquema fijo 
+# Esquema fijo.
 
 AC1[2,6]<-round(coeftest(lm(DL.arima.f.h2~1), vcov = NeweyWest(lm(DL.arima.f.h2~1)))[4],4)
 AC1[3,6]<-round(coeftest(lm(DL.arimax.f.h2~1), vcov = NeweyWest(lm(DL.arimax.f.h2~1)))[4],4)
@@ -3447,7 +3296,7 @@ AC1[5,6]<-round(coeftest(lm(DL.adl.f.h2~1), vcov = NeweyWest(lm(DL.arimax.f.h2~1
 AC1[6,6]<-round(coeftest(lm(DL.var.f.h2~1), vcov = NeweyWest(lm(DL.var.f.h2~1)))[4],4)
 AC1[7,6]<-round(coeftest(lm(DL.favar.f.h2~1), vcov = NeweyWest(lm(DL.favar.f.h2~1)))[4],4)
 
-# esquema recursivo 
+# Esquema recursivo.
 
 AC1[8,6]<-round(coeftest(lm(DL.arima.rec.h2~1), vcov = NeweyWest(lm(DL.arima.rec.h2~1)))[4],4)
 AC1[9,6]<-round(coeftest(lm(DL.arimax.rec.h2~1), vcov = NeweyWest(lm(DL.arimax.rec.h2~1)))[4],4)
@@ -3456,7 +3305,7 @@ AC1[11,6]<-round(coeftest(lm(DL.adl.rec.h2~1), vcov = NeweyWest(lm(DL.arimax.rec
 AC1[12,6]<-round(coeftest(lm(DL.var.rec.h2~1), vcov = NeweyWest(lm(DL.var.rec.h2~1)))[4],4)
 AC1[13,6]<-round(coeftest(lm(DL.favar.rec.h2~1), vcov = NeweyWest(lm(DL.favar.rec.h2~1)))[4],4)
 
-# esquema rolling 
+# Esquema rolling. 
 
 AC1[14,6]<-round(coeftest(lm(DL.arima.rol.h2~1), vcov = NeweyWest(lm(DL.arima.rol.h2~1)))[4],4)
 AC1[15,6]<-round(coeftest(lm(DL.arimax.rol.h2~1), vcov = NeweyWest(lm(DL.arimax.rol.h2~1)))[4],4)
@@ -3465,14 +3314,13 @@ AC1[17,6]<-round(coeftest(lm(DL.adl.rol.h2~1), vcov = NeweyWest(lm(DL.arimax.rol
 AC1[18,6]<-round(coeftest(lm(DL.var.rol.h2~1), vcov = NeweyWest(lm(DL.var.rol.h2~1)))[4],4)
 AC1[19,6]<-round(coeftest(lm(DL.favar.rol.h2~1), vcov = NeweyWest(lm(DL.favar.rol.h2~1)))[4],4)
 
-# bagging 
+# Bagging.
 
 AC1[20,6]<-round(coeftest(lm(DL.arima.f.h2.b~1), vcov = NeweyWest(lm(DL.arima.f.h2.b~1)))[4],4)
 AC1[21,6]<-round(coeftest(lm(DL.arimax.f.h2.b~1), vcov = NeweyWest(lm(DL.arimax.f.h2.b~1)))[4],4)
 AC1[22,6]<-round(coeftest(lm(DL.ets.f.h2.b~1), vcov = NeweyWest(lm(DL.ets.f.h2.b~1)))[4],4)
 AC1[23,6]<-round(coeftest(lm(DL.var.f.h2.b~1), vcov = NeweyWest(lm(DL.var.f.h2.b~1)))[4],4)
 AC1[24,6]<-round(coeftest(lm(DL.favar.f.h2.b~1), vcov = NeweyWest(lm(DL.favar.f.h2.b~1)))[4],4)
-
 
 AC1[25,6]<-round(coeftest(lm(DL.arima.rec.h2.b~1), vcov = NeweyWest(lm(DL.arima.rec.h2.b~1)))[4],4)
 AC1[26,6]<-round(coeftest(lm(DL.arimax.rec.h2.b~1), vcov = NeweyWest(lm(DL.arimax.rec.h2.b~1)))[4],4)
@@ -3486,11 +3334,9 @@ AC1[32,6]<-round(coeftest(lm(DL.ets.rol.h2.b~1), vcov = NeweyWest(lm(DL.ets.rol.
 AC1[33,6]<-round(coeftest(lm(DL.var.rol.h2.b~1), vcov = NeweyWest(lm(DL.var.rol.h2.b~1)))[4],4)
 AC1[34,6]<-round(coeftest(lm(DL.favar.rol.h2.b~1), vcov = NeweyWest(lm(DL.favar.rol.h2.b~1)))[4],4)
 
+### h= 7 
 
-# h= 7 
-
-# Estadístico 
-
+# Estadístico.
 
 AC4[2,5]<-round(summary(lm(DL.arima.f.h7~1))$coefficients[3],4)
 AC4[3,5]<-round(summary(lm(DL.arimax.f.h7~1))$coefficients[3],4)
@@ -3513,7 +3359,7 @@ AC4[17,5]<-round(summary(lm(DL.adl.rec.h7~1))$coefficients[3],4)
 AC4[18,5]<-round(summary(lm(DL.var.rec.h7~1))$coefficients[3],4)
 AC4[19,5]<-round(summary(lm(DL.favar.rec.h7~1))$coefficients[3],4)
 
-# bagging
+# Bagging.
 
 AC4[35,5]<-round(summary(lm(DL.arima.rol.h7.b~1))$coefficients[3],4)
 AC4[21,5]<-round(summary(lm(DL.arimax.f.h7.b~1))$coefficients[3],4)
@@ -3533,10 +3379,9 @@ AC4[32,5]<-round(summary(lm(DL.ets.rol.h7.b~1))$coefficients[3],4)
 AC4[33,5]<-round(summary(lm(DL.var.rol.h7.b~1))$coefficients[3],4)
 AC4[34,5]<-round(summary(lm(DL.favar.rol.h7.b~1))$coefficients[3],4)
 
+# P-value. 
 
-# p value 
-
-# esquema fijo 
+# Esquema fijo. 
 
 AC4[2,6]<-round(coeftest(lm(DL.arima.f.h7~1), vcov = NeweyWest(lm(DL.arima.f.h7~1)))[4],4)
 AC4[3,6]<-round(coeftest(lm(DL.arimax.f.h7~1), vcov = NeweyWest(lm(DL.arimax.f.h7~1)))[4],4)
@@ -3545,7 +3390,7 @@ AC4[5,6]<-round(coeftest(lm(DL.adl.f.h7~1), vcov = NeweyWest(lm(DL.arimax.f.h7~1
 AC4[6,6]<-round(coeftest(lm(DL.var.f.h7~1), vcov = NeweyWest(lm(DL.var.f.h7~1)))[4],4)
 AC4[7,6]<-round(coeftest(lm(DL.favar.f.h7~1), vcov = NeweyWest(lm(DL.favar.f.h7~1)))[4],4)
 
-# esquema recursivo 
+# Esquema recursivo. 
 
 AC4[8,6]<-round(coeftest(lm(DL.arima.rec.h7~1), vcov = NeweyWest(lm(DL.arima.rec.h7~1)))[4],4)
 AC4[9,6]<-round(coeftest(lm(DL.arimax.rec.h7~1), vcov = NeweyWest(lm(DL.arimax.rec.h7~1)))[4],4)
@@ -3554,7 +3399,7 @@ AC4[11,6]<-round(coeftest(lm(DL.adl.rec.h7~1), vcov = NeweyWest(lm(DL.arimax.rec
 AC4[12,6]<-round(coeftest(lm(DL.var.rec.h7~1), vcov = NeweyWest(lm(DL.var.rec.h7~1)))[4],4)
 AC4[13,6]<-round(coeftest(lm(DL.favar.rec.h7~1), vcov = NeweyWest(lm(DL.favar.rec.h7~1)))[4],4)
 
-# esquema rolling 
+# Esquema rolling. 
 
 AC4[14,6]<-round(coeftest(lm(DL.arima.rol.h7~1), vcov = NeweyWest(lm(DL.arima.rol.h7~1)))[4],4)
 AC4[15,6]<-round(coeftest(lm(DL.arimax.rol.h7~1), vcov = NeweyWest(lm(DL.arimax.rol.h7~1)))[4],4)
@@ -3563,14 +3408,13 @@ AC4[17,6]<-round(coeftest(lm(DL.adl.rol.h7~1), vcov = NeweyWest(lm(DL.arimax.rol
 AC4[18,6]<-round(coeftest(lm(DL.var.rol.h7~1), vcov = NeweyWest(lm(DL.var.rol.h7~1)))[4],4)
 AC4[19,6]<-round(coeftest(lm(DL.favar.rol.h7~1), vcov = NeweyWest(lm(DL.favar.rol.h7~1)))[4],4)
 
-# bagging 
+# Bagging.
 
 AC4[20,6]<-round(coeftest(lm(DL.arima.f.h7.b~1), vcov = NeweyWest(lm(DL.arima.f.h7.b~1)))[4],4)
 AC4[21,6]<-round(coeftest(lm(DL.arimax.f.h7.b~1), vcov = NeweyWest(lm(DL.arimax.f.h7.b~1)))[4],4)
 AC4[22,6]<-round(coeftest(lm(DL.ets.f.h7.b~1), vcov = NeweyWest(lm(DL.ets.f.h7.b~1)))[4],4)
 AC4[23,6]<-round(coeftest(lm(DL.var.f.h7.b~1), vcov = NeweyWest(lm(DL.var.f.h7.b~1)))[4],4)
 AC4[24,6]<-round(coeftest(lm(DL.favar.f.h7.b~1), vcov = NeweyWest(lm(DL.favar.f.h7.b~1)))[4],4)
-
 
 AC4[25,6]<-round(coeftest(lm(DL.arima.rec.h7.b~1), vcov = NeweyWest(lm(DL.arima.rec.h7.b~1)))[4],4)
 AC4[26,6]<-round(coeftest(lm(DL.arimax.rec.h7.b~1), vcov = NeweyWest(lm(DL.arimax.rec.h7.b~1)))[4],4)
@@ -3584,7 +3428,6 @@ AC4[32,6]<-round(coeftest(lm(DL.ets.rol.h7.b~1), vcov = NeweyWest(lm(DL.ets.rol.
 AC4[33,6]<-round(coeftest(lm(DL.var.rol.h7.b~1), vcov = NeweyWest(lm(DL.var.rol.h7.b~1)))[4],4)
 AC4[34,6]<-round(coeftest(lm(DL.favar.rol.h7.b~1), vcov = NeweyWest(lm(DL.favar.rol.h7.b~1)))[4],4)
 
-
 # Medidas de accuracy comparables 
 
 
@@ -3595,26 +3438,19 @@ AC4[34,6]<-round(coeftest(lm(DL.favar.rol.h7.b~1), vcov = NeweyWest(lm(DL.favar.
 
 
 
-# Test de Giacomini Rossi 
 
-# Para este test hacemos las funciones cuadraticas
+
+
+
+
+#### Test de Giacomini Rossi ####
+
+# Para realizar este test, vamos a plantear las funciones de 
+# pérdida cuadráticas. 
 
 ### h=1 
 
-# Esquema fijo
-
-import_csv_forecasts <- function(link){
-  temp <- read.csv(link)
-  temp <- temp[, -1:2]
-  return(temp)
-}
-
-
-pr.f.h1 <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/normales/pr.f.h1.csv")
-pr.f.h1 <- pr.f.h1[,-(1:3)]
-pr.f.h1 <- ts(pr.f.h1, frequency = 365, start = c(2019,12))
-
-
+# Esquema fijo.
 
 error.bench.sq <- error.bench^2 
 
@@ -3630,7 +3466,7 @@ error.var.f.h1.sq <- (out.of.sample[,2]-pr.f.h1[,5])^2
 
 error.favar.f.h1.sq <- (out.of.sample[,2]-pr.f.h1[,6])^2
 
-# Esquema recursivo
+# Esquema recursivo.
 
 error.arima.rec.h1.sq <- (out.of.sample[,2]-pr.rec.h1[,1])^2
 
@@ -3644,7 +3480,7 @@ error.var.rec.h1.sq <- (out.of.sample[,2]-pr.rec.h1[,5])^2
 
 error.favar.rec.h1.sq <- (out.of.sample[,2]-pr.rec.h1[,6])^2
 
-# Esquema rolling 
+# Esquema rolling.
 
 error.arima.rol.h1.sq <- (out.of.sample[,2]-pr.rol.h1[,1])^2
 
@@ -3660,7 +3496,7 @@ error.favar.rol.h1.sq <- (out.of.sample[,2]-pr.rol.h1[,6])^2
 
 # Bagging 
 
-# Esquema fijo bagged
+# Esquema fijo bagged.
 
 error.arima.f.h1.b.sq <- (out.of.sample[,2]-pr.f.h1.b[,1])^2
 
@@ -3672,7 +3508,7 @@ error.var.f.h1.b.sq <- (out.of.sample[,2]-pr.f.h1.b[,4])^2
 
 error.favar.f.h1.b.sq <- (out.of.sample[,2]-pr.f.h1.b[,5])^2
 
-# Esquema recursivo bagged
+# Esquema recursivo bagged.
 
 error.arima.rec.h1.b.sq <- (out.of.sample[,2]-pr.rec.h1.b[,1])^2
 
@@ -3684,7 +3520,7 @@ error.var.rec.h1.b.sq <- (out.of.sample[,2]-pr.rec.h1.b[,4])^2
 
 error.favar.rec.h1.b.sq <- (out.of.sample[,2]-pr.rec.h1.b[,5])^2
 
-# Esquema rolling bagged
+# Esquema rolling bagged.
 
 error.arima.rol.h1.b.sq <-  (out.of.sample[,2]-pr.rol.h1.b[,1])^2
 
@@ -3696,10 +3532,7 @@ error.var.rol.h1.b.sq <- (out.of.sample[,2]-pr.rol.h1.b[,4])^2
 
 error.favar.rol.h1.b.sq <- (out.of.sample[,2]-pr.rol.h1.b[,5])^2
 
-
 ### h=2 
-
-
 
 error.arima.f.h2.sq <- (out.of.sample[2:58,2]-pr.f.h2[,1])^{2}
 
@@ -3713,7 +3546,7 @@ error.var.f.h2.sq <- (out.of.sample[2:58,2]-pr.f.h2[,5])^{2}
 
 error.favar.f.h2.sq <- (out.of.sample[2:58,2]-pr.f.h2[,6])^{2}
 
-# Esquema recursivo
+# Esquema recursivo.
 
 error.arima.rec.h2.sq <- (out.of.sample[2:58,2]-pr.rec.h2[,1])^{2}
 
@@ -3727,7 +3560,7 @@ error.var.rec.h2.sq <- (out.of.sample[2:58,2]-pr.rec.h2[,5])^{2}
 
 error.favar.rec.h2.sq <- (out.of.sample[2:58,2]-pr.rec.h2[,6])^{2}
 
-# Esquema rolling 
+# Esquema rolling.
 
 error.arima.rol.h2.sq <- (out.of.sample[2:58,2]-pr.rol.h2[,1])^{2}
 
@@ -3741,10 +3574,9 @@ error.var.rol.h2.sq <- (out.of.sample[2:58,2]-pr.rol.h2[,5])^{2}
 
 error.favar.rol.h2.sq <- (out.of.sample[2:58,2]-pr.rol.h2[,6])^{2}
 
+# Bagging. 
 
-# Bagging 
-
-# Esquema fijo bagged
+# Esquema fijo bagged.
 
 error.arima.f.h2.b.sq <- (out.of.sample[,2]-pr.f.h2.b[,1])^{2}
 
@@ -3756,7 +3588,7 @@ error.var.f.h2.b.sq <- (out.of.sample[,2]-pr.f.h2.b[,4])^{2}
 
 error.favar.f.h2.b.sq <- (out.of.sample[,2]-pr.f.h2.b[,5])^{2}
 
-# Esquema recursivo bagged
+# Esquema recursivo bagged.
 
 error.arima.rec.h2.b.sq <- (out.of.sample[2:58,2]-pr.rec.h2.b[,1])^{2}
 
@@ -3768,7 +3600,7 @@ error.var.rec.h2.b.sq <- (out.of.sample[2:58,2]-pr.rec.h2.b[,4])^{2}
 
 error.favar.rec.h2.b.sq <- (out.of.sample[2:58,2]-pr.rec.h2.b[,5])^{2}
 
-# Esquema rolling 
+# Esquema rolling.
 
 error.arima.rol.h2.b.sq <- (out.of.sample[2:58,2]-pr.rol.h2.b[,1])^{2}
 
@@ -3794,7 +3626,7 @@ error.var.f.h7.sq <-  (out.of.sample[7:58,2]-pr.f.h7[,5])^2
 
 error.favar.f.h7.sq <- (out.of.sample[7:58,2]-pr.f.h7[,6])^2
 
-# Esquema recursivo
+# Esquema recursivo.
 
 error.arima.rec.h7.sq <- (out.of.sample[7:58,2]-pr.rec.h7[,1])^2
 
@@ -3808,7 +3640,7 @@ error.var.rec.h7.sq <- (out.of.sample[7:58,2]-pr.rec.h7[,5])^2
 
 error.favar.rec.h7.sq <- (out.of.sample[7:58,2]-pr.rec.h7[,6])^2
 
-# Esquema rolling 
+# Esquema rolling. 
 
 error.arima.rol.h7.sq <- (out.of.sample[7:58,2]-pr.rol.h7[,1])^2
 
@@ -3824,7 +3656,7 @@ error.favar.rol.h7.sq <- (out.of.sample[7:58,2]-pr.rol.h7[,6])^2
 
 # Bagging 
 
-# Esquema fijo bagged
+# Esquema fijo bagged.
 
 error.arima.f.h7.b.sq <- (out.of.sample[7:58,2]-pr.f.h7.b[,1])^2
 
@@ -3836,7 +3668,7 @@ error.var.f.h7.b.sq <- (out.of.sample[7:58,2]-pr.f.h7.b[,5])^2
 
 error.favar.f.h7.b.sq <- (out.of.sample[7:58,2]-pr.f.h7.b[,4])^2
 
-# Esquema recursivo bagged
+# Esquema recursivo bagged.
 
 error.arima.rec.h7.b.sq <- (out.of.sample[7:58,2]-pr.rec.h7.b[,1])^2
 
@@ -3848,7 +3680,7 @@ error.var.rec.h7.b.sq <- (out.of.sample[7:58,2]-pr.rec.h7.b[,5])^2
 
 error.favar.rec.h7.b.sq <- (out.of.sample[7:58,2]-pr.rec.h7.b[,4])^2
 
-# Esquema rolling bagged
+# Esquema rolling bagged.
 
 error.arima.rol.h7.b.sq <- (out.of.sample[7:58,2]-pr.rol.h7.b[,1])^2
 
@@ -3860,15 +3692,11 @@ error.var.rol.h7.b.sq <- (out.of.sample[7:58,2]-pr.rol.h7.b[,5])^2
 
 error.favar.rol.h7.b.sq <- (out.of.sample[7:58,2]-pr.rol.h7.b[,4])^2
 
-
-
-
-
+# Ahora graficamos.
 
 library(murphydiagram)
 
-
-# Pronosticos h=1 fijo.
+# Pronósticos h=1 fijo.
 
 gr1 <- fluctuation_test(error.arima.f.h1.sq, error.bench.sq[1,], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -3924,9 +3752,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Pronósticos: esquema fijo con un paso hacia adelante",
        caption = "Fuente: elaboración propia")
 
-
-
-# Pronosticos h=2 fijo.
+# Pronósticos h=2 fijo.
 
 gr1 <- fluctuation_test(error.arima.f.h2.sq, error.bench.sq[1,2:58], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -3980,8 +3806,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Pronósticos: esquema fijo con dos pasos hacia adelante",
        caption = "Fuente: elaboración propia")
 
-
-# Pronosticos h=7 fijo.
+# Pronósticos h=7 fijo.
 
 gr1 <- fluctuation_test(error.arima.f.h7.sq, error.bench.sq[1,7:58], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -4035,9 +3860,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Pronósticos: esquema fijo con siete pasos hacia adelante",
        caption = "Fuente: elaboración propia")
 
-
-
-# Pronosticos h=1 recursivo
+# Pronósticos h=1 recursivo.
 
 gr1 <- fluctuation_test(error.arima.rec.h1.sq, error.bench.sq[1,], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -4093,9 +3916,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Pronósticos: esquema recursivo con un paso hacia adelante",
        caption = "Fuente: elaboración propia")
 
-
-
-# Pronosticos h=2 recursivo
+# Pronósticos h=2 recursivo.
 
 gr1 <- fluctuation_test(error.arima.rec.h2.sq, error.bench.sq[1,2:58], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -4149,8 +3970,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Pronósticos: esquema recursivo con dos pasos hacia adelante",
        caption = "Fuente: elaboración propia")
 
-
-# Pronosticos h=7 recursivo.
+# Pronósticos h=7 recursivo.
 
 gr1 <- fluctuation_test(error.arima.rec.h7.sq, error.bench.sq[1,7:58], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -4204,10 +4024,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Pronósticos: esquema recursivo con siete pasos hacia adelante",
        caption = "Fuente: elaboración propia")
 
-
-
-
-# Pronosticos h=1 rolling
+# Pronósticos h=1 rolling.
 
 gr1 <- fluctuation_test(error.arima.rol.h1.sq, error.bench.sq[1,], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -4263,9 +4080,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Pronósticos: esquema rolling con un paso hacia adelante",
        caption = "Fuente: elaboración propia")
 
-
-
-# Pronosticos h=2 rolling
+# Pronósticos h=2 rolling.
 
 gr1 <- fluctuation_test(error.arima.rol.h2.sq, error.bench.sq[1,2:58], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -4320,7 +4135,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        caption = "Fuente: elaboración propia")
 
 
-# Pronosticos h=7 rolling.
+# Pronósticos h=7 rolling.
 
 gr1 <- fluctuation_test(error.arima.rol.h7.sq, error.bench.sq[1,7:58], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -4373,17 +4188,6 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   labs(title = "Fluctuation Test",
        subtitle = "Pronósticos: esquema rolling con siete pasos hacia adelante",
        caption = "Fuente: elaboración propia")
-
-
-
-
-
-
-
-
-
-
-
 
 # Pronosticos h=1 fijo bagged.
 
@@ -4439,9 +4243,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Pronósticos: esquema fijo bagged un paso hacia adelante",
        caption = "Fuente: elaboración propia")
 
-
-
-# Pronosticos h=2 fijo bagged.
+# Pronósticos h=2 fijo bagged.
 
 gr1 <- fluctuation_test(error.arima.f.h2.b.sq, error.bench.sq[1,1:58], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -4490,8 +4292,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Pronósticos: esquema fijo bagged dos pasos hacia adelante",
        caption = "Fuente: elaboración propia")
 
-
-# Pronosticos h=7 fijo bagged.
+# Pronósticos h=7 fijo bagged.
 
 gr1 <- fluctuation_test(error.arima.f.h7.b.sq, error.bench.sq[1,7:58], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -4541,23 +4342,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Pronósticos: esquema fijo bagged siete pasos hacia adelante",
        caption = "Fuente: elaboración propia")
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Pronosticos h=1 recursivo bagged
+# Pronósticos h=1 recursivo bagged.
 
 gr1 <- fluctuation_test(error.arima.rec.h1.b.sq, error.bench.sq[1,], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -4611,7 +4396,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
 
 ## PROBLEMA ##
 
-# Pronosticos h=2 recursivo
+# Pronósticos h=2 recursivo.
 
 gr1 <- fluctuation_test(error.arima.rec.h2.b.sq, error.bench.sq[1,2:58], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -4661,8 +4446,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Pronósticos: esquema recursivo bagged dos pasos hacia adelante",
        caption = "Fuente: elaboración propia")
 
-
-# Pronosticos h=7 recursivo.
+# Pronósticos h=7 recursivo.
 
 gr1 <- fluctuation_test(error.arima.rol.h7.b.sq, error.bench.sq[1,7:58], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -4712,10 +4496,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Pronósticos: esquema recursivo bagged siete pasos hacia adelante",
        caption = "Fuente: elaboración propia")
 
-
-
-
-# Pronosticos h=1 rolling
+# Pronósticos h=1 rolling.
 
 gr1 <- fluctuation_test(error.arima.rol.h1.b.sq, error.bench.sq[1,], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -4767,9 +4548,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Pronósticos: esquema rolling bagged un paso hacia adelante",
        caption = "Fuente: elaboración propia")
 
-
-
-# Pronosticos h=2 rolling
+# Pronósticos h=2 rolling.
 
 gr1 <- fluctuation_test(error.arima.rol.h2.b.sq, error.bench.sq[1,2:58], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -4819,8 +4598,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Pronósticos: esquema rolling bagged dos pasos hacia adelante",
        caption = "Fuente: elaboración propia")
 
-
-# Pronosticos h=7 rolling.
+# Pronósticos h=7 rolling.
 
 gr1 <- fluctuation_test(error.arima.rol.h7.b.sq, error.bench.sq[1,7:58], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -4870,9 +4648,8 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Pronósticos: esquema rolling bagged siete pasos hacia adelante",
        caption = "Fuente: elaboración propia")
 
-
-
-# Comparamos cada una de las estimaciones con su version bagged.
+# A continuación, haremos el test de Giacomini-Rossi comparando a cada modelo con 
+# su versión bagged. Graficamos por esquema-ventana.
 
 # Fijos h = 1.
 
@@ -4924,7 +4701,6 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Comparación pronósticos vs. bagging: esquema fijo un paso adelante",
        caption = "Nota: valores negativos reflejan un mejor desempeño de la versión bagging. \
        Fuente: elaboración propia")
-
 
 # Fijos h = 2.
 
@@ -4981,7 +4757,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        caption = "Nota: valores negativos reflejan un mejor desempeño de la versión bagging. \
        Fuente: elaboración propia")
 
-# Fijo con h=7
+# Fijo con h=7.
 
 rm(gr1c, gr2c, gr3c, gr4c, gr5c, dm.1c, 
    values.gr1c, values.gr2c, values.gr3c,
@@ -5035,10 +4811,6 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Comparación pronósticos vs. bagging: esquema fijo siente pasos adelante",
        caption = "Nota: valores negativos reflejan un mejor desempeño de la versión bagging. \
        Fuente: elaboración propia")
-
-
-
-
 
 # Rolling h = 1.
 
@@ -5095,9 +4867,6 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        caption = "Nota: valores negativos reflejan un mejor desempeño de la versión bagging. \
        Fuente: elaboración propia")
 
-
-
-
 # Rolling h = 2.
 
 rm(gr1c, gr2c, gr3c, gr4c, gr5c, dm.1c, 
@@ -5153,8 +4922,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        caption = "Nota: valores negativos reflejan un mejor desempeño de la versión bagging. \
        Fuente: elaboración propia")
 
-
-# Rolling con h=7
+# Rolling con h=7.
 
 rm(gr1c, gr2c, gr3c, gr4c, gr5c, dm.1c, 
    values.gr1c, values.gr2c, values.gr3c,
@@ -5208,9 +4976,6 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Comparación pronósticos vs. bagging: esquema rolling siete pasos adelante",
        caption = "Nota: valores negativos reflejan un mejor desempeño de la versión bagging. \
        Fuente: elaboración propia")
-
-
-
 
 # Recursivo h = 1.
 
@@ -5266,9 +5031,6 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Comparación pronósticos vs. bagging: esquema recursivo un paso adelante",
        caption = "Nota: valores negativos reflejan un mejor desempeño de la versión bagging. \
        Fuente: elaboración propia")
-
-
-
 
 # Recursivo h = 2.
 
@@ -5380,12 +5142,4 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Comparación pronósticos vs. bagging: esquema recursivo siete pasos adelante",
        caption = "Nota: valores negativos reflejan un mejor desempeño de la versión bagging. \
        Fuente: elaboración propia")
-
-
-
-
-
-
-
-
 
