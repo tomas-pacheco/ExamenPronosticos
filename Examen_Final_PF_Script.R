@@ -39,6 +39,8 @@ rownames(data) <- data$time
 colnames(data)
 data <- data[,-c(12,13,14,18,19,20,21,22,23)]
 
+setwd("C:\\Users\\Tomas\\Desktop\\Pronosticos_Final\\Script\\Graficos")
+
 # Construimos las nuevas variables.
 
 # Las muertes en Argentina respecto de las muertes en el resto del mundo. 
@@ -103,7 +105,6 @@ autoplot(twfav, ts.colour = colores[2]) +
 
 ggsave(file="FAVs.eps", width=6.5, height=4, dpi=300)
 
-
 autoplot(twret, ts.colour = colores[3]) + 
   ggtitle("Evolución de los retweets que recibe AF en Twitter") + 
   xlab("Tiempo") + 
@@ -126,7 +127,6 @@ autoplot(reservasbcra, ts.colour = colores2[7]) +
   labs(caption = "Fuente: elaboración propia con datos del BCRA") 
 
 ggsave(file="ReservasBCRA.eps", width=6.5, height=4, dpi=300)
-
 
 autoplot(tasaint, ts.colour = colores[4]) + 
   ggtitle("Evolución de la tasa de interés") + 
