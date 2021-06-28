@@ -392,6 +392,314 @@ serial.test(var.dl)
 # Rechazamos la hipótesis nula de que los residuos están
 # incorrelacionados. Por lo tanto, no podemos validar el modelo. 
 
+# Ahora lo que haremos es interpretar económicamente al modelo VAR.
+
+# Para hacer esto primero haremos un test de restricciones, con el objetivo
+# de ver si las variables explicativas causan en el sentido de Granger
+# al sentimiento del presidente.
+
+variables.var <- colnames(in.sample.d)[-1]
+
+causality(var.dl, cause = c("twfav"))
+
+
+# Como vimos en clase, este comando tiene dos tests. El primero de ellos
+# evalúa la hipótesis nula de no causalidad en el sentido de Granger. 
+
+
+# En nuestro caso, rechazamos esta hipótesis a niveles tradicionales
+# de significación. Esto nos dice que la tasa Badlar, los activos
+# externos netos y el tipo de cambio causan en el sentido de Granger
+# a la cantidad de dinero en la economía.
+# En el segundo test se hace una prueba de "causalidad instantánea", en la
+# que la H0 es que hay correlación nula entre los errores de las variables.
+# En este caso, solo rechazamos al 10%, es decir, que no hay una fuerte evidencia
+# de que la causalidad sea instánea. 
+
+# Para concluir, podemos decir que la información de que los "predictores" causan
+# en el sentido de Granger a M1 nos dice que estas variables tienen información
+# sobre nuestra variable de interés, lo que nos ayudará a la hora de pronosticar.
+
+
+
+# Ahora, las funciones de impulso-respuesta.
+
+sent.fir <- irf(var.dl, impulse = variables.var, 
+              response = "sentsmooth", n.ahead = 7,
+              ortho = FALSE, runs = 50)
+
+fir.cases <- function(variable){
+  t <- as.data.frame(cbind(seq(0,7,1), sent.fir$irf[[variable]],
+                           sent.fir$Lower[[variable]],
+                           sent.fir$Upper[[variable]]))
+  colnames(t) <- c("day","irf", "lower", "upper")
+  return(t)
+}
+
+ggplot(fir.cases("twfav") , aes(y = irf, x = day)) +
+  theme_bw() + 
+  xlim(0,7) +
+  ylim(-0.01,0.01)+
+  geom_hline(aes(yintercept = 0), size = 1, color = colores[1])+
+  geom_line(aes(y = upper , x = day), size = 1, color = colores[1],
+            linetype = "dashed") +
+  geom_line(aes(y = irf, x = day), size = 1, color = "black") +
+  geom_line(aes(y = lower, x = day), size = 1, color = colores[1], 
+            linetype = "dashed")+
+  xlab("95 % Bootstrap CI, 1000 runs") +
+  ylab("Sentimiento del presidente") + 
+  theme(plot.title = element_text(hjust = 0.5))+
+  ggtitle("IRF de Cantidad de Favoritos")
+
+ggplot(fir.cases("twfav") , aes(y = irf, x = day)) +
+  theme_bw() + 
+  xlim(0,7) +
+  ylim(-0.01,0.01)+
+  geom_hline(aes(yintercept = 0), size = 1, color = colores[2])+
+  geom_line(aes(y = upper , x = day), size = 1, color = colores[2],
+            linetype = "dashed") +
+  geom_line(aes(y = irf, x = day), size = 1, color = "black") +
+  geom_line(aes(y = lower, x = day), size = 1, color = colores[2], 
+            linetype = "dashed")+
+  xlab("95 % Bootstrap CI, 1000 runs") +
+  ylab("Sentimiento del presidente") + 
+  theme(plot.title = element_text(hjust = 0.5))+
+  ggtitle("IRF de Cantidad de Favoritos")
+
+ggplot(fir.cases("tasaint") , aes(y = irf, x = day)) +
+  theme_bw() + 
+  xlim(0,7) +
+  ylim(-0.025,0.025)+
+  geom_hline(aes(yintercept = 0), size = 1, color = colores[3])+
+  geom_line(aes(y = upper , x = day), size = 1, color = colores[3],
+            linetype = "dashed") +
+  geom_line(aes(y = irf, x = day), size = 1, color = "black") +
+  geom_line(aes(y = lower, x = day), size = 1, color = colores[3], 
+            linetype = "dashed")+
+  xlab("95 % Bootstrap CI, 1000 runs") +
+  ylab("Sentimiento del presidente") + 
+  theme(plot.title = element_text(hjust = 0.5))+
+  ggtitle("IRF de Tasa de interés")
+
+ggplot(fir.cases("basemon") , aes(y = irf, x = day)) +
+  theme_bw() + 
+  xlim(0,7) +
+  ylim(-0.025,0.025)+
+  geom_hline(aes(yintercept = 0), size = 1, color = colores[4])+
+  geom_line(aes(y = upper , x = day), size = 1, color = colores[4],
+            linetype = "dashed") +
+  geom_line(aes(y = irf, x = day), size = 1, color = "black") +
+  geom_line(aes(y = lower, x = day), size = 1, color = colores[4], 
+            linetype = "dashed")+
+  xlab("95 % Bootstrap CI, 1000 runs") +
+  ylab("Sentimiento del presidente") + 
+  theme(plot.title = element_text(hjust = 0.5))+
+  ggtitle("IRF de Base Monetaria")
+
+ggplot(fir.cases("casosarg") , aes(y = irf, x = day)) +
+  theme_bw() + 
+  xlim(0,7) +
+  ylim(-0.025,0.025)+
+  geom_hline(aes(yintercept = 0), size = 1, color = colores[5])+
+  geom_line(aes(y = upper , x = day), size = 1, color = colores[5],
+            linetype = "dashed") +
+  geom_line(aes(y = irf, x = day), size = 1, color = "black") +
+  geom_line(aes(y = lower, x = day), size = 1, color = colores[5], 
+            linetype = "dashed")+
+  xlab("95 % Bootstrap CI, 1000 runs") +
+  ylab("Sentimiento del presidente") + 
+  theme(plot.title = element_text(hjust = 0.5))+
+  ggtitle("IRF de Casos COVID-19 en Argentina")
+
+
+ggplot(fir.cases("muertosarg") , aes(y = irf, x = day)) +
+  theme_bw() + 
+  xlim(0,7) +
+  ylim(-0.0025,0.0025)+
+  geom_hline(aes(yintercept = 0), size = 1, color = colores[6])+
+  geom_line(aes(y = upper , x = day), size = 1, color = colores[6],
+            linetype = "dashed") +
+  geom_line(aes(y = irf, x = day), size = 1, color = "black") +
+  geom_line(aes(y = lower, x = day), size = 1, color = colores[6], 
+            linetype = "dashed")+
+  xlab("95 % Bootstrap CI, 1000 runs") +
+  ylab("Sentimiento del presidente") + 
+  theme(plot.title = element_text(hjust = 0.5))+
+  ggtitle("IRF de Muertes por COVID-19 en Argentina")
+
+ggplot(fir.cases("vacunasarg") , aes(y = irf, x = day)) +
+  theme_bw() + 
+  xlim(0,7) +
+  ylim(-0.02,0.02)+
+  geom_hline(aes(yintercept = 0), size = 1, color = colores[1])+
+  geom_line(aes(y = upper , x = day), size = 1, color = colores[1],
+            linetype = "dashed") +
+  geom_line(aes(y = irf, x = day), size = 1, color = "black") +
+  geom_line(aes(y = lower, x = day), size = 1, color = colores[1], 
+            linetype = "dashed")+
+  xlab("95 % Bootstrap CI, 1000 runs") +
+  ylab("Sentimiento del presidente") + 
+  theme(plot.title = element_text(hjust = 0.5))+
+  ggtitle("IRF de Vacunas Aplicadas")
+
+ggplot(fir.cases("maxtemp") , aes(y = irf, x = day)) +
+  theme_bw() + 
+  xlim(0,7) +
+  ylim(-0.02,0.02)+
+  geom_hline(aes(yintercept = 0), size = 1, color = colores[1])+
+  geom_line(aes(y = upper , x = day), size = 1, color = colores[1],
+            linetype = "dashed") +
+  geom_line(aes(y = irf, x = day), size = 1, color = "black") +
+  geom_line(aes(y = lower, x = day), size = 1, color = colores[1], 
+            linetype = "dashed")+
+  xlab("95 % Bootstrap CI, 1000 runs") +
+  ylab("Sentimiento del presidente") + 
+  theme(plot.title = element_text(hjust = 0.5))+
+  ggtitle("IRF de Temperatura Máxima")
+
+ggplot(fir.cases("mintemp") , aes(y = irf, x = day)) +
+  theme_bw() + 
+  xlim(0,7) +
+  ylim(-0.02,0.02)+
+  geom_hline(aes(yintercept = 0), size = 1, color = colores[2])+
+  geom_line(aes(y = upper , x = day), size = 1, color = colores[2],
+            linetype = "dashed") +
+  geom_line(aes(y = irf, x = day), size = 1, color = "black") +
+  geom_line(aes(y = lower, x = day), size = 1, color = colores[2], 
+            linetype = "dashed")+
+  xlab("95 % Bootstrap CI, 1000 runs") +
+  ylab("Sentimiento del presidente") + 
+  theme(plot.title = element_text(hjust = 0.5))+
+  ggtitle("IRF de Temperatura Mínima")
+
+ggplot(fir.cases("casos.arg.rel") , aes(y = irf, x = day)) +
+  theme_bw() + 
+  xlim(0,7) +
+  ylim(-6,6)+
+  geom_hline(aes(yintercept = 0), size = 1, color = colores[3])+
+  geom_line(aes(y = upper , x = day), size = 1, color = colores[3],
+            linetype = "dashed") +
+  geom_line(aes(y = irf, x = day), size = 1, color = "black") +
+  geom_line(aes(y = lower, x = day), size = 1, color = colores[3], 
+            linetype = "dashed")+
+  xlab("95 % Bootstrap CI, 1000 runs") +
+  ylab("Sentimiento del presidente") + 
+  theme(plot.title = element_text(hjust = 0.5))+
+  ggtitle("IRF de Casos COVID-19 Relativos")
+
+
+ggplot(fir.cases("muertes.arg.rel") , aes(y = irf, x = day)) +
+  theme_bw() + 
+  xlim(0,7) +
+  ylim(-3.5,3)+
+  geom_hline(aes(yintercept = 0), size = 1, color = colores[4])+
+  geom_line(aes(y = upper , x = day), size = 1, color = colores[4],
+            linetype = "dashed") +
+  geom_line(aes(y = irf, x = day), size = 1, color = "black") +
+  geom_line(aes(y = lower, x = day), size = 1, color = colores[4], 
+            linetype = "dashed")+
+  xlab("95 % Bootstrap CI, 1000 runs") +
+  ylab("Sentimiento del presidente") + 
+  theme(plot.title = element_text(hjust = 0.5))+
+  ggtitle("IRF de Muertes por COVID-19 Relativos")
+
+ggplot(fir.cases("reservas.est") , aes(y = irf, x = day)) +
+  theme_bw() + 
+  xlim(0,7) +
+  ylim(-0.005,0.005)+
+  geom_hline(aes(yintercept = 0), size = 1, color = colores[5])+
+  geom_line(aes(y = upper , x = day), size = 1, color = colores[5],
+            linetype = "dashed") +
+  geom_line(aes(y = irf, x = day), size = 1, color = "black") +
+  geom_line(aes(y = lower, x = day), size = 1, color = colores[5], 
+            linetype = "dashed")+
+  xlab("95 % Bootstrap CI, 1000 runs") +
+  ylab("Sentimiento del presidente") + 
+  theme(plot.title = element_text(hjust = 0.5))+
+  ggtitle("IRF de Reservas del BCRA")
+
+
+ggplot(fir.cases("dolar.est") , aes(y = irf, x = day)) +
+  theme_bw() + 
+  xlim(0,7) +
+  ylim(-0.01,0.01)+
+  geom_hline(aes(yintercept = 0), size = 1, color = colores[6])+
+  geom_line(aes(y = upper , x = day), size = 1, color = colores[6],
+            linetype = "dashed") +
+  geom_line(aes(y = irf, x = day), size = 1, color = "black") +
+  geom_line(aes(y = lower, x = day), size = 1, color = colores[6], 
+            linetype = "dashed")+
+  xlab("95 % Bootstrap CI, 1000 runs") +
+  ylab("Sentimiento del presidente") + 
+  theme(plot.title = element_text(hjust = 0.5))+
+  ggtitle("IRF del Tipo de Cambio")
+
+
+
+
+
+
+
+variables.var
+
+
+
+# Descomposición de la varianza.
+
+var.decomp <- fevd(var.dl, n.ahead=7)
+
+library(reshape)
+
+vd <- as.data.frame(cbind(seq(1,7,1),
+                          var.decomp$sentsmooth[,14],
+                          var.decomp$sentsmooth[,13],
+                          var.decomp$sentsmooth[,12],
+                          var.decomp$sentsmooth[,11],
+                          var.decomp$sentsmooth[,10],
+                          var.decomp$sentsmooth[,9],
+                          var.decomp$sentsmooth[,8],
+                          var.decomp$sentsmooth[,7],
+                          var.decomp$sentsmooth[,6],
+                          var.decomp$sentsmooth[,5],
+                          var.decomp$sentsmooth[,4],
+                          var.decomp$sentsmooth[,3],
+                          var.decomp$sentsmooth[,2],
+                          var.decomp$sentsmooth[,1]))
+
+colnames(vd) <- c("id", rev(c("sentsmooth", variables.var)))
+
+colnames(vd) <- c("id", "Dólar", "Res. BCRA", "Casos Arg.Rel.", 
+                  "Muertes Arg. Rel.", "Temp. Min.", "Temp. Max.",
+                  "Vacunas Arg.", "Muertes Arg.", "Casos Arg.", "Base Mon.",
+                  "Tasa Int.", "Retweets", "Favoritos", "Sentimiento AF")
+
+vd_panel <- melt(vd, id = c("id"))
+
+ggplot(vd_panel, aes(fill=variable, y=value, x=id)) + 
+  geom_bar(position="fill", stat="identity") + 
+  theme_minimal() + 
+  xlab("Horizonte") + 
+  ylab("Porcentaje explicado") +
+  scale_x_discrete(limits=1:7, labels = c("1", "2", "3", "4",
+                                           "5", "6", "7")) +
+  scale_fill_manual("Variables:", values = c("Dólar" = "chartreuse2", 
+                                             "Res. BCRA" = "orangered2", 
+                                             "Casos Arg.Rel." = "#00AFBB", 
+                                             "Muertes Arg. Rel." = "darkorchid2",
+                                             "Temp. Min." = "chartreuse2", 
+                                             "Temp. Max." = "orangered2", 
+                                             "Vacunas Arg." = "#00AFBB", 
+                                             "Muertes Arg." = "darkorchid2",
+                                             "Casos Arg." = "chartreuse2", 
+                                             "Base Mon." = "orangered2", 
+                                             "Tasa Int." = "#00AFBB", 
+                                             "Retweets" = "red",
+                                             "Favoritos" = "chartreuse2", 
+                                             "Sentimiento AF" = "orangered2"))+
+  ggtitle("Descomposición de varianza - Sentimiento")+
+  theme(plot.title = element_text(hjust = 0.5))
+
+
 # Ahora, vamos a estimar un modelo FAVAR. Comenzamos aplicando la técnica de componentes
 # principales a nuestras variables explicativas.
 
