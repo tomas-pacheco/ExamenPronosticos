@@ -4162,15 +4162,15 @@ error.favar.rol.h2.sq <- (out.of.sample[2:58,2]-pr.rol.h2[,6])^{2}
 
 # Esquema fijo bagged.
 
-error.arima.f.h2.b.sq <- (out.of.sample[,2]-pr.f.h2.b[,1])^{2}
+error.arima.f.h2.b.sq <- (out.of.sample[2:58,2]-pr.f.h2.b[,1])^{2}
 
-error.arimax.f.h2.b.sq <- (out.of.sample[,2]-pr.f.h2.b[,2])^{2}
+error.arimax.f.h2.b.sq <- (out.of.sample[2:58,2]-pr.f.h2.b[,2])^{2}
 
-error.ets.f.h2.b.sq <- (out.of.sample[,2]-pr.f.h2.b[,3])^{2}
+error.ets.f.h2.b.sq <- (out.of.sample[2:58,2]-pr.f.h2.b[,3])^{2}
 
-error.var.f.h2.b.sq <- (out.of.sample[,2]-pr.f.h2.b[,4])^{2}
+error.var.f.h2.b.sq <- (out.of.sample[2:58,2]-pr.f.h2.b[,4])^{2}
 
-error.favar.f.h2.b.sq <- (out.of.sample[,2]-pr.f.h2.b[,5])^{2}
+error.favar.f.h2.b.sq <- (out.of.sample[2:58,2]-pr.f.h2.b[,5])^{2}
 
 # Esquema recursivo bagged.
 
@@ -5392,13 +5392,14 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   xlab("Tiempo") + 
   ylab("Estadístico Diebold-Mariano") +
   scale_color_manual(name = "", labels = c("ARIMA", "ARIMAX","ETS","VAR", "FAVAR"), 
-                     values = c(colores[1], colores[2],colores[3], colores[4], colores[5]))+
+                     values = c(colores[1], colores[2],colores[3],
+                                colores[5], colores[6]))+
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         legend.position="bottom") +
   guides(colour = guide_legend(nrow = 1)) + 
   labs(title = "Fluctuation Test",
-       subtitle = "Comparación pronósticos vs. bagging: esquema fijo un paso adelante",
+       subtitle = "Comparación pronósticos vs. 'bagging': esquema fijo un paso adelante",
        caption = "Nota: valores negativos reflejan un mejor desempeño de la versión bagging. \
        Fuente: elaboración propia")
 
@@ -5447,13 +5448,14 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   xlab("Tiempo") + 
   ylab("Estadístico Diebold-Mariano") +
   scale_color_manual(name = "", labels = c("ARIMA", "ARIMAX","ETS","VAR", "FAVAR"), 
-                     values = c(colores[1], colores[2],colores[3], colores[4], colores[5]))+
+                     values = c(colores[1], colores[2],colores[3],
+                                colores[5], colores[6]))+
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         legend.position="bottom") +
   guides(colour = guide_legend(nrow = 1)) + 
   labs(title = "Fluctuation Test",
-       subtitle = "Comparación pronósticos vs. bagging: esquema fijo dos pasos adelante",
+       subtitle = "Comparación pronósticos vs. 'bagging': esquema fijo dos pasos adelante",
        caption = "Nota: valores negativos reflejan un mejor desempeño de la versión bagging. \
        Fuente: elaboración propia")
 
@@ -5502,13 +5504,14 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   xlab("Tiempo") + 
   ylab("Estadístico Diebold-Mariano") +
   scale_color_manual(name = "", labels = c("ARIMA", "ARIMAX","ETS","VAR", "FAVAR"), 
-                     values = c(colores[1], colores[2],colores[3], colores[4], colores[5]))+
+                     values = c(colores[1], colores[2],colores[3],
+                                colores[5], colores[6]))+
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         legend.position="bottom") +
   guides(colour = guide_legend(nrow = 1)) + 
   labs(title = "Fluctuation Test",
-       subtitle = "Comparación pronósticos vs. bagging: esquema fijo siente pasos adelante",
+       subtitle = "Comparación pronósticos vs. 'bagging': esquema fijo siente pasos adelante",
        caption = "Nota: valores negativos reflejan un mejor desempeño de la versión bagging. \
        Fuente: elaboración propia")
 
@@ -5557,13 +5560,14 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   xlab("Tiempo") + 
   ylab("Estadístico Diebold-Mariano") +
   scale_color_manual(name = "", labels = c("ARIMA", "ARIMAX","ETS","VAR", "FAVAR"), 
-                     values = c(colores[1], colores[2],colores[3], colores[4], colores[5]))+
+                     values = c(colores[1], colores[2],colores[3],
+                                colores[5], colores[6]))+
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         legend.position="bottom") +
   guides(colour = guide_legend(nrow = 1)) + 
   labs(title = "Fluctuation Test",
-       subtitle = "Comparación pronósticos vs. bagging: esquema fijo un paso adelante",
+       subtitle = "Comparación pronósticos vs. 'bagging': esquema fijo un paso adelante",
        caption = "Nota: valores negativos reflejan un mejor desempeño de la versión bagging. \
        Fuente: elaboración propia")
 
@@ -5573,21 +5577,21 @@ rm(gr1c, gr2c, gr3c, gr4c, gr5c, dm.1c,
    values.gr1c, values.gr2c, values.gr3c,
    values.gr4c, values.gr5c)
 
-gr1c <- fluctuation_test(error.arima.f.h2.sq, error.arima.f.h2.b.sq[-1] , mu = 0.5)
+gr1c <- fluctuation_test(error.arima.f.h2.sq, error.arima.f.h2.b.sq , mu = 0.5)
 values.gr1c <- as.data.frame(gr1c$df)
 band5 <- gr1c$CV[1]
 band6 <- gr1c$CV[2]
 
-gr2c <- fluctuation_test(error.arimax.f.h2.sq, error.arimax.f.h2.b.sq[-1], mu = 0.5)
+gr2c <- fluctuation_test(error.arimax.f.h2.sq, error.arimax.f.h2.b.sq, mu = 0.5)
 values.gr2c <- as.data.frame(gr2c$df)
 
-gr3c <- fluctuation_test(error.ets.f.h2.sq, error.ets.f.h2.b.sq[-1], mu = 0.5)
+gr3c <- fluctuation_test(error.ets.f.h2.sq, error.ets.f.h2.b.sq, mu = 0.5)
 values.gr3c <- as.data.frame(gr3c$df)
 
-gr4c <- fluctuation_test(error.var.f.h2.sq, error.var.f.h2.b.sq[-1], mu = 0.5)
+gr4c <- fluctuation_test(error.var.f.h2.sq, error.var.f.h2.b.sq, mu = 0.5)
 values.gr4c <- as.data.frame(gr4c$df)
 
-gr5c <- fluctuation_test(error.favar.f.h2.sq, error.favar.f.h2.b.sq[-1], mu = 0.5)
+gr5c <- fluctuation_test(error.favar.f.h2.sq, error.favar.f.h2.b.sq, mu = 0.5)
 values.gr5c <- as.data.frame(gr5c$df)
 
 dm.1c <- full_join(values.gr1c, values.gr2c, by = "time")
@@ -5612,13 +5616,14 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   xlab("Tiempo") + 
   ylab("Estadístico Diebold-Mariano") +
   scale_color_manual(name = "", labels = c("ARIMA", "ARIMAX","ETS","VAR", "FAVAR"), 
-                     values = c(colores[1], colores[2],colores[3], colores[4], colores[5]))+
+                     values = c(colores[1], colores[2],colores[3],
+                                colores[5], colores[6]))+
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         legend.position="bottom") +
   guides(colour = guide_legend(nrow = 1)) + 
   labs(title = "Fluctuation Test",
-       subtitle = "Comparación pronósticos vs. bagging: esquema rolling dos pasos adelante",
+       subtitle = "Comparación pronósticos vs. 'bagging': esquema 'rolling' dos pasos adelante",
        caption = "Nota: valores negativos reflejan un mejor desempeño de la versión bagging. \
        Fuente: elaboración propia")
 
@@ -5667,13 +5672,14 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   xlab("Tiempo") + 
   ylab("Estadístico Diebold-Mariano") +
   scale_color_manual(name = "", labels = c("ARIMA", "ARIMAX","ETS","VAR", "FAVAR"), 
-                     values = c(colores[1], colores[2],colores[3], colores[4], colores[5]))+
+                     values = c(colores[1], colores[2],colores[3],
+                                colores[5], colores[6]))+
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         legend.position="bottom") +
   guides(colour = guide_legend(nrow = 1)) + 
   labs(title = "Fluctuation Test",
-       subtitle = "Comparación pronósticos vs. bagging: esquema rolling siete pasos adelante",
+       subtitle = "Comparación pronósticos vs. 'bagging': esquema 'rolling' siete pasos adelante",
        caption = "Nota: valores negativos reflejan un mejor desempeño de la versión bagging. \
        Fuente: elaboración propia")
 
@@ -5722,13 +5728,14 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   xlab("Tiempo") + 
   ylab("Estadístico Diebold-Mariano") +
   scale_color_manual(name = "", labels = c("ARIMA", "ARIMAX","ETS","VAR", "FAVAR"), 
-                     values = c(colores[1], colores[2],colores[3], colores[4], colores[5]))+
+                     values = c(colores[1], colores[2],colores[3],
+                                colores[5], colores[6]))+
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         legend.position="bottom") +
   guides(colour = guide_legend(nrow = 1)) + 
   labs(title = "Fluctuation Test",
-       subtitle = "Comparación pronósticos vs. bagging: esquema recursivo un paso adelante",
+       subtitle = "Comparación pronósticos vs. 'bagging': esquema recursivo un paso adelante",
        caption = "Nota: valores negativos reflejan un mejor desempeño de la versión bagging. \
        Fuente: elaboración propia")
 
@@ -5777,13 +5784,14 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   xlab("Tiempo") + 
   ylab("Estadístico Diebold-Mariano") +
   scale_color_manual(name = "", labels = c("ARIMA", "ARIMAX","ETS","VAR", "FAVAR"), 
-                     values = c(colores[1], colores[2],colores[3], colores[4], colores[5]))+
+                     values = c(colores[1], colores[2],colores[3],
+                                colores[5], colores[6]))+
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         legend.position="bottom") +
   guides(colour = guide_legend(nrow = 1)) + 
   labs(title = "Fluctuation Test",
-       subtitle = "Comparación pronósticos vs. bagging: esquema recursivo dos pasos adelante",
+       subtitle = "Comparación pronósticos vs. 'bagging': esquema recursivo dos pasos adelante",
        caption = "Nota: valores negativos reflejan un mejor desempeño de la versión bagging. \
        Fuente: elaboración propia")
 
@@ -5833,13 +5841,14 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   xlab("Tiempo") + 
   ylab("Estadístico Diebold-Mariano") +
   scale_color_manual(name = "", labels = c("ARIMA", "ARIMAX","ETS","VAR", "FAVAR"), 
-                     values = c(colores[1], colores[2],colores[3], colores[4], colores[5]))+
+                     values = c(colores[1], colores[2],colores[3],
+                                colores[5], colores[6]))+
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         legend.position="bottom") +
   guides(colour = guide_legend(nrow = 1)) + 
   labs(title = "Fluctuation Test",
-       subtitle = "Comparación pronósticos vs. bagging: esquema recursivo siete pasos adelante",
+       subtitle = "Comparación pronósticos vs. 'bagging': esquema recursivo siete pasos adelante",
        caption = "Nota: valores negativos reflejan un mejor desempeño de la versión bagging. \
        Fuente: elaboración propia")
 
