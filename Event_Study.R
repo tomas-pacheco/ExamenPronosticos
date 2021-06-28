@@ -285,7 +285,7 @@ ggplot(aes(x = obsahead, y = value, group = variable, color = variable),
   annotate("text", x = 400, y = 0.07, label = "p<0.05")+
   annotate("text", x = 400, y = 0.12, label = "p<0.10") 
 
-
+ggsave(file="sensitivity_anuncio.eps", width=6.5, height=4, dpi=300)
 
 
 sensibility_vicentin <- sensibility(AR_vicentin)
@@ -300,7 +300,7 @@ ggplot(aes(x = obsahead, y = value, group = variable, color = variable),
   xlab("Observaciones adelante") + 
   ylab("p-valor") + 
   ylim(0,1) + 
-  labs(title = "Análisis de sensibilidad - Vicentin",
+  labs(title = "Análisis de sensibilidad - Expropiación de Vicentin",
        caption = "Fuente: elaboración propia") +
   theme(plot.title = element_text(hjust = 0.5),
         legend.position = "bottom") + 
@@ -312,8 +312,7 @@ ggplot(aes(x = obsahead, y = value, group = variable, color = variable),
   annotate("text", x = 400, y = 0.07, label = "p<0.05")+
   annotate("text", x = 400, y = 0.12, label = "p<0.10") 
 
-
-
+ggsave(file="sensitivity_vicentin.eps", width=6.5, height=4, dpi=300)
 
 
 sensibility_maradona <- sensibility(AR_maradona)
@@ -329,7 +328,7 @@ ggplot(aes(x = obsahead, y = value, group = variable, color = variable),
   ylab("p-valor") + 
   ylim(0,1) + 
   xlim(0,200) +
-  labs(title = "Análisis de sensibilidad - Fallecimiento Maradona",
+  labs(title = "Análisis de sensibilidad - Funeral de Maradona",
        caption = "Fuente: elaboración propia") +
   theme(plot.title = element_text(hjust = 0.5),
         legend.position = "bottom") + 
@@ -337,9 +336,11 @@ ggplot(aes(x = obsahead, y = value, group = variable, color = variable),
   geom_hline(yintercept=0.05, linetype="dashed", color = colores[5])+ 
   geom_hline(yintercept=0.01, linetype="dashed", color = colores[5]) + 
   scale_x_continuous(n.breaks = 20) + 
-  annotate("text", x = 200, y = 0.03, label = "p<0.01")+
-  annotate("text", x = 200, y = 0.07, label = "p<0.05")+
-  annotate("text", x = 200, y = 0.12, label = "p<0.10") 
+  annotate("text", x = 180, y = 0.03, label = "p<0.01")+
+  annotate("text", x = 180, y = 0.07, label = "p<0.05")+
+  annotate("text", x = 180, y = 0.12, label = "p<0.10") 
+
+ggsave(file="sensitivity_maradona.eps", width=6.5, height=4, dpi=300)
 
 
 sensibility_vacunas<- sensibility(AR_vacunas)
@@ -366,6 +367,8 @@ ggplot(aes(x = obsahead, y = value, group = variable, color = variable),
   annotate("text", x = 150, y = 0.03, label = "p<0.01")+
   annotate("text", x = 150, y = 0.07, label = "p<0.05")+
   annotate("text", x = 150, y = 0.12, label = "p<0.10") 
+
+ggsave(file="sensitivity_vacunas.eps", width=6.5, height=4, dpi=300)
 
 
 # Vamos a hacer un analisis de potencia.
