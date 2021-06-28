@@ -2940,7 +2940,7 @@ error.favar.f.h1.b <- out.of.sample[,2]-pr.f.h1.b[,5]
 
 # Esquema recursivo bagged.
 
-error.arima.f.h1.b <- out.of.sample[,2]-pr.rec.h1.b[,1]
+error.arima.rec.h1.b <- out.of.sample[,2]-pr.rec.h1.b[,1]
 
 error.arimax.rec.h1.b <- out.of.sample[,2]-pr.rec.h1.b[,2]
 
@@ -2964,163 +2964,163 @@ error.favar.rol.h1.b <- out.of.sample[,2]-pr.rol.h1.b[,5]
 
 ### h=2 
 
-error.arima.f.h2 <- out.of.sample[,2]-pr.f.h2[,1]
+error.arima.f.h2 <- out.of.sample[-1,2]-pr.f.h2[,1]
 
-error.arimax.f.h2 <- out.of.sample[,2]-pr.f.h2[,2]
+error.arimax.f.h2 <- out.of.sample[-1,2]-pr.f.h2[,2]
 
-error.ets.f.h2 <- out.of.sample[,2]-pr.f.h2[,3]
+error.ets.f.h2 <- out.of.sample[-1,2]-pr.f.h2[,3]
 
-error.adl.f.h2 <- out.of.sample[,2]-pr.f.h2[,4]
+error.adl.f.h2 <- out.of.sample[-1,2]-pr.f.h2[,4]
 
-error.var.f.h2 <- out.of.sample[,2]-pr.f.h2[,5]
+error.var.f.h2 <- out.of.sample[-1,2]-pr.f.h2[,5]
 
-error.favar.f.h2 <- out.of.sample[,2]-pr.f.h2[,6]
+error.favar.f.h2 <- out.of.sample[-1,2]-pr.f.h2[,6]
 
 # Esquema recursivo.
 
-error.arima.rec.h2 <- out.of.sample[,2]-pr.rec.h2[,1]
+error.arima.rec.h2 <- out.of.sample[-1,2]-pr.rec.h2[,1]
 
-error.arimax.rec.h2 <- out.of.sample[,2]-pr.rec.h2[,2]
+error.arimax.rec.h2 <- out.of.sample[-1,2]-pr.rec.h2[,2]
 
-error.ets.rec.h2 <- out.of.sample[,2]-pr.rec.h2[,3]
+error.ets.rec.h2 <- out.of.sample[-1,2]-pr.rec.h2[,3]
 
-error.adl.rec.h2 <- out.of.sample[,2]-pr.rec.h2[,4]
+error.adl.rec.h2 <- out.of.sample[-1,2]-pr.rec.h2[,4]
 
-error.var.rec.h2 <- out.of.sample[,2]-pr.rec.h2[,5]
+error.var.rec.h2 <- out.of.sample[-1,2]-pr.rec.h2[,5]
 
-error.favar.rec.h2 <- out.of.sample[,2]-pr.rec.h2[,6]
+error.favar.rec.h2 <- out.of.sample[-1,2]-pr.rec.h2[,6]
 
 # Esquema rolling. 
 
-error.arima.rol.h2 <- out.of.sample[,2]-pr.rol.h2[,1]
+error.arima.rol.h2 <- out.of.sample[-1,2]-pr.rol.h2[,1]
 
-error.arimax.rol.h2 <- out.of.sample[,2]-pr.rol.h2[,2]
+error.arimax.rol.h2 <- out.of.sample[-1,2]-pr.rol.h2[,2]
 
-error.ets.rol.h2 <- out.of.sample[,2]-pr.rol.h2[,3]
+error.ets.rol.h2 <- out.of.sample[-1,2]-pr.rol.h2[,3]
 
-error.adl.rol.h2 <- out.of.sample[,2]-pr.rol.h2[,4]
+error.adl.rol.h2 <- out.of.sample[-1,2]-pr.rol.h2[,4]
 
-error.var.rol.h2 <- out.of.sample[,2]-pr.rol.h2[,5]
+error.var.rol.h2 <- out.of.sample[-1,2]-pr.rol.h2[,5]
 
-error.favar.rol.h2 <- out.of.sample[,2]-pr.rol.h2[,6]
+error.favar.rol.h2 <- out.of.sample[-1,2]-pr.rol.h2[,6]
 
 # Bagging 
 
 # Esquema fijo bagged.
 
-error.arima.f.h2.b <- out.of.sample[,2]-pr.f.h2.b[,1]
+error.arima.f.h2.b <- out.of.sample[-1,2]-pr.f.h2.b[,1]
 
-error.arimax.f.h2.b <- out.of.sample[,2]-pr.f.h2.b[,2]
+error.arimax.f.h2.b <- out.of.sample[-1,2]-pr.f.h2.b[,2]
 
-error.ets.f.h2.b <- out.of.sample[,2]-pr.f.h2.b[,3]
+error.ets.f.h2.b <- out.of.sample[-1,2]-pr.f.h2.b[,3]
 
-error.var.f.h2.b <- out.of.sample[,2]-pr.f.h2.b[,4]
+error.var.f.h2.b <- out.of.sample[-1,2]-pr.f.h2.b[,4]
 
-error.favar.f.h2.b <- out.of.sample[,2]-pr.f.h2.b[,5]
+error.favar.f.h2.b <- out.of.sample[-1,2]-pr.f.h2.b[,5]
 
 # Esquema recursivo bagged.
 
-error.arima.rec.h2.b <- out.of.sample[,2]-pr.rec.h2.b[,1]
+error.arima.rec.h2.b <- out.of.sample[-1,2]-pr.rec.h2.b[,1]
 
-error.arimax.rec.h2.b <- out.of.sample[,2]-pr.rec.h2.b[,2]
+error.arimax.rec.h2.b <- out.of.sample[-1,2]-pr.rec.h2.b[,2]
 
-error.ets.rec.h2.b <- out.of.sample[,2]-pr.rec.h2.b[,3]
+error.ets.rec.h2.b <- out.of.sample[-1,2]-pr.rec.h2.b[,3]
 
-error.var.rec.h2.b <- out.of.sample[,2]-pr.rec.h2.b[,4]
+error.var.rec.h2.b <- out.of.sample[-1,2]-pr.rec.h2.b[,4]
 
-error.favar.rec.h2.b <- out.of.sample[,2]-pr.rec.h2.b[,5]
+error.favar.rec.h2.b <- out.of.sample[-1,2]-pr.rec.h2.b[,5]
 
 # Esquema rolling.
 
-error.arima.rol.h2.b <- out.of.sample[,2]-pr.rol.h2.b[,1]
+error.arima.rol.h2.b <- out.of.sample[-1,2]-pr.rol.h2.b[,1]
 
-error.arimax.rol.h2.b <- out.of.sample[,2]-pr.rol.h2.b[,2]
+error.arimax.rol.h2.b <- out.of.sample[-1,2]-pr.rol.h2.b[,2]
 
-error.ets.rol.h2.b <- out.of.sample[,2]-pr.rol.h2.b[,3]
+error.ets.rol.h2.b <- out.of.sample[-1,2]-pr.rol.h2.b[,3]
 
-error.var.rol.h2.b <- out.of.sample[,2]-pr.rol.h2.b[,4]
+error.var.rol.h2.b <- out.of.sample[-1,2]-pr.rol.h2.b[,4]
 
-error.favar.rol.h2.b <- out.of.sample[,2]-pr.rol.h2.b[,5]
+error.favar.rol.h2.b <- out.of.sample[-1,2]-pr.rol.h2.b[,5]
 
 ### h=7
 
-error.arima.f.h7 <- out.of.sample[,2]-pr.f.h7[,1]
+error.arima.f.h7 <- out.of.sample[7:58,2]-pr.f.h7[,1]
 
-error.arimax.f.h7 <- out.of.sample[,2]-pr.f.h7[,2]
+error.arimax.f.h7 <- out.of.sample[7:58,2]-pr.f.h7[,2]
 
-error.ets.f.h7 <- out.of.sample[,2]-pr.f.h7[,3]
+error.ets.f.h7 <- out.of.sample[7:58,2]-pr.f.h7[,3]
 
-error.adl.f.h7 <- out.of.sample[,2]-pr.f.h7[,4]
+error.adl.f.h7 <- out.of.sample[7:58,2]-pr.f.h7[,4]
 
-error.var.f.h7 <- out.of.sample[,2]-pr.f.h7[,5]
+error.var.f.h7 <- out.of.sample[7:58,2]-pr.f.h7[,5]
 
-error.favar.f.h7 <- out.of.sample[,2]-pr.f.h7[,6]
+error.favar.f.h7 <- out.of.sample[7:58,2]-pr.f.h7[,6]
 
 # Esquema recursivo.
 
-error.arima.rec.h7 <- out.of.sample[,2]-pr.rec.h7[,1]
+error.arima.rec.h7 <- out.of.sample[7:58,2]-pr.rec.h7[,1]
 
-error.arimax.rec.h7 <- out.of.sample[,2]-pr.rec.h7[,2]
+error.arimax.rec.h7 <- out.of.sample[7:58,2]-pr.rec.h7[,2]
 
-error.ets.rec.h7 <- out.of.sample[,2]-pr.rec.h7[,3]
+error.ets.rec.h7 <- out.of.sample[7:58,2]-pr.rec.h7[,3]
 
-error.adl.rec.h7 <- out.of.sample[,2]-pr.rec.h7[,4]
+error.adl.rec.h7 <- out.of.sample[7:58,2]-pr.rec.h7[,4]
 
-error.var.rec.h7 <- out.of.sample[,2]-pr.rec.h7[,5]
+error.var.rec.h7 <- out.of.sample[7:58,2]-pr.rec.h7[,5]
 
-error.favar.rec.h7 <- out.of.sample[,2]-pr.rec.h7[,6]
+error.favar.rec.h7 <- out.of.sample[7:58,2]-pr.rec.h7[,6]
 
 # Esquema rolling. 
 
-error.arima.rol.h7 <- out.of.sample[,2]-pr.rol.h7[,1]
+error.arima.rol.h7 <- out.of.sample[7:58,2]-pr.rol.h7[,1]
 
-error.arimax.rol.h7 <- out.of.sample[,2]-pr.rol.h7[,2]
+error.arimax.rol.h7 <- out.of.sample[7:58,2]-pr.rol.h7[,2]
 
-error.ets.rol.h7 <- out.of.sample[,2]-pr.rol.h7[,3]
+error.ets.rol.h7 <- out.of.sample[7:58,2]-pr.rol.h7[,3]
 
-error.adl.rol.h7 <- out.of.sample[,2]-pr.rol.h7[,4]
+error.adl.rol.h7 <- out.of.sample[7:58,2]-pr.rol.h7[,4]
 
-error.var.rol.h7 <- out.of.sample[,2]-pr.rol.h7[,5]
+error.var.rol.h7 <- out.of.sample[7:58,2]-pr.rol.h7[,5]
 
-error.favar.rol.h7 <- out.of.sample[,2]-pr.rol.h7[,6]
+error.favar.rol.h7 <- out.of.sample[7:58,2]-pr.rol.h7[,6]
 
 # Bagging. 
 
 # Esquema fijo bagged.
 
-error.arima.f.h7.b <- out.of.sample[,2]-pr.f.h7.b[,1]
+error.arima.f.h7.b <- out.of.sample[7:58,2]-pr.f.h7.b[,1]
 
-error.arimax.f.h7.b <- out.of.sample[,2]-pr.f.h7.b[,2]
+error.arimax.f.h7.b <- out.of.sample[7:58,2]-pr.f.h7.b[,2]
 
-error.ets.f.h7.b <- out.of.sample[,2]-pr.f.h7.b[,3]
+error.ets.f.h7.b <- out.of.sample[7:58,2]-pr.f.h7.b[,3]
 
-error.var.f.h7.b <- out.of.sample[,2]-pr.f.h7.b[,5]
+error.var.f.h7.b <- out.of.sample[7:58,2]-pr.f.h7.b[,5]
 
-error.favar.f.h7.b <- out.of.sample[,2]-pr.f.h7.b[,4]
+error.favar.f.h7.b <- out.of.sample[7:58,2]-pr.f.h7.b[,4]
 
 # Esquema recursivo bagged.
 
-error.arima.rec.h7.b <- out.of.sample[,2]-pr.rec.h7.b[,1]
+error.arima.rec.h7.b <- out.of.sample[7:58,2]-pr.rec.h7.b[,1]
 
-error.arimax.rec.h7.b <- out.of.sample[,2]-pr.rec.h7.b[,2]
+error.arimax.rec.h7.b <- out.of.sample[7:58,2]-pr.rec.h7.b[,2]
 
-error.ets.rec.h7.b <- out.of.sample[,2]-pr.rec.h7.b[,3]
+error.ets.rec.h7.b <- out.of.sample[7:58,2]-pr.rec.h7.b[,3]
 
-error.var.rec.h7.b <- out.of.sample[,2]-pr.rec.h7.b[,5]
+error.var.rec.h7.b <- out.of.sample[7:58,2]-pr.rec.h7.b[,5]
 
-error.favar.rec.h7.b <- out.of.sample[,2]-pr.rec.h7.b[,4]
+error.favar.rec.h7.b <- out.of.sample[7:58,2]-pr.rec.h7.b[,4]
 
 # Esquema rolling bagged.
 
-error.arima.rol.h7.b <- out.of.sample[,2]-pr.rol.h7.b[,1]
+error.arima.rol.h7.b <- out.of.sample[7:58,2]-pr.rol.h7.b[,1]
 
-error.arimax.rol.h7.b <- out.of.sample[,2]-pr.rol.h7.b[,2]
+error.arimax.rol.h7.b <- out.of.sample[7:58,2]-pr.rol.h7.b[,2]
 
-error.ets.rol.h7.b <- out.of.sample[,2]-pr.rol.h7.b[,3]
+error.ets.rol.h7.b <- out.of.sample[7:58,2]-pr.rol.h7.b[,3]
 
-error.var.rol.h7.b <- out.of.sample[,2]-pr.rol.h7.b[,5]
+error.var.rol.h7.b <- out.of.sample[7:58,2]-pr.rol.h7.b[,5]
 
-error.favar.rol.h7.b <- out.of.sample[,2]-pr.rol.h7.b[,4]
+error.favar.rol.h7.b <- out.of.sample[7:58,2]-pr.rol.h7.b[,4]
 
 # Funciones de pérdida.
 
@@ -4280,27 +4280,28 @@ error.favar.rol.h7.b.sq <- (out.of.sample[7:58,2]-pr.rol.h7.b[,4])^2
 
 library(murphydiagram)
 library(reshape)
+library(dplyr)
 
 # Pronósticos h=1 fijo.
 
-gr1 <- fluctuation_test(error.arima.f.h1.sq, error.bench.sq[1,], mu = 0.5)
+gr1 <- fluctuation_test(error.arima.f.h1.sq, error.bench.sq, mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
 band1 <- gr1$CV[1]
 band2 <- gr1$CV[2]
 
-gr2 <- fluctuation_test(error.arimax.f.h1.sq, error.bench.sq[1,], mu = 0.5)
+gr2 <- fluctuation_test(error.arimax.f.h1.sq, error.bench.sq, mu = 0.5)
 values.gr2 <- as.data.frame(gr2$df)
 
-gr3 <- fluctuation_test(error.ets.f.h1.sq, error.bench.sq[1,], mu = 0.5)
+gr3 <- fluctuation_test(error.ets.f.h1.sq, error.bench.sq, mu = 0.5)
 values.gr3 <- as.data.frame(gr3$df)
 
-gr4 <- fluctuation_test(error.adl.f.h1.sq, error.bench.sq[1,], mu = 0.5)
+gr4 <- fluctuation_test(error.adl.f.h1.sq, error.bench.sq, mu = 0.5)
 values.gr4 <- as.data.frame(gr4$df)
 
-gr5 <- fluctuation_test(error.var.f.h1.sq, error.bench.sq[1,], mu = 0.5)
+gr5 <- fluctuation_test(error.var.f.h1.sq, error.bench.sq, mu = 0.5)
 values.gr5 <- as.data.frame(gr5$df)
 
-gr6 <- fluctuation_test(error.favar.f.h1.sq, error.bench.sq[1,], mu = 0.5)
+gr6 <- fluctuation_test(error.favar.f.h1.sq, error.bench.sq, mu = 0.5)
 values.gr6 <- as.data.frame(gr6$df)
 
 dm.1 <- full_join(values.gr1, values.gr2, by = "time")
@@ -4326,16 +4327,23 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
     xlab("Tiempo") + 
   ylab("Estadístico Diebold-Mariano") +
   scale_color_manual(name = "", labels = c("ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"), 
-                     values = c(colores[1], colores[2],colores[3], colores[4], colores[5], "red"))+
+                     values = c(colores[1], colores[2],colores[3], colores[4],
+                                colores[5], colores[6]))+
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         legend.position="bottom") +
   guides(colour = guide_legend(nrow = 1)) + 
   labs(title = "Fluctuation Test",
-       subtitle = "Pronósticos: esquema fijo con un paso hacia adelante",
+       subtitle = "Pronósticos: esquema fijo, un paso hacia adelante",
        caption = "Fuente: elaboración propia")
 
+ggsave(file="gr.f.h1.eps", width=6.5, height=4, dpi=300)
+
 # Pronósticos h=2 fijo.
+
+rm(gr1, gr2, gr3, gr4, gr5, gr6, dm.1, 
+   values.gr1, values.gr2, values.gr3, values.gr4, values.gr5,
+   values.gr6)
 
 gr1 <- fluctuation_test(error.arima.f.h2.sq, error.bench.sq[1,2:58], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -4380,16 +4388,23 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   xlab("Tiempo") + 
   ylab("Estadístico Diebold-Mariano") +
   scale_color_manual(name = "", labels = c("ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"), 
-                     values = c(colores[1], colores[2],colores[3], colores[4], colores[5], "red"))+
+                     values = c(colores[1], colores[2],colores[3], colores[4],
+                                colores[5], colores[6]))+
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         legend.position="bottom") +
   guides(colour = guide_legend(nrow = 1)) + 
   labs(title = "Fluctuation Test",
-       subtitle = "Pronósticos: esquema fijo con dos pasos hacia adelante",
+       subtitle = "Pronósticos: esquema fijo, dos pasos hacia adelante",
        caption = "Fuente: elaboración propia")
 
+ggsave(file="gr.f.h2.eps", width=6.5, height=4, dpi=300)
+
 # Pronósticos h=7 fijo.
+
+rm(gr1, gr2, gr3, gr4, gr5, gr6, dm.1, 
+   values.gr1, values.gr2, values.gr3, values.gr4, values.gr5,
+   values.gr6)
 
 gr1 <- fluctuation_test(error.arima.f.h7.sq, error.bench.sq[1,7:58], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -4434,7 +4449,8 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   xlab("Tiempo") + 
   ylab("Estadístico Diebold-Mariano") +
   scale_color_manual(name = "", labels = c("ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"), 
-                     values = c(colores[1], colores[2],colores[3], colores[4], colores[5], "red"))+
+                     values = c(colores[1], colores[2],colores[3], colores[4],
+                                colores[5], colores[6]))+
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         legend.position="bottom") +
@@ -4443,7 +4459,13 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Pronósticos: esquema fijo con siete pasos hacia adelante",
        caption = "Fuente: elaboración propia")
 
+ggsave(file="gr.f.h7.eps", width=6.5, height=4, dpi=300)
+
 # Pronósticos h=1 recursivo.
+
+rm(gr1, gr2, gr3, gr4, gr5, gr6, dm.1, 
+   values.gr1, values.gr2, values.gr3, values.gr4, values.gr5,
+   values.gr6)
 
 gr1 <- fluctuation_test(error.arima.rec.h1.sq, error.bench.sq[1,], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -4490,7 +4512,8 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   xlab("Tiempo") + 
   ylab("Estadístico Diebold-Mariano") +
   scale_color_manual(name = "", labels = c("ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"), 
-                     values = c(colores[1], colores[2],colores[3], colores[4], colores[5], "red"))+
+                     values = c(colores[1], colores[2],colores[3], colores[4],
+                                colores[5], colores[6]))+
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         legend.position="bottom") +
@@ -4499,7 +4522,14 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Pronósticos: esquema recursivo con un paso hacia adelante",
        caption = "Fuente: elaboración propia")
 
+ggsave(file="gr.rec.h1.eps", width=6.5, height=4, dpi=300)
+
+
 # Pronósticos h=2 recursivo.
+
+rm(gr1, gr2, gr3, gr4, gr5, gr6, dm.1, 
+   values.gr1, values.gr2, values.gr3, values.gr4, values.gr5,
+   values.gr6)
 
 gr1 <- fluctuation_test(error.arima.rec.h2.sq, error.bench.sq[1,2:58], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -4544,7 +4574,8 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   xlab("Tiempo") + 
   ylab("Estadístico Diebold-Mariano") +
   scale_color_manual(name = "", labels = c("ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"), 
-                     values = c(colores[1], colores[2],colores[3], colores[4], colores[5], "red"))+
+                     values = c(colores[1], colores[2],colores[3], colores[4],
+                                colores[5], colores[6]))+
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         legend.position="bottom") +
@@ -4553,7 +4584,14 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Pronósticos: esquema recursivo con dos pasos hacia adelante",
        caption = "Fuente: elaboración propia")
 
+ggsave(file="gr.rec.h2.eps", width=6.5, height=4, dpi=300)
+
+
 # Pronósticos h=7 recursivo.
+
+rm(gr1, gr2, gr3, gr4, gr5, gr6, dm.1, 
+   values.gr1, values.gr2, values.gr3, values.gr4, values.gr5,
+   values.gr6)
 
 gr1 <- fluctuation_test(error.arima.rec.h7.sq, error.bench.sq[1,7:58], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -4598,7 +4636,8 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   xlab("Tiempo") + 
   ylab("Estadístico Diebold-Mariano") +
   scale_color_manual(name = "", labels = c("ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"), 
-                     values = c(colores[1], colores[2],colores[3], colores[4], colores[5], "red"))+
+                     values = c(colores[1], colores[2],colores[3], colores[4],
+                                colores[5], colores[6]))+
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         legend.position="bottom") +
@@ -4607,7 +4646,13 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Pronósticos: esquema recursivo con siete pasos hacia adelante",
        caption = "Fuente: elaboración propia")
 
+ggsave(file="gr.rec.h7.eps", width=6.5, height=4, dpi=300)
+
 # Pronósticos h=1 rolling.
+
+rm(gr1, gr2, gr3, gr4, gr5, gr6, dm.1, 
+   values.gr1, values.gr2, values.gr3, values.gr4, values.gr5,
+   values.gr6)
 
 gr1 <- fluctuation_test(error.arima.rol.h1.sq, error.bench.sq[1,], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -4654,7 +4699,8 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   xlab("Tiempo") + 
   ylab("Estadístico Diebold-Mariano") +
   scale_color_manual(name = "", labels = c("ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"), 
-                     values = c(colores[1], colores[2],colores[3], colores[4], colores[5], "red"))+
+                     values = c(colores[1], colores[2],colores[3], colores[4],
+                                colores[5], colores[6]))+
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         legend.position="bottom") +
@@ -4663,7 +4709,13 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Pronósticos: esquema rolling con un paso hacia adelante",
        caption = "Fuente: elaboración propia")
 
+ggsave(file="gr.rol.h1.eps", width=6.5, height=4, dpi=300)
+
 # Pronósticos h=2 rolling.
+
+rm(gr1, gr2, gr3, gr4, gr5, gr6, dm.1, 
+   values.gr1, values.gr2, values.gr3, values.gr4, values.gr5,
+   values.gr6)
 
 gr1 <- fluctuation_test(error.arima.rol.h2.sq, error.bench.sq[1,2:58], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -4708,7 +4760,8 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   xlab("Tiempo") + 
   ylab("Estadístico Diebold-Mariano") +
   scale_color_manual(name = "", labels = c("ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"), 
-                     values = c(colores[1], colores[2],colores[3], colores[4], colores[5], "red"))+
+                     values = c(colores[1], colores[2],colores[3], colores[4],
+                                colores[5], colores[6]))+
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         legend.position="bottom") +
@@ -4717,8 +4770,13 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Pronósticos: esquema rolling con dos pasos hacia adelante",
        caption = "Fuente: elaboración propia")
 
+ggsave(file="gr.rol.h2.eps", width=6.5, height=4, dpi=300)
 
 # Pronósticos h=7 rolling.
+
+rm(gr1, gr2, gr3, gr4, gr5, gr6, dm.1, 
+   values.gr1, values.gr2, values.gr3, values.gr4, values.gr5,
+   values.gr6)
 
 gr1 <- fluctuation_test(error.arima.rol.h7.sq, error.bench.sq[1,7:58], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -4763,7 +4821,8 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   xlab("Tiempo") + 
   ylab("Estadístico Diebold-Mariano") +
   scale_color_manual(name = "", labels = c("ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"), 
-                     values = c(colores[1], colores[2],colores[3], colores[4], colores[5], "red"))+
+                     values = c(colores[1], colores[2],colores[3], colores[4],
+                                colores[5], colores[6]))+
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         legend.position="bottom") +
@@ -4772,25 +4831,30 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Pronósticos: esquema rolling con siete pasos hacia adelante",
        caption = "Fuente: elaboración propia")
 
+ggsave(file="gr.rol.h7.eps", width=6.5, height=4, dpi=300)
+
+
 # Pronosticos h=1 fijo bagged.
 
-rm(gr4)
+rm(gr1, gr2, gr3, gr4, gr5, gr6, dm.1, 
+   values.gr1, values.gr2, values.gr3, values.gr4, values.gr5,
+   values.gr6)
 
-gr1 <- fluctuation_test(error.arima.f.h1.b.sq, error.bench.sq[1,], mu = 0.5)
+gr1 <- fluctuation_test(error.arima.f.h1.b.sq, error.bench.sq, mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
 band1 <- gr1$CV[1]
 band2 <- gr1$CV[2]
 
-gr2 <- fluctuation_test(error.arimax.f.h1.b.sq, error.bench.sq[1,], mu = 0.5)
+gr2 <- fluctuation_test(error.arimax.f.h1.b.sq, error.bench.sq, mu = 0.5)
 values.gr2 <- as.data.frame(gr2$df)
 
-gr3 <- fluctuation_test(error.ets.f.h1.b.sq, error.bench.sq[1,], mu = 0.5)
+gr3 <- fluctuation_test(error.ets.f.h1.b.sq, error.bench.sq, mu = 0.5)
 values.gr3 <- as.data.frame(gr3$df)
 
-gr5 <- fluctuation_test(error.var.f.h1.b.sq, error.bench.sq[1,], mu = 0.5)
+gr5 <- fluctuation_test(error.var.f.h1.b.sq, error.bench.sq, mu = 0.5)
 values.gr5 <- as.data.frame(gr5$df)
 
-gr6 <- fluctuation_test(error.favar.f.h1.b.sq, error.bench.sq[1,], mu = 0.5)
+gr6 <- fluctuation_test(error.favar.f.h1.b.sq, error.bench.sq, mu = 0.5)
 values.gr6 <- as.data.frame(gr6$df)
 
 dm.1 <- full_join(values.gr1, values.gr2, by = "time")
@@ -4801,8 +4865,6 @@ colnames(dm.1) <- c("time", "dmstat1", "dmstat2", "dmstat3",
                     "dmstat5", "dmstat6")
 
 dm.1 <- melt(dm.1, id=c("time"))
-
-colores <- c("#00ABC5","#cfb0b4" ,"#ff3c84","#FF7F32", "#edf71c", "#941cf7")
 
 ggplot(aes(x = time , y = value, group = variable, color = variable),
        data = dm.1) +
@@ -4816,8 +4878,9 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   geom_hline(aes(yintercept = band2), size = 1, color = "black") + 
   xlab("Tiempo") + 
   ylab("Estadístico Diebold-Mariano") +
-  scale_color_manual(name = "", labels = c("ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"), 
-                     values = c(colores[1], colores[2],colores[3], colores[4], colores[5], "red"))+
+  scale_color_manual(name = "", labels = c("ARIMA", "ARIMAX","ETS","VAR", "FAVAR"), 
+                     values = c(colores[1], colores[2],colores[3], colores[5],
+                                colores[6]))+
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         legend.position="bottom") +
@@ -4826,7 +4889,13 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Pronósticos: esquema fijo bagged un paso hacia adelante",
        caption = "Fuente: elaboración propia")
 
+ggsave(file="gr.f.h1.b.eps", width=6.5, height=4, dpi=300)
+
 # Pronósticos h=2 fijo bagged.
+
+rm(gr1, gr2, gr3, gr4, gr5, gr6, dm.1, 
+   values.gr1, values.gr2, values.gr3, values.gr4, values.gr5,
+   values.gr6)
 
 gr1 <- fluctuation_test(error.arima.f.h2.b.sq, error.bench.sq[1,1:58], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -4875,7 +4944,13 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Pronósticos: esquema fijo bagged dos pasos hacia adelante",
        caption = "Fuente: elaboración propia")
 
+ggsave(file="gr.f.h2.b.eps", width=6.5, height=4, dpi=300)
+
 # Pronósticos h=7 fijo bagged.
+
+rm(gr1, gr2, gr3, gr5, gr6, dm.1, 
+   values.gr1, values.gr2, values.gr3, values.gr5,
+   values.gr6)
 
 gr1 <- fluctuation_test(error.arima.f.h7.b.sq, error.bench.sq[1,7:58], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -4925,7 +5000,13 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Pronósticos: esquema fijo bagged siete pasos hacia adelante",
        caption = "Fuente: elaboración propia")
 
+ggsave(file="gr.f.h7.b.eps", width=6.5, height=4, dpi=300)
+
 # Pronósticos h=1 recursivo bagged.
+
+rm(gr1, gr2, gr3, gr5, gr6, dm.1, 
+   values.gr1, values.gr2, values.gr3, values.gr5,
+   values.gr6)
 
 gr1 <- fluctuation_test(error.arima.rec.h1.b.sq, error.bench.sq[1,], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -4977,9 +5058,14 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Pronósticos: esquema recursivo bagged un paso hacia adelante",
        caption = "Fuente: elaboración propia")
 
-## PROBLEMA ##
+ggsave(file="gr.rec.h1.b.eps", width=6.5, height=4, dpi=300)
+
 
 # Pronósticos h=2 recursivo.
+
+rm(gr1, gr2, gr3, gr5, gr6, dm.1, 
+   values.gr1, values.gr2, values.gr3, values.gr5,
+   values.gr6)
 
 gr1 <- fluctuation_test(error.arima.rec.h2.b.sq, error.bench.sq[1,2:58], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -5029,7 +5115,13 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Pronósticos: esquema recursivo bagged dos pasos hacia adelante",
        caption = "Fuente: elaboración propia")
 
+ggsave(file="gr.rec.h2.b.eps", width=6.5, height=4, dpi=300)
+
 # Pronósticos h=7 recursivo.
+
+rm(gr1, gr2, gr3, gr5, gr6, dm.1, 
+   values.gr1, values.gr2, values.gr3, values.gr5,
+   values.gr6)
 
 gr1 <- fluctuation_test(error.arima.rol.h7.b.sq, error.bench.sq[1,7:58], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -5079,7 +5171,14 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Pronósticos: esquema recursivo bagged siete pasos hacia adelante",
        caption = "Fuente: elaboración propia")
 
+ggsave(file="gr.rec.h7.b.eps", width=6.5, height=4, dpi=300)
+
+
 # Pronósticos h=1 rolling.
+
+rm(gr1, gr2, gr3, gr5, gr6, dm.1, 
+   values.gr1, values.gr2, values.gr3, values.gr5,
+   values.gr6)
 
 gr1 <- fluctuation_test(error.arima.rol.h1.b.sq, error.bench.sq[1,], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -5131,7 +5230,13 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Pronósticos: esquema rolling bagged un paso hacia adelante",
        caption = "Fuente: elaboración propia")
 
+ggsave(file="gr.rol.h1.b.eps", width=6.5, height=4, dpi=300)
+
 # Pronósticos h=2 rolling.
+
+rm(gr1, gr2, gr3, gr5, gr6, dm.1, 
+   values.gr1, values.gr2, values.gr3, values.gr5,
+   values.gr6)
 
 gr1 <- fluctuation_test(error.arima.rol.h2.b.sq, error.bench.sq[1,2:58], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -5181,7 +5286,13 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        subtitle = "Pronósticos: esquema rolling bagged dos pasos hacia adelante",
        caption = "Fuente: elaboración propia")
 
+ggsave(file="gr.rol.h2.b.eps", width=6.5, height=4, dpi=300)
+
 # Pronósticos h=7 rolling.
+
+rm(gr1, gr2, gr3, gr5, gr6, dm.1, 
+   values.gr1, values.gr2, values.gr3, values.gr5,
+   values.gr6)
 
 gr1 <- fluctuation_test(error.arima.rol.h7.b.sq, error.bench.sq[1,7:58], mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
@@ -5230,6 +5341,11 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   labs(title = "Fluctuation Test",
        subtitle = "Pronósticos: esquema rolling bagged siete pasos hacia adelante",
        caption = "Fuente: elaboración propia")
+
+ggsave(file="gr.rol.h7.b.eps", width=6.5, height=4, dpi=300)
+
+
+#### GR Comparando ####
 
 # A continuación, haremos el test de Giacomini-Rossi comparando a cada modelo con 
 # su versión bagged. Graficamos por esquema-ventana.
