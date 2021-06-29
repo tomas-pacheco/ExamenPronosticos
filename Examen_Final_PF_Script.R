@@ -820,8 +820,6 @@ ggsave(file="VarDecomp.eps", width=5.5, height=4, dpi=300)
 
 PCA1 <- prcomp(in.sample[,3:15], scale =TRUE) 
 
-get_eig(PCA1) # probar esto 
-
 # Veremos los autovalores para evaluar qué cantidad de componentes utilizaremos.
 
 PCA1$sdev^2
@@ -831,6 +829,22 @@ PCA1$sdev^2
 library(dplyr)
 
 PC.is <- scale(in.sample[,3:15])%*%PCA1$rotation
+
+library(factoextra)
+
+eigr <- matrix(NA, 13, 4)
+eig <- as.matrix(get_eig(PCA1))
+
+eigr[,1] <- c("PC1", "PC2", "PC3", "PC4", "PC5", "PC6",
+              "PC7", "PC8", "PC9", "PC10", "PC11", "PC12", "PC13")
+eigr[,2] <- round(eig[,1],4)
+eigr[,3] <- round(eig[,2],4)
+eigr[,4] <- round(eig[,3],4)
+
+colnames(eigr) <- c("Componente", "Autovalor",
+                    " Porcentaje de varianza explicada",
+                    "Porcentaje de varianza explicada acumulada")
+stargazer(eigr)
 
 # Aplicamos los componentes principales a toda la base de datos (no solo el período in-sample).
 
