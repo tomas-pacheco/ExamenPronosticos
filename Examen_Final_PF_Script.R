@@ -385,6 +385,7 @@ summary(arima.1)
 
 arima.to.table <- arima(in.sample[,2],order = c(5,0,1))
 
+
 # Validaremos el modelo chequeando que los residuos sean ruido blanco.
 
 act1 <- checkresiduals(arima.1, lag = 13)
@@ -442,16 +443,13 @@ order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + 
                             vacunasarg + maxtemp + mintemp + muertes.arg.rel + casos.arg.rel, 
                           data = in.sample[,-1], max_order = 5)
 
-order.adl.dl <- auto_ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + casosarg + muertosarg +
-                            vacunasarg + maxtemp + mintemp + muertes.arg.rel + casos.arg.rel, 
-                          data = data.in.sample[,-1], max_order = 5)
 
 # Ahora estimamos el modelo.
 
 adl.dl <- ardl(sentsmooth ~ twfav + twret + reservasbcra + tasaint + basemon + tcdolar + 
                  casosarg + muertosarg + vacunasarg + maxtemp + 
                  mintemp + muertes.arg.rel + casos.arg.rel, 
-               data = data.in.sample.dum, order = as.vector(order.adl.dl$best_order))
+               data = in.sample[,-1], order = as.vector(order.adl.dl$best_order))
 
 # Estimamos el ADL pero con la función dynlm.
 
@@ -2010,7 +2008,7 @@ for(i in 1:58){
                     start = c(2019,12), end = 2020.195 + (i-1)/365)
     
     # FAVAR
-    f4 <- VAR(cbind(temp, temp3[,1]), p = 6, type= "trend")
+    f4 <- VAR(cbind(temp, temp3[,1]), p = 8, type= "trend")
     forecast4<-forecast(f4, h=h)
     pr.favar[1,j] <- forecast4$forecast$temp$mean[h]
     print(j)
@@ -2084,7 +2082,7 @@ for(i in 1:57){
     pr.ets[1,j] <- pre$mean[h]
     
     # FAVAR
-    f4 <- VAR(cbind(temp, temp3), p = 6, type= "trend")
+    f4 <- VAR(cbind(temp, temp3), p = 8, type= "trend")
     forecast4<-forecast(f4, h=h)
     pr.favar[1,j] <- forecast4$forecast$temp$mean[h]
     print(j)
@@ -2182,7 +2180,7 @@ for(i in 1:52){
     pr.ets[1,j] <- pre$mean[h]
     
     # FAVAR
-    f4 <- VAR(cbind(temp, temp3), p = 6, type= "trend")
+    f4 <- VAR(cbind(temp, temp3), p = 8, type= "trend")
     forecast4<-forecast(f4, h=h)
     pr.favar[1,j] <- forecast4$forecast$temp$mean[h]
     
@@ -2255,6 +2253,24 @@ for(i in 1:58){
   pr.ets <- matrix(nrow=1,ncol=100,NA)
   pr.favar <- matrix(nrow=1,ncol=100,NA)
   
+  # Estimamos los modelos que luego aplicaremos a las muestras bootstrap
+  
+    temp<-window(data1[,2], start = c(2019,12), end = 2020.195 + (i-1)/365)
+    temp2 <-window(data1[,3:15], start = c(2019,12), end = 2020.195 + (i-1)/365)
+    temp3 <- window(PC, start = c(2019,12), end = 2020.195 + (i-1)/365)
+    
+    # ARIMA 
+    arima.1 <- auto.arima(temp)
+
+    
+    # ETS 
+    ets.1 <- ets(temp)
+    
+    # FAVAR
+    favar.1 <-VARselect(cbind(temp, temp3), lag.max = 13, type = "trend")$selection[1]
+
+
+  
   for (j in 1:100) {
     temp <-window(data.bag.2[,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
     data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],
@@ -2265,23 +2281,22 @@ for(i in 1:58){
     temp3 <- window(cbind(PC.bag.1[,j],PC.bag.2[,j],PC.bag.3[,j],
                           PC.bag.4[,j]), start = c(2019,12), end = 2020.195 + (i-1)/365)
     # ARIMA 
-    f1 <- auto.arima(temp)
+    f1 <- Arima(temp, model = arima.1)
     forecast <- forecast(f1,h = h)
     pr.arima[1,j] <- forecast$mean[h]
     
     # ARIMAX
-    f2 <- Arima(temp,model=auto.arima(temp),newxreg=temp2)
+    f2 <- Arima(temp,model=arima.1,newxreg=temp2)
     forecast2 <- forecast(f2$fitted,h=h)
     pr.arimax[1,j] <- forecast2$mean[h]
     
     # ETS 
-    f1 <- ets(temp)
+    f1 <- ets(temp, model = ets.1, use.initial.values = TRUE)
     pre <- forecast(f1, n.ahead=h)
     pr.ets[1,j] <- pre$mean[h]
     
     # FAVAR
-    a <- VARselect(cbind(temp, temp3), lag.max = 13, type = "trend")$selection[1]
-    f4 <- VAR(cbind(temp, temp3), p = a, type= "trend")
+    f4 <- VAR(cbind(temp, temp3), p = favar.1, type= "trend")
     forecast4<-forecast(f4, h=h)
     pr.favar[1,j] <- forecast4$forecast$temp$mean[h]
     
@@ -2299,11 +2314,20 @@ for(i in 1:58){
 
 for(i in 1:58){
   pr.var <- matrix(nrow=1,ncol=100,NA)
+  
+  # Estimamos el modelo que luego aplicaremos a las muestras bootstrap
+  
+  temp<-window(data1[,2], start = c(2019,12), end = 2020.195 + (i-1)/365)
+  temp3 <- window(PC, start = c(2019,12), end = 2020.195 + (i-1)/365)
+  
+  # VAR
+  var.1 <-VARselect(cbind(temp, temp3), lag.max = 13, type = "trend")$selection[1]
+  
+  
   for (j in 1:100){
     data.var.bag.ex <- window(cbind(data.bag.2[,j],data.bag.3[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j], data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j]), start = c(2019,12), end = 2020.195 + (i-1)/365)
     var.bag.ex.diff<- window(cbind(diff(data.bag.4[,j]), diff(data.bag.8[,j])), start = c(2019,12), end = 2020.195 + (i-1)/365)
-    a <- VARselect(cbind(data.var.bag.ex[-1,],var.bag.ex.diff), lag.max = 13, type = "const")$selection[1]
-    f5 <- VAR(cbind(data.var.bag.ex[-1,],var.bag.ex.diff), p = a, type = "trend")
+    f5 <- VAR(cbind(data.var.bag.ex[-1,],var.bag.ex.diff), p =var.1, type = "trend")
     pr.var[1,j] <- forecast(f5)$forecast$data.var.bag.ex..1....data.bag.2...j.$mean[h]
     print(j)
   }
@@ -2348,6 +2372,22 @@ for(i in 1:57){
   pr.ets <- matrix(nrow=1,ncol=100,NA)
   pr.favar <-  matrix(nrow=1,ncol=100,NA)
   
+  # Estimamos los modelos que luego aplicaremos a las muestras bootstrap
+  
+  temp<-window(data1[,2], start = c(2019,12), end = 2020.195 + (i-1)/365)
+  temp2 <-window(data1[,3:15], start = c(2019,12), end = 2020.195 + (i-1)/365)
+  temp3 <- window(PC, start = c(2019,12), end = 2020.195 + (i-1)/365)
+  
+  # ARIMA 
+  arima.1 <- auto.arima(temp)
+  
+  
+  # ETS 
+  ets.1 <- ets(temp)
+  
+  # FAVAR
+  favar.1 <-VARselect(cbind(temp, temp3), lag.max = 13, type = "trend")$selection[1]
+  
   for (j in 1:100){
     temp<-window(data.bag.2[,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
     data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j],
@@ -2358,23 +2398,22 @@ for(i in 1:57){
                     start = c(2019,12), end = 2020.195 + (i-1)/365)
     
     # ARIMA 
-    f1 <- auto.arima(temp)
+    f1 <- Arima(temp, model = arima.1)
     forecast <- forecast(f1,h = h)
     pr.arima[1,j] <- forecast$mean[h]
     
     #ARIMAX
-    f2 <- Arima(temp,model=auto.arima(temp),newxreg=temp2)
+    f2 <- Arima(temp,model=arima.1,newxreg=temp2)
     forecast2 <- forecast(f2$fitted,h=h)
     pr.arimax[1,j] <- forecast2$mean[h]
     
     #ETS 
-    f1 <- ets(temp)
+    f1 <- ets(temp, model = ets.1, use.initial.values = TRUE)
     pre <- forecast(f1, n.ahead=h)
     pr.ets[1,j] <- pre$mean[h]
     
     # FAVAR
-    a <- VARselect(cbind(temp, temp3), lag.max = 13, type = "trend")$selection[1]
-    f4 <- VAR(cbind(temp, temp3), p = a, type= "trend")
+    f4 <- VAR(cbind(temp, temp3), p = favar.1, type= "trend")
     forecast4<-forecast(f4, h=h)
     pr.favar[1,j] <- forecast4$forecast$temp$mean[h]
     
@@ -2392,13 +2431,18 @@ for(i in 1:57){
 
 for(i in 1:57){
   pr.var <- matrix(nrow=1,ncol=100,NA)
+  temp<-window(data1[,2], start = c(2019,12), end = 2020.195 + (i-1)/365)
+  temp3 <- window(PC, start = c(2019,12), end = 2020.195 + (i-1)/365)
+
+  # VAR
+  var.1 <-VARselect(cbind(temp, temp3), lag.max = 13, type = "trend")$selection[1]
+  
   for (j in 1:100) {
     data.var.bag.ex <- window(cbind(data.bag.2[,j],data.bag.3[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j], 
                                     data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],data.bag.12[,j],data.bag.13[,j],
                                     data.bag.14[,j],data.bag.15[,j]), start = c(2019,12), end = 2020.195 + (i-1)/365)
     var.bag.ex.diff<- window(cbind(diff(data.bag.4[,j]), diff(data.bag.8[,j])), start = c(2019,12), end = 2020.195 + (i-1)/365)
-    a <- VARselect(cbind(data.var.bag.ex[-1,],var.bag.ex.diff),lag.max = 13, type = "trend")$selection[1]
-    f5 <- VAR(cbind(data.var.bag.ex[-1,],var.bag.ex.diff), p = a, type = "trend")
+    f5 <- VAR(cbind(data.var.bag.ex[-1,],var.bag.ex.diff), p = var.1, type = "trend")
     pr.var[1,j]<- forecast(f5)$forecast$data.var.bag.ex..1....data.bag.2...j.$mean[h]
     print(j)
   }
@@ -2445,6 +2489,20 @@ for(i in 1:52){
   pr.ets <- matrix(nrow=1,ncol=100,NA)
   pr.favar <- matrix(nrow=1,ncol=100,NA)
   
+  temp<-window(data1[,2], start = c(2019,12), end = 2020.195 + (i-1)/365)
+  temp2 <-window(data1[,3:15], start = c(2019,12), end = 2020.195 + (i-1)/365)
+  temp3 <- window(PC, start = c(2019,12), end = 2020.195 + (i-1)/365)
+  
+  # ARIMA 
+  arima.1 <- auto.arima(temp)
+  
+  
+  # ETS 
+  ets.1 <- ets(temp)
+  
+  # FAVAR
+  favar.1 <-VARselect(cbind(temp, temp3), lag.max = 13, type = "trend")$selection[1]
+  
   for (j in 1:100) {
     temp<-window(data.bag.2[,j], start = c(2019,12), end = 2020.195 + (i-1)/365)
     data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],data.bag.7[,j],
@@ -2455,23 +2513,22 @@ for(i in 1:52){
                     start = c(2019,12), end = 2020.195 + (i-1)/365)
     
     # ARIMA 
-    f1 <- auto.arima(temp)
+    f1 <- Arima(temp, model = arima.1)
     forecast <- forecast(f1,h = h)
     pr.arima[1,j] <- forecast$mean[h]
     
     # ARIMAX
-    f2 <- Arima(temp,model=auto.arima(temp),newxreg=temp2)
+    f2 <- Arima(temp,model=arima.1,newxreg=temp2)
     forecast2 <- forecast(f2$fitted,h=h)
     pr.arimax[1,j] <- forecast2$mean[h]
     
     # ETS 
-    f1 <- ets(temp)
+    f1 <- ets(temp, model = ets.1, use.initial.values = TRUE)
     pre <- forecast(f1, n.ahead=h)
     pr.ets[1,j] <- pre$mean[h]
     
     # FAVAR
-    a <- VARselect(cbind(temp, temp3), lag.max = 13, type = "trend")$selection[1]
-    f4 <- VAR(cbind(temp, temp3), p = a, type= "trend")
+    f4 <- VAR(cbind(temp, temp3), p = favar.1, type= "trend")
     forecast4<-forecast(f4, h=h)
     pr.favar[1,j] <- forecast4$forecast$temp$mean[h]
     
@@ -2489,15 +2546,18 @@ for(i in 1:52){
 
 for(i in 1:52){
   pr.var <- matrix(nrow=1,ncol=100,NA)
+  temp<-window(data1[,2], start = c(2019,12), end = 2020.195 + (i-1)/365)
+  temp3 <- window(PC, start = c(2019,12), end = 2020.195 + (i-1)/365)
+  
+  # VAR
+  var.1 <-VARselect(cbind(temp, temp3), lag.max = 13, type = "trend")$selection[1]
   for (j in 1:100) {
     data.var.bag.ex <- window(cbind(data.bag.2[,j],data.bag.3[,j],data.bag.5[,j],data.bag.6[,j],
                                     data.bag.7[,j], data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],
                                     data.bag.12[,j],data.bag.13[,j],data.bag.14[,j],data.bag.15[,j]), 
                               start = c(2019,12), end = 2020.195 + (i-1)/365)
     var.bag.ex.diff<- window(cbind(diff(data.bag.4[,j]), diff(data.bag.8[,j])), start = c(2019,12), end = 2020.195 + (i-1)/365)
-    a <- VARselect(cbind(data.var.bag.ex[-1,], var.bag.ex.diff), 
-                   lag.max = 13, type = "trend")$selection[1]
-    f5 <- VAR(cbind(data.var.bag.ex[-1,], var.bag.ex.diff), p = a, type = "trend")
+    f5 <- VAR(cbind(data.var.bag.ex[-1,], var.bag.ex.diff), p = var.1, type = "trend")
     pr.var[1,j]<- forecast(f5)$forecast$data.var.bag.ex..1....data.bag.2...j.$mean[h]
     print(j)
   }
@@ -2545,6 +2605,22 @@ for(i in 1:58){
   pr.ets <- matrix(nrow=1,ncol=100,NA)
   pr.favar <- matrix(nrow=1,ncol=100,NA)
   
+  # Estimamos los modelos que luego aplicaremos a las muestras bootstrap
+  
+  temp<-window(data1[,2], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+  temp2 <-window(data1[,3:15], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+  temp3 <- window(PC, start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+  
+  # ARIMA 
+  arima.1 <- auto.arima(temp)
+  
+  
+  # ETS 
+  ets.1 <- ets(temp)
+  
+  # FAVAR
+  favar.1 <-VARselect(cbind(temp, temp3), lag.max = 13, type = "trend")$selection[1]
+  
   
   for (j in 1:100) {
     temp <-window(data.bag.2[,j], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
@@ -2556,23 +2632,22 @@ for(i in 1:58){
     temp3 <- window(cbind(PC.bag.1[,j],PC.bag.2[,j],PC.bag.3[,j],PC.bag.4[,j]),
                     start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
     # ARIMA 
-    f1 <- auto.arima(temp)
+    f1 <- Arima(temp, model = arima.1)
     forecast <- forecast(f1,h = h)
     pr.arima[1,j] <- forecast$mean[h]
     
     # ARIMAX
-    f2 <- Arima(temp,model=auto.arima(temp),newxreg=temp2)
+    f2 <- Arima(temp,model = arima.1,newxreg=temp2)
     forecast2 <- forecast(f2$fitted,h=h)
     pr.arimax[1,j] <- forecast2$mean[h]
     
     # ETS 
-    f1 <- ets(temp)
+    f1 <- ets(temp, model = ets.1, use.initial.values = TRUE)
     pre <- forecast(f1, n.ahead=h)
     pr.ets[1,j] <- pre$mean[h]
     
     # FAVAR
-    a <- VARselect(cbind(temp, temp3), lag.max = 13, type = "trend")$selection[1]
-    f4 <- VAR(cbind(temp, temp3), p = a, type= "trend")
+    f4 <- VAR(cbind(temp, temp3), p = favar.1, type= "trend")
     forecast4<-forecast(f4, h=h)
     pr.favar[1,j] <- forecast4$forecast$temp$mean[h]
     
@@ -2590,6 +2665,14 @@ for(i in 1:58){
 
 for(i in 1:58){
   pr.var <- matrix(nrow=1,ncol=100,NA)
+  
+  # Estimamos el modelos que luego aplicaremos a las series bootstrap
+  temp<-window(data1[,2], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+  temp3 <- window(PC, start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+  
+  # VAR
+  var.1 <-VARselect(cbind(temp, temp3), lag.max = 13, type = "trend")$selection[1]
+  
   for (j in 1:100) {
     data.var.bag.ex <- window(cbind(data.bag.2[,j],data.bag.3[,j],data.bag.5[,j],
                                     data.bag.6[,j],data.bag.7[,j], data.bag.9[,j],
@@ -2598,8 +2681,7 @@ for(i in 1:58){
                               start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
     var.bag.ex.diff.1<- window(cbind(data.bag.4[,j], data.bag.8[,j]), start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
     var.bag.ex.diff <- diff(var.bag.ex.diff.1)
-    a <- VARselect(cbind(data.var.bag.ex[-1,],var.bag.ex.diff), lag.max = 13, type = "const")$selection[1]
-    f5 <- VAR(cbind(data.var.bag.ex[-1,],var.bag.ex.diff), p = a, type = "trend")
+    f5 <- VAR(cbind(data.var.bag.ex[-1,],var.bag.ex.diff), p = var.1, type = "trend")
     pr.var[1,j] <- forecast(f5)$forecast$data.var.bag.ex..1....data.bag.2...j.$mean[h]
     print(j)
   }
@@ -2646,9 +2728,26 @@ for(i in 1:57){
   pr.ets <- matrix(nrow=1,ncol=100,NA)
   pr.favar <-  matrix(nrow=1,ncol=100,NA)
   
+  # Estimamos los modelos que luego aplicaremos a las muestras bootstrap
+  
+  temp<-window(data1[,2], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+  temp2 <-window(data1[,3:15], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+  temp3 <- window(PC, start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+  
+  # ARIMA 
+  arima.1 <- auto.arima(temp)
+  
+  
+  # ETS 
+  ets.1 <- ets(temp)
+  
+  # FAVAR
+  favar.1 <-VARselect(cbind(temp, temp3), lag.max = 13, type = "trend")$selection[1]
+  
+  
   for (j in 1:100) {
 
-        temp<-window(data.bag.2[,j], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+    temp<-window(data.bag.2[,j], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
     data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],
                              data.bag.6[,j],data.bag.7[,j],data.bag.8[,j],
                              data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],
@@ -2659,23 +2758,22 @@ for(i in 1:57){
                     start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
     
     # ARIMA 
-    f1 <- auto.arima(temp)
+    f1 <- Arima(temp, model = arima.1)
     forecast <- forecast(f1,h = h)
     pr.arima[1,j] <- forecast$mean[h]
     
     #ARIMAX
-    f2 <- Arima(temp,model=auto.arima(temp),newxreg=temp2)
+    f2 <- Arima(temp,model=arima.1,newxreg=temp2)
     forecast2 <- forecast(f2$fitted,h=h)
     pr.arimax[1,j] <- forecast2$mean[h]
     
     #ETS 
-    f1 <- ets(temp)
+    f1 <- ets(temp, model = ets.1, use.initial.values = TRUE)
     pre <- forecast(f1, n.ahead=h)
     pr.ets[1,j] <- pre$mean[h]
     
     # FAVAR
-    a <- VARselect(cbind(temp, temp3), lag.max = 13, type = "trend")$selection[1]
-    f4 <- VAR(cbind(temp, temp3), p = a, type= "trend")
+    f4 <- VAR(cbind(temp, temp3), p = favar.1, type= "trend")
     forecast4<-forecast(f4, h=h)
     pr.favar[1,j] <- forecast4$forecast$temp$mean[h]
     
@@ -2693,6 +2791,15 @@ for(i in 1:57){
 
 for(i in 1:57){
   pr.var <- matrix(nrow=1,ncol=100,NA)
+  
+  # Estimamos los modelos que luego aplicaremos a las muestras bootstrap
+  
+  temp<-window(data1[,2], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+  temp3 <- window(PC, start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+  
+  # VAR
+  var.1 <-VARselect(cbind(temp, temp3), lag.max = 13, type = "trend")$selection[1]
+  
   for (j in 1:100){
     data.var.bag.ex <- window(cbind(data.bag.2[,j],data.bag.3[,j],data.bag.5[,j],data.bag.6[,j],
                                     data.bag.7[,j], data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],
@@ -2700,8 +2807,7 @@ for(i in 1:57){
                               start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
     var.bag.ex.diff.1<- window(cbind(data.bag.4[,j], data.bag.8[,j]), start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
     var.bag.ex.diff <- diff(var.bag.ex.diff.1)
-    a <- VARselect(cbind(data.var.bag.ex[-1,],var.bag.ex.diff),lag.max = 13, type = "trend")$selection[1]
-    f5 <- VAR(cbind(data.var.bag.ex[-1,],var.bag.ex.diff), p = a, type = "trend")
+    f5 <- VAR(cbind(data.var.bag.ex[-1,],var.bag.ex.diff), p = var.1, type = "trend")
     pr.var[1,j] <- forecast(f5)$forecast$data.var.bag.ex..1....data.bag.2...j.$mean[h]
     print(j)
   }
@@ -2748,6 +2854,22 @@ for(i in 1:52){
   pr.ets <- matrix(nrow=1,ncol=100,NA)
   pr.favar <- matrix(nrow=1,ncol=100,NA)
   
+  # Estimamos los modelos que luego aplicaremos a las muestras bootstrap
+  
+  temp<-window(data1[,2], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+  temp2 <-window(data1[,3:15], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+  temp3 <- window(PC, start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+  
+  # ARIMA 
+  arima.1 <- auto.arima(temp)
+  
+  
+  # ETS 
+  ets.1 <- ets(temp)
+  
+  # FAVAR
+  favar.1 <-VARselect(cbind(temp, temp3), lag.max = 13, type = "trend")$selection[1]
+  
   for (j in 1:100) {
     temp<-window(data.bag.2[,j], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
     data.var.bag.ex <- cbind(data.bag.3[,j],data.bag.4[,j],data.bag.5[,j],data.bag.6[,j],
@@ -2758,23 +2880,22 @@ for(i in 1:52){
     temp3 <- window(cbind(PC.bag.1[,j],PC.bag.2[,j],PC.bag.3[,j],PC.bag.4[,j]), start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
     
     # ARIMA 
-    f1 <- auto.arima(temp)
+    f1 <- Arima(temp, model = arima.1)
     forecast <- forecast(f1,h = h)
     pr.arima[1,j] <- forecast$mean[h]
     
     # ARIMAX
-    f2 <- Arima(temp,model=auto.arima(temp),newxreg=temp2)
+    f2 <- Arima(temp,model=arima.1,newxreg=temp2)
     forecast2 <- forecast(f2$fitted,h=h)
     pr.arimax[1,j] <- forecast2$mean[h]
     
     # ETS 
-    f1 <- ets(temp)
+    f1 <- ets(temp, model = ets.1, use.initial.values = TRUE)
     pre <- forecast(f1, n.ahead=h)
     pr.ets[1,j] <- pre$mean[h]
     
     # FAVAR
-    a <- VARselect(cbind(temp, temp3), lag.max = 13, type = "trend")$selection[1]
-    f4 <- VAR(cbind(temp, temp3), p = a, type= "trend")
+    f4 <- VAR(cbind(temp, temp3), p = favar.1, type= "trend")
     forecast4<-forecast(f4, h=h)
     pr.favar[1,j] <- forecast4$forecast$temp$mean[h]
     
@@ -2792,6 +2913,15 @@ for(i in 1:52){
 
 for(i in 1:52){
   pr.var <- matrix(nrow=1,ncol=100,NA)
+  
+  # Estimamos el modelo que luego aplicaremos a las series bootstrap
+  
+  temp<-window(data1[,2], start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+  temp3 <- window(PC, start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
+  
+  # VAR
+  var.1 <-VARselect(cbind(temp, temp3), lag.max = 13, type = "trend")$selection[1]
+  
   for (j in 1:100) {
     data.var.bag.ex <- window(cbind(data.bag.2[,j],data.bag.3[,j],data.bag.5[,j],data.bag.6[,j],
                                     data.bag.7[,j], data.bag.9[,j],data.bag.10[,j],data.bag.11[,j],
@@ -2799,8 +2929,7 @@ for(i in 1:52){
                               start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
     var.bag.ex.diff.1<- window(cbind(data.bag.4[,j], data.bag.8[,j]), start = 2019.030 + (i-1)/365, end = 2020.195 + (i-1)/365)
     var.bag.ex.diff <- diff(var.bag.ex.diff.1)
-    a <- VARselect(cbind(data.var.bag.ex[-1,],var.bag.ex.diff), lag.max = 13, type = "trend")$selection[1]
-    f5 <- VAR(cbind(data.var.bag.ex[-1,],var.bag.ex.diff), p = 6, type = "trend")
+    f5 <- VAR(cbind(data.var.bag.ex[-1,],var.bag.ex.diff), p = var.1, type = "trend")
     pr.var[1,j] <- forecast(f5)$forecast$data.var.bag.ex..1....data.bag.2...j.$mean[h]
     print(j)
   }
