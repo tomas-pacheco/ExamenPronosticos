@@ -277,9 +277,9 @@ ggplot(aes(x = obsahead, y = value, group = variable, color = variable),
        caption = "Fuente: elaboración propia") +
   theme(plot.title = element_text(hjust = 0.5),
         legend.position = "bottom") + 
-  geom_hline(yintercept=0.1, linetype="dashed", color = colores[5])+ 
-  geom_hline(yintercept=0.05, linetype="dashed", color = colores[5])+ 
-  geom_hline(yintercept=0.01, linetype="dashed", color = colores[5]) + 
+  geom_hline(yintercept=0.1, linetype="dashed", color = colores[3])+ 
+  geom_hline(yintercept=0.05, linetype="dashed", color = colores[3])+ 
+  geom_hline(yintercept=0.01, linetype="dashed", color = colores[3]) + 
   scale_x_continuous(n.breaks = 20) + 
   annotate("text", x = 400, y = 0.03, label = "p<0.01")+
   annotate("text", x = 400, y = 0.07, label = "p<0.05")+
@@ -304,9 +304,9 @@ ggplot(aes(x = obsahead, y = value, group = variable, color = variable),
        caption = "Fuente: elaboración propia") +
   theme(plot.title = element_text(hjust = 0.5),
         legend.position = "bottom") + 
-  geom_hline(yintercept=0.1, linetype="dashed", color = colores[5])+ 
-  geom_hline(yintercept=0.05, linetype="dashed", color = colores[5])+ 
-  geom_hline(yintercept=0.01, linetype="dashed", color = colores[5]) + 
+  geom_hline(yintercept=0.1, linetype="dashed", color = colores[3])+ 
+  geom_hline(yintercept=0.05, linetype="dashed", color = colores[3])+ 
+  geom_hline(yintercept=0.01, linetype="dashed", color = colores[3]) + 
   scale_x_continuous(n.breaks = 20) + 
   annotate("text", x = 400, y = 0.03, label = "p<0.01")+
   annotate("text", x = 400, y = 0.07, label = "p<0.05")+
@@ -400,7 +400,7 @@ power_analysis <- function(event, bound){
 
 # Llamamos a la función para cada uno de los eventos y luego graficamos.
 
-power_anuncio <- power_analysis(AR_anuncio, 0.25)
+power_anuncio <- power_analysis(AR_anuncio_siete, 2)
 
 p1 <- ggplot(aes(x = sim_assumed, y = power ), data = power_anuncio) + 
   geom_line(aes(x = sim_assumed , y = power), size = 1, col = colores[1]) + 
@@ -412,7 +412,7 @@ p1 <- ggplot(aes(x = sim_assumed, y = power ), data = power_anuncio) +
   theme(plot.title = element_text(hjust = 0.5),
     plot.subtitle = element_text(hjust = 0.5))
   
-power_vicentin <- power_analysis(AR_vicentin, 0.25)
+power_vicentin <- power_analysis(AR_vicentin_siete, 1.5)
 
 p2 <- ggplot(aes(x = sim_assumed, y = power ), data = power_vicentin) + 
   geom_line(aes(x = sim_assumed , y = power), size = 1, col = colores[2]) + 
@@ -424,7 +424,7 @@ p2 <- ggplot(aes(x = sim_assumed, y = power ), data = power_vicentin) +
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5))
 
-power_maradona <- power_analysis(AR_maradona, 0.25)
+power_maradona <- power_analysis(AR_maradona_siete, 1)
 
 p3 <- ggplot(aes(x = sim_assumed, y = power ), data = power_maradona) + 
   geom_line(aes(x = sim_assumed , y = power), size = 1, col = colores[3]) + 
@@ -436,7 +436,7 @@ p3 <- ggplot(aes(x = sim_assumed, y = power ), data = power_maradona) +
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5))
 
-power_vacunas <- power_analysis(AR_vacunas, 0.25)
+power_vacunas <- power_analysis(AR_vacunas_siete, 1)
 
 p4 <- ggplot(aes(x = sim_assumed, y = power ), data = power_vacunas) + 
   geom_line(aes(x = sim_assumed , y = power), size = 1, col = colores[4]) + 
@@ -450,5 +450,11 @@ p4 <- ggplot(aes(x = sim_assumed, y = power ), data = power_vacunas) +
 
 library(gridExtra)
 grid.arrange(p1, p2, p3, p4, nrow = 2, ncol = 2)
+
+
+
+
+
+
 
 
