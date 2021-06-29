@@ -492,7 +492,7 @@ in.sample.d <- in.sample.d[,2:15]
 
 # Elegimos el orden.
 
-var.d <- VARselect(in.sample.d, type ="const")
+var.d <- VARselect(in.sample.d, type ="trend")
 
 var.d$selection
 
@@ -502,7 +502,7 @@ var.d$selection
 
 # VER: si estimamos el var con constante, tendencia, las dos o ninguna
 
-var.dl <- VAR(in.sample.d, p = 6, type = "const")
+var.dl <- VAR(in.sample.d, p = 6, type = "trend")
 
 # Vemos si podemos validar el modelo.
 
@@ -820,6 +820,8 @@ ggsave(file="VarDecomp.eps", width=5.5, height=4, dpi=300)
 
 PCA1 <- prcomp(in.sample[,3:15], scale =TRUE) 
 
+get_eig(PCA1) # probar esto 
+
 # Veremos los autovalores para evaluar qué cantidad de componentes utilizaremos.
 
 PCA1$sdev^2
@@ -856,9 +858,7 @@ favar$varresult$X
 stargazer(var.dl$varresult$sentsmooth, favar$varresult$X,
           align = TRUE, 
           dep.var.labels = c("SentIndex", "SentIndex"),
-          omit = c("mes01", "mes02", "mes03", "mes04",
-                   "mes05", "mes06", "mes07", "mes08",
-                   "mes09", "mes10", "mes11", "sd1", 
+          omit = c("sd1", 
                    "sd2", "sd3"),
           keep.stat = c("n", "ll", "rsq"),
           no.space = TRUE,
@@ -1998,6 +1998,10 @@ for(i in 1:58){
   print(paste("VAMOS:", i, "PERIODOS"))
 }
 
+
+
+
+
 # Realizamos los pronósticos para el FAVAR.
 
 for(i in 1:58){
@@ -2008,7 +2012,7 @@ for(i in 1:58){
                     start = c(2019,12), end = 2020.195 + (i-1)/365)
     
     # FAVAR
-    f4 <- VAR(cbind(temp, temp3[,1]), p = 8, type= "trend")
+    f4 <- VAR(cbind(temp, temp3[,1]), p = 6, type= "trend")
     forecast4<-forecast(f4, h=h)
     pr.favar[1,j] <- forecast4$forecast$temp$mean[h]
     print(j)
@@ -2017,6 +2021,9 @@ for(i in 1:58){
   pr.f.h1.b[i,4] <- mean(pr.favar,na.rm = TRUE)
   print(i)
 }
+
+
+write.csv(pr.f.h1.b,"pr.f.h1.b.csv" , row.names = FALSE)
 
 # Importamos los pronósticos ya hechos.
 
@@ -2114,6 +2121,8 @@ for(i in 1:57){
   print(paste("VAMOS:", i, "PERIODOS"))
 }
 
+write.csv(pr.f.h2.b, "pr.f.h2.b.csv", row.names = FALSE)
+
 # Importamos.
 
 pr.f.h2.b <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/pr.f.h2.b.csv")
@@ -2170,7 +2179,7 @@ for(i in 1:52){
     pr.arima[1,j] <- forecast$mean[h]
     
     # ARIMAX
-    f2 <- Arima(temp,model=auto.arima(temp),newxreg=temp2)
+    f2 <- Arima(temp,model=arima.1,newxreg=temp2)
     forecast2 <- forecast(f2$fitted,h=h)
     pr.arimax[1,j] <- forecast2$mean[h]
     
@@ -2211,6 +2220,8 @@ for(i in 1:52){
   pr.f.h7.b[i,5] <- mean(pr.var)
   print(paste("VAMOS:", i, "PERIODOS"))
 }
+
+write.csv(pr.f.h7.b, "pr.f.h7.b.csv", row.names = FALSE)
 
 # Importamos.
 
@@ -2334,6 +2345,8 @@ for(i in 1:58){
   pr.rec.h1.b[i,5] <- mean(pr.var)
   print(paste("VAMOS:", i, "PERIODOS"))
 }
+
+
 
 # Importamos.
 
