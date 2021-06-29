@@ -12,7 +12,7 @@ library(dplyr)
 
 # Definimos la paleta de colores.
 
-colores <- c("#00ABC5", "#f7941c", "#edf71c", "#ff3c84")
+colores <- c("#00ABC5","#edf71c",  "#ff3c84","#FF7F32", "#cfb0b4", "#941cf7")
 
 # Abrimos la base de datos para esta etapa del trabajo.
 
@@ -69,9 +69,9 @@ data$t <- seq(1, nrow(data),1)
 data$ev_cuarentena <- 60
 data$ev_cuarentena_time <- data$t - data$ev_cuarentena
 
-# Segundo evento. Expropiación (o intento de) de Vicentin. 21 de junio 2020
+# Segundo evento. Expropiación (o intento de) de Vicentin. 11 de junio 2020
 
-data$ev_vicentin <- 153
+data$ev_vicentin <- 143
 data$ev_vicentin_time <- data$t - data$ev_vicentin
 
 # Tercer evento. Velatorio Maradona: 26 de noviembre de 2020.
@@ -218,24 +218,31 @@ test.np.vacunas  <- wilcox.test(AR_vacunas_siete, alternative =  "two.sided")
 
 # Ponemos estos resultados en una tabla.
 
-pvtest <- matrix(NA, nrow = 4, ncol = 3)
+pvtest <- matrix(NA, nrow = 4, ncol = 4)
 
 pvtest[1,1] <- "Anuncio cuarentena"
-pvtest[1,2] <- round(test.p.anuncio$p.value,4)
-pvtest[1,3] <- round(test.np.anuncio$p.value,4)
+pvtest[1,3] <- round(test.p.anuncio$p.value,4)
+pvtest[1,4] <- round(test.np.anuncio$p.value,4)
+pvtest[1,2] <- round(mean(AR_anuncio_siete),4)
 
 pvtest[2,1] <- "Vicentin"
-pvtest[2,2] <- round(test.p.vicentin$p.value,4)
-pvtest[2,3] <- round(test.np.vicentin$p.value,4)
+pvtest[2,3] <- round(test.p.vicentin$p.value,4)
+pvtest[2,4] <- round(test.np.vicentin$p.value,4)
+pvtest[2,2] <- round(mean(AR_vicentin_siete),4)
+
 
 pvtest[3,1] <- "Fallecimiento Maradona"
-pvtest[3,2] <- round(test.p.maradona$p.value,4)
-pvtest[3,3] <- round(test.np.maradona$p.value,4)
+pvtest[3,3] <- round(test.p.maradona$p.value,4)
+pvtest[3,4] <- round(test.np.maradona$p.value,4)
+pvtest[3,2] <- round(mean(AR_maradona_siete),4)
+
 
 pvtest[4,1] <- "Llegada de vacunas"
-pvtest[4,2] <- round(test.p.vacunas$p.value,4)
-pvtest[4,3] <- round(test.np.vacunas$p.value,4)
+pvtest[4,3] <- round(test.p.vacunas$p.value,4)
+pvtest[4,4] <- round(test.np.vacunas$p.value,4)
+pvtest[4,2] <- round(mean(AR_vacunas_siete),4)
 
+colnames(pvtest) <- c("Evento", "Media", "p-val ttest", "p-val Wilcoxon")
 stargazer(pvtest, type = "latex")
 
 
@@ -375,7 +382,6 @@ ggsave(file="sensitivity_vacunas.eps", width=6.5, height=4, dpi=300)
 
 # Para ello, nos construiremos una función. Esta exporta un data frame con los
 # retornos anormales ficticios y su potencia asociada.
-
 power_analysis <- function(event, bound){
   # Definimos los valores del retorno anormal hipotético
   sim_left_assumed <- seq(from = -bound, to = 0, by = 0.005)  
@@ -403,58 +409,175 @@ power_analysis <- function(event, bound){
 power_anuncio <- power_analysis(AR_anuncio_siete, 2)
 
 p1 <- ggplot(aes(x = sim_assumed, y = power ), data = power_anuncio) + 
+  geom_segment(aes(x = mean(AR_anuncio_siete), y = 0, 
+                   xend = mean(AR_anuncio_siete), yend = 0.405, colour = "segment"),
+               size = 1, col = colores[3]) +
   geom_line(aes(x = sim_assumed , y = power), size = 1, col = colores[1]) + 
   theme_minimal() + 
   ylab("Potencia") + 
   xlab("Retorno anormal hipotético") + 
   ggtitle(label = "Curva de potencia",
-          subtitle = "Anuncio de cuarentena - 19/03/20") + 
+          subtitle = "Cuarentena - 19/03/20") + 
   theme(plot.title = element_text(hjust = 0.5),
-    plot.subtitle = element_text(hjust = 0.5))
+    plot.subtitle = element_text(hjust = 0.5),
+    legend.position = "none" )
+
   
 power_vicentin <- power_analysis(AR_vicentin_siete, 1.5)
 
 p2 <- ggplot(aes(x = sim_assumed, y = power ), data = power_vicentin) + 
+  geom_segment(aes(x = mean(AR_vicentin_siete), y = 0, 
+                   xend = mean(AR_vicentin_siete), yend = 0.035, colour = "segment"),
+               size = 1, col = colores[1]) + 
   geom_line(aes(x = sim_assumed , y = power), size = 1, col = colores[2]) + 
   theme_minimal() + 
   ylab("Potencia") + 
   xlab("Retorno anormal hipotético") + 
   ggtitle(label = "Curva de potencia",
-          subtitle = "Expropiación de Vicentin - 21/06/2020 ") + 
+          subtitle = "Vicentin - 11/06/2020 ") + 
   theme(plot.title = element_text(hjust = 0.5),
-        plot.subtitle = element_text(hjust = 0.5))
+        plot.subtitle = element_text(hjust = 0.5),
+        legend.position = "none" ) 
+
 
 power_maradona <- power_analysis(AR_maradona_siete, 1)
 
 p3 <- ggplot(aes(x = sim_assumed, y = power ), data = power_maradona) + 
+  geom_segment(aes(x = mean(AR_maradona_siete), y = 0, 
+                   xend = mean(AR_maradona_siete), yend = 0.03, colour = "segment"),
+               size = 1, col = colores[4]) + 
   geom_line(aes(x = sim_assumed , y = power), size = 1, col = colores[3]) + 
   theme_minimal() + 
   ylab("Potencia") + 
   xlab("Retorno anormal hipotético") + 
   ggtitle(label = "Curva de potencia",
-          subtitle = "Velorio de Maradona - 26/11/2020 ") + 
+          subtitle = "Funeral Maradona - 26/11/2020 ") + 
   theme(plot.title = element_text(hjust = 0.5),
-        plot.subtitle = element_text(hjust = 0.5))
+        plot.subtitle = element_text(hjust = 0.5),
+        legend.position = "none" )
+
+
 
 power_vacunas <- power_analysis(AR_vacunas_siete, 1)
 
 p4 <- ggplot(aes(x = sim_assumed, y = power ), data = power_vacunas) + 
+  geom_segment(aes(x = mean(AR_vacunas_siete), y = 0, 
+                   xend = mean(AR_vacunas_siete), yend = 0.125, colour = "segment"),
+               size = 1, col = colores[2]) + 
   geom_line(aes(x = sim_assumed , y = power), size = 1, col = colores[4]) + 
   theme_minimal() + 
   ylab("Potencia") + 
   xlab("Retorno anormal hipotético") + 
   ggtitle(label = "Curva de potencia",
-          subtitle = "Llegada de de vacunas - 24/12/2020 ") + 
+          subtitle = "Llegada vacunas - 24/12/2020 ") + 
   theme(plot.title = element_text(hjust = 0.5),
-        plot.subtitle = element_text(hjust = 0.5))
+        plot.subtitle = element_text(hjust = 0.5),
+        legend.position = "none" ) 
 
 library(gridExtra)
 grid.arrange(p1, p2, p3, p4, nrow = 2, ncol = 2)
 
 
+# Finalmente vamos a hacer un control de robustez, chequeando si para el primer evento
+# hubo algún efecto en el aumento de los retornos del sentimiento del presidente.
 
+data$ev_cuarentena_rob <- 60 - 7
+data$ev_cuarentena_time_rob <- data$t - data$ev_cuarentena_rob 
 
+# Calculamos medias antes y despues
 
+round(mean(data$retpres[data$ev_cuarentena_time_rob<0]),4) #anterior
+round(mean(data$retpres[data$ev_cuarentena_time_rob>0]),4) #posterior
 
+# Estimamoos
 
+modelo_anuncio_rob <- lm(retpres ~ retmarket , data=subset(data,ev_cuarentena_time_rob<0))  
+summary(modelo_anuncio_rob)
+
+# Calculamos ARs.
+
+AR_anuncio_rob <- data$retpres[data$ev_cuarentena_time_rob>=0]-predict(modelo_anuncio, newdata=subset(data,ev_cuarentena_time_rob >=0))
+
+# Testeamos si cada AR medio es igual a 0:
+
+t.test(AR_anuncio_rob, df=length(AR_anuncio_rob)-1, alternative = "two.sided")
+
+# Rechazamos.
+
+# Ahora solo lo hacemos para los siete dias siguientes
+
+AR_anuncio_siete_rob <- AR_anuncio_rob[1:7]
+qqnorm(AR_anuncio_siete)
+qqline(AR_anuncio_siete)
+
+# Testeamos paramétricamanete.
+
+test.p.anuncio.rob <- t.test(AR_anuncio_siete_rob, df=length(AR_anuncio_siete_rob)-1, 
+                         alternative = "two.sided")
+
+# No paramétrico.
+
+test.np.anuncio.rob  <- wilcox.test(AR_anuncio_siete_rob, alternative =  "two.sided")
+
+# No rechazamos ningún test, validando la hipótesis de que fue el día del anuncio.
+
+# Hacemos el mismo ejercicio pero probando con fecha de evento desde una semana antes del evento hasta el mismo día
+
+rob.test <- matrix(NA, nrow = 10, ncol = 4)
+colnames(rob.test) <- c("Fecha de evento", "Media ARs", "p-val t-test", "p-val Wilcoxon")
+for (i in 0:7){
+  data$ev_cuarentena_rob_loop <- 60 - i 
+  data$ev_cuarentena_time_rob_loop <- data$t - data$ev_cuarentena_rob_loop 
+  modelo_anuncio_rob_loop <- lm(retpres ~ retmarket , data=subset(data,ev_cuarentena_time_rob_loop<0))  
+  AR_anuncio_rob <- data$retpres[data$ev_cuarentena_time_rob_loop>=0]-predict(modelo_anuncio_rob_loop,
+                                                                              newdata=subset(data,ev_cuarentena_time_rob_loop >=0))
+  AR_anuncio_siete_rob_loop <- AR_anuncio_rob[1:7]
+  test.p.anuncio.rob.loop <- t.test(AR_anuncio_siete_rob_loop, 
+                                    df=length(AR_anuncio_siete_rob_loop)-1, 
+                                    alternative = "two.sided")
+  test.np.anuncio.rob.loop  <- wilcox.test(AR_anuncio_siete_rob_loop, 
+                                           alternative =  "two.sided")
+  rob.test[i + 1,2] <- round(mean(AR_anuncio_siete_rob_loop),4)
+  rob.test[i + 1,3] <- round(test.p.anuncio.rob.loop$p.value,4)
+  rob.test[i + 1,4] <- round(test.np.anuncio.rob.loop$p.value,4)
+}
+
+rob.test[1,1] <- "19/03/2019"
+rob.test[2,1] <- "18/03/2019"
+rob.test[3,1] <- "17/03/2019"
+rob.test[4,1] <- "16/03/2019"
+rob.test[5,1] <- "15/03/2019"
+rob.test[6,1] <- "14/03/2019"
+rob.test[7,1] <- "13/03/2019"
+rob.test[8,1] <- "12/03/2019"
+
+stargazer(rob.test, type = "latex")
+
+# Vemos que en ningún momento rechazando, haciendo aún más fuerte nuestra hipótesis.
+
+# Graficamos los retornos anormales luego del evento.
+
+AR_anuncio_plot <- data.frame(
+  AR_anuncio, 
+  seq(1, length(AR_anuncio),1),
+  c(AR_anuncio[1:7], rep(NA, length(AR_anuncio)-7)),
+  c(seq(1, 7,1),  rep(NA, length(AR_anuncio)-7))
+)
+
+colnames(AR_anuncio_plot) <- c("ars", "days", "ars2", "days2")
+
+ggplot(aes(x = days, y = ars), data = AR_anuncio_plot) + 
+  theme_bw() + 
+  geom_point(size= 1.5) + 
+  geom_line(aes(x = days2, y = ars2), color = colores[1]) + 
+  geom_hline(yintercept = 0, color = colores[3], size = 1) + 
+  labs(title = "Retornos anormales luego del evento", 
+       subtitle = "Anuncio de cuarentena", 
+       caption = "Fuente: elaboración propia", 
+       x = "Días post evento",
+       y = "Retorno anormal") + 
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+
+ggsave(file="abnormal_post.eps", width=6.5, height=4, dpi=300)
 
