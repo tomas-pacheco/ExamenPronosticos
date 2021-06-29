@@ -4663,7 +4663,7 @@ library(dplyr)
 
 # Pronósticos h=1 fijo.
 
-gr1 <- fluctuation_test(error.arima.f.h1.sq, error.bench.sq, mu = 0.1)
+gr1 <- fluctuation_test(error.arima.f.h1.sq, error.bench.sq, mu = 0.5)
 values.gr1 <- as.data.frame(gr1$df)
 band1 <- gr1$CV[1]
 band2 <- gr1$CV[2]
