@@ -3114,7 +3114,7 @@ AC[29,2:4]<-round(accuracy(pr.rec.h1.b[,4], out.of.sample[,2])[c(2:3,5)],4)
 # Medidas de accuracy de los pronósticos con esquema rolling, h = 1 y series boots.
 
 AC[30,1]<-"ARIMA rolling bagged" 
-AC2[230,1]<-"1"
+AC2[30,1]<-"1"
 AC[30,2:4]<-round(accuracy(pr.rol.h1.b[,1], out.of.sample[,2])[c(2:3,5)],4)
 AC[31,1]<-"ARIMAX rolling bagged" 
 AC2[31,1]<-"1"
@@ -4294,7 +4294,7 @@ AC[29,2:4]<-round(accuracy(pr.rec.h1.b[7:58,4], out.of.sample[7:58,2])[c(2:3,5)]
 # Medidas de accuracy de los pronósticos con esquema rolling, h = 1 y series boots.
 
 AC[30,1]<-"ARIMA rolling bagged" 
-AC2[230,1]<-"1"
+AC2[23,1]<-"1"
 AC[30,2:4]<-round(accuracy(pr.rol.h1.b[7:58,1], out.of.sample[7:58,2])[c(2:3,5)],4)
 AC[31,1]<-"ARIMAX rolling bagged" 
 AC2[31,1]<-"1"
@@ -4555,6 +4555,7 @@ AC4[34,2:4]<-round(accuracy(pr.rol.h7.b[,5], out.of.sample[7:58,2])[c(2:3,5)],4)
 # Exportamos.
 
 # Para h=1
+
 colnames(AC) <- c("Modelo", "RMSE", "MAE", "MAPE")
 stargazer(AC[1:nrow(AC),], type = "latex")
 
@@ -4564,7 +4565,8 @@ colnames(AC1) <- c("Modelo", "RMSE", "MAE", "MAPE")
 AC1[1,1:ncol(AC1)] <- AC[1,1:ncol(AC)]
 stargazer(AC1[1:nrow(AC1),], type = "latex")
 
-# Para h = 3
+# Para h=7
+
 colnames(AC4) <- c("Modelo", "RMSE", "MAE", "MAPE")
 AC4[1,1:ncol(AC4)] <- AC[1,1:ncol(AC)]
 stargazer(AC4[1:nrow(AC4),], type = "latex")
