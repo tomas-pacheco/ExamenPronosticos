@@ -390,7 +390,7 @@ arima.to.table <- arima(in.sample[,2],order = c(5,0,1))
 
 act1 <- checkresiduals(arima.1, lag = 13)
 
-test <- round(act1$p.value, 2)
+test <- round(act1$p.value, 4)
 
 # Como H0 es ausencia de autocorrelación y no rechazamos la hipótesis
 # podemos decir que los residuos no están correlacionados.
@@ -404,7 +404,7 @@ ets.1 <- ets(in.sample[,2])
 
 act2 <- Box.test(ets.1$residuals, lag = 13, type = c("Ljung-Box"))
 
-test2 <- round(act2$p.value, 2)
+test2 <- round(act2$p.value, 4)
 
 # Como H0 es ausencia de autocorrelación y rechazamos la hipótesis
 # podemos decir que los residuos están correlacionados.
@@ -426,7 +426,7 @@ arimax.to.table <- arima(in.sample[,2],order = c(5,0,1),
 
 act3 <- Box.test(arimax.1$residuals, lag = 13, type = c("Ljung-Box"))
 
-test3 <- round(act3$p.value, 2)
+test3 <- round(act3$p.value, 4)
 
 # El p-valor nos da 0.6359, con lo cual validamos el modelo.
 
