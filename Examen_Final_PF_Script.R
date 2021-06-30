@@ -1807,7 +1807,7 @@ autoplot(ts.union(out.of.sample[7:58,2], pr.rec.h7[,1], pr.rec.h7[,2],pr.rec.h7[
        caption = "Fuente: elaboración propia") +
   guides(colour = guide_legend(nrow = 1))
 
-ggsave(file="pr.f.h7.eps", width=6.5, height=4, dpi=300)
+ggsave(file="pr.rec.h7.eps", width=6.5, height=4, dpi=300)
 
 #### Esquema rolling ####
 
@@ -2500,7 +2500,7 @@ autoplot(ts.union(out.of.sample[2:58,2], pr.rec.h2.b[,1], pr.rec.h2.b[,2], pr.re
        caption = "Fuente: elaboración propia") +
   guides(colour = guide_legend(nrow = 1))
 
-ggsave(file="pr.f.h2.b.eps", width=6.5, height=4, dpi=300)
+ggsave(file="pr.rec.h2.b.eps", width=6.5, height=4, dpi=300)
 
 
 
@@ -4861,7 +4861,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        data = dm.1) +
   theme_bw() + 
   geom_line(size = 1) +
-  xlim(29,60) +
+  xlim(5,58) +
   ylim(-5,5) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
@@ -4922,7 +4922,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        data = dm.1) +
   theme_bw() + 
   geom_line(size = 1) +
-  xlim(26,60) +
+  xlim(5,58) +
   ylim(-5,5) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
@@ -4983,7 +4983,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        data = dm.1) +
   theme_bw() + 
   geom_line(size = 1) +
-  xlim(26,52) +
+  xlim(5,52) +
   ylim(-4,6) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
@@ -5045,7 +5045,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        data = dm.1) +
   theme_bw() + 
   geom_line(size = 1) +
-  xlim(29,60) +
+  xlim(5,60) +
   ylim(-5,5) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
@@ -5107,7 +5107,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        data = dm.1) +
   theme_bw() + 
   geom_line(size = 1) +
-  xlim(26,60) +
+  xlim(5,58) +
   ylim(-5,5) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
@@ -5168,7 +5168,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        data = dm.1) +
   theme_bw() + 
   geom_line(size = 1) +
-  xlim(26,52) +
+  xlim(5,52) +
   ylim(-4,6) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
@@ -5229,7 +5229,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        data = dm.1) +
   theme_bw() + 
   geom_line(size = 1) +
-  xlim(29,60) +
+  xlim(5,58) +
   ylim(-5,5) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
@@ -5290,7 +5290,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        data = dm.1) +
   theme_bw() + 
   geom_line(size = 1) +
-  xlim(26,60) +
+  xlim(5,58) +
   ylim(-5,5) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
@@ -5351,7 +5351,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        data = dm.1) +
   theme_bw() + 
   geom_line(size = 1) +
-  xlim(26,52) +
+  xlim(5,53) +
   ylim(-4,6) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
@@ -5409,7 +5409,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        data = dm.1) +
   theme_bw() + 
   geom_line(size = 1) +
-  xlim(29,60) +
+  xlim(5,58) +
   ylim(-5,5) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
@@ -5465,7 +5465,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        data = dm.1) +
   theme_bw() + 
   geom_line(size = 1) +
-  xlim(29,58) +
+  xlim(5,58) +
   ylim(-5,5) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
@@ -5522,7 +5522,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        data = dm.1) +
   theme_bw() + 
   geom_line(size = 1) +
-  xlim(26,52) +
+  xlim(5,52) +
   ylim(-4,6) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
@@ -5579,7 +5579,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        data = dm.1) +
   theme_bw() + 
   geom_line(size = 1) +
-  xlim(29,60) +
+  xlim(5,58) +
   ylim(-5,5) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
@@ -5637,7 +5637,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        data = dm.1) +
   theme_bw() + 
   geom_line(size = 1) +
-  xlim(28,57) +
+  xlim(5,58) +
   ylim(-5,5) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
@@ -5694,7 +5694,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        data = dm.1) +
   theme_bw() + 
   geom_line(size = 1) +
-  xlim(26,52) +
+  xlim(4,52) +
   ylim(-4,6) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
@@ -5752,7 +5752,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        data = dm.1) +
   theme_bw() + 
   geom_line(size = 1) +
-  xlim(29,60) +
+  xlim(5,58) +
   ylim(-5,5) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
@@ -5809,7 +5809,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        data = dm.1) +
   theme_bw() + 
   geom_line(size = 1) +
-  xlim(26,60) +
+  xlim(5,58) +
   ylim(-5,5) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
@@ -5866,7 +5866,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        data = dm.1) +
   theme_bw() + 
   geom_line(size = 1) +
-  xlim(26,52) +
+  xlim(5,52) +
   ylim(-4,6) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
@@ -5925,7 +5925,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        data = dm.1c) +
   theme_bw() + 
   geom_line(size = 1) +
-  xlim(29,58) +
+  xlim(5,58) +
   ylim(-6,5) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
@@ -5983,7 +5983,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        data = dm.1c) +
   theme_bw() + 
   geom_line(size = 1) +
-  xlim(29,58) +
+  xlim(5,58) +
   ylim(-5,5) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
@@ -6041,7 +6041,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        data = dm.1c) +
   theme_bw() + 
   geom_line(size = 1) +
-  xlim(26,52) +
+  xlim(5,52) +
   ylim(-5,6) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
@@ -6099,7 +6099,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        data = dm.1c) +
   theme_bw() + 
   geom_line(size = 1) +
-  xlim(29,57) +
+  xlim(5,58) +
   ylim(-6,4) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
@@ -6158,7 +6158,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        data = dm.1c) +
   theme_bw() + 
   geom_line(size = 1) +
-  xlim(27,57) +
+  xlim(5,58) +
   ylim(-5,5) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
@@ -6216,7 +6216,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        data = dm.1c) +
   theme_bw() + 
   geom_line(size = 1) +
-  xlim(26,52) +
+  xlim(5,53) +
   ylim(-5,5.5) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
@@ -6275,7 +6275,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        data = dm.1c) +
   theme_bw() + 
   geom_line(size = 1) +
-  xlim(29,57) +
+  xlim(5,58) +
   ylim(-6,4) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
@@ -6333,7 +6333,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        data = dm.1c) +
   theme_bw() + 
   geom_line(size = 1) +
-  xlim(27,57) +
+  xlim(5,58) +
   ylim(-5,5) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
@@ -6391,7 +6391,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
        data = dm.1c) +
   theme_bw() + 
   geom_line(size = 1) +
-  xlim(26,52) +
+  xlim(5,53) +
   ylim(-5,5.5) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
