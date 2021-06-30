@@ -2369,7 +2369,7 @@ pr.rec.h1.b <- ts(pr.rec.h1.b, frequency = 365, start = c(2020,11))
 
 # Graficamos.
 
-autoplot(ts.union(out.of.sample[1:58, 2], pr.rec.h1.b[,1], pr.rec.h1.b[,2], pr.rec.h1.b[,3], pr.rec.h1[,4], pr.rec.h1[,5]), size = 0.7) + 
+autoplot(ts.union(out.of.sample[1:58, 2], pr.rec.h1.b[,1], pr.rec.h1.b[,2], pr.rec.h1.b[,3], pr.rec.h1.b[,4], pr.rec.h1.b[,5]), size = 0.7) + 
   scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX",
                                            "ETS","VAR", "FAVAR"), 
                      values = c("#4b4b4b", colores[1], colores[2],colores[3],
@@ -2724,7 +2724,7 @@ pr.rol.h1.b <- ts(pr.rol.h1.b, frequency = 365, start = c(2020,11))
 # Graficamos.
 
 autoplot(ts.union(out.of.sample[,2], pr.rol.h1.b[,1], pr.rol.h1.b[,2], 
-                  pr.rol.h1.b[,3], pr.rol.h1[,4], pr.rol.h1[,5]), size = 0.7) + 
+                  pr.rol.h1.b[,3], pr.rol.h1.b[,4], pr.rol.h1.b[,5]), size = 0.7) + 
   scale_color_manual(name = "", labels = c("Actual", "ARIMA", "ARIMAX",
                                            "ETS","VAR", "FAVAR"), 
                      values = c("#4b4b4b", colores[1], colores[2],colores[3],
@@ -4825,24 +4825,24 @@ library(dplyr)
 
 # Pronósticos h=1 fijo.
 
-gr1 <- fluctuation_test(error.arima.f.h1.sq, error.bench.sq, mu = 0.5)
+gr1 <- fluctuation_test(error.arima.f.h1.sq, error.bench.sq, mu = 0.1)
 values.gr1 <- as.data.frame(gr1$df)
 band1 <- gr1$CV[1]
 band2 <- gr1$CV[2]
 
-gr2 <- fluctuation_test(error.arimax.f.h1.sq, error.bench.sq, mu = 0.5)
+gr2 <- fluctuation_test(error.arimax.f.h1.sq, error.bench.sq, mu = 0.1)
 values.gr2 <- as.data.frame(gr2$df)
 
-gr3 <- fluctuation_test(error.ets.f.h1.sq, error.bench.sq, mu = 0.5)
+gr3 <- fluctuation_test(error.ets.f.h1.sq, error.bench.sq, mu = 0.1)
 values.gr3 <- as.data.frame(gr3$df)
 
-gr4 <- fluctuation_test(error.adl.f.h1.sq, error.bench.sq, mu = 0.5)
+gr4 <- fluctuation_test(error.adl.f.h1.sq, error.bench.sq, mu = 0.1)
 values.gr4 <- as.data.frame(gr4$df)
 
-gr5 <- fluctuation_test(error.var.f.h1.sq, error.bench.sq, mu = 0.5)
+gr5 <- fluctuation_test(error.var.f.h1.sq, error.bench.sq, mu = 0.1)
 values.gr5 <- as.data.frame(gr5$df)
 
-gr6 <- fluctuation_test(error.favar.f.h1.sq, error.bench.sq, mu = 0.5)
+gr6 <- fluctuation_test(error.favar.f.h1.sq, error.bench.sq, mu = 0.1)
 values.gr6 <- as.data.frame(gr6$df)
 
 dm.1 <- full_join(values.gr1, values.gr2, by = "time")
@@ -4886,24 +4886,24 @@ rm(gr1, gr2, gr3, gr4, gr5, gr6, dm.1,
    values.gr1, values.gr2, values.gr3, values.gr4, values.gr5,
    values.gr6)
 
-gr1 <- fluctuation_test(error.arima.f.h2.sq, error.bench.sq[2:58], mu = 0.5)
+gr1 <- fluctuation_test(error.arima.f.h2.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr1 <- as.data.frame(gr1$df)
 band3 <- gr1$CV[1]
 band4 <- gr1$CV[2]
 
-gr2 <- fluctuation_test(error.arimax.f.h2.sq, error.bench.sq[2:58], mu = 0.5)
+gr2 <- fluctuation_test(error.arimax.f.h2.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr2 <- as.data.frame(gr2$df)
 
-gr3 <- fluctuation_test(error.ets.f.h2.sq, error.bench.sq[2:58], mu = 0.5)
+gr3 <- fluctuation_test(error.ets.f.h2.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr3 <- as.data.frame(gr3$df)
 
-gr4 <- fluctuation_test(error.adl.f.h2.sq, error.bench.sq[2:58], mu = 0.5)
+gr4 <- fluctuation_test(error.adl.f.h2.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr4 <- as.data.frame(gr4$df)
 
-gr5 <- fluctuation_test(error.var.f.h2.sq, error.bench.sq[2:58], mu = 0.5)
+gr5 <- fluctuation_test(error.var.f.h2.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr5 <- as.data.frame(gr5$df)
 
-gr6 <- fluctuation_test(error.favar.f.h2.sq, error.bench.sq[2:58], mu = 0.5)
+gr6 <- fluctuation_test(error.favar.f.h2.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr6 <- as.data.frame(gr6$df)
 
 dm.1 <- full_join(values.gr1, values.gr2, by = "time")
@@ -4947,24 +4947,24 @@ rm(gr1, gr2, gr3, gr4, gr5, gr6, dm.1,
    values.gr1, values.gr2, values.gr3, values.gr4, values.gr5,
    values.gr6)
 
-gr1 <- fluctuation_test(error.arima.f.h7.sq, error.bench.sq[7:58], mu = 0.5)
+gr1 <- fluctuation_test(error.arima.f.h7.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr1 <- as.data.frame(gr1$df)
 band5 <- gr1$CV[1]
 band6 <- gr1$CV[2]
 
-gr2 <- fluctuation_test(error.arimax.f.h7.sq, error.bench.sq[7:58], mu = 0.5)
+gr2 <- fluctuation_test(error.arimax.f.h7.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr2 <- as.data.frame(gr2$df)
 
-gr3 <- fluctuation_test(error.ets.f.h7.sq, error.bench.sq[7:58], mu = 0.5)
+gr3 <- fluctuation_test(error.ets.f.h7.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr3 <- as.data.frame(gr3$df)
 
-gr4 <- fluctuation_test(error.adl.f.h7.sq, error.bench.sq[7:58], mu = 0.5)
+gr4 <- fluctuation_test(error.adl.f.h7.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr4 <- as.data.frame(gr4$df)
 
-gr5 <- fluctuation_test(error.var.f.h7.sq, error.bench.sq[7:58], mu = 0.5)
+gr5 <- fluctuation_test(error.var.f.h7.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr5 <- as.data.frame(gr5$df)
 
-gr6 <- fluctuation_test(error.favar.f.h7.sq, error.bench.sq[7:58], mu = 0.5)
+gr6 <- fluctuation_test(error.favar.f.h7.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr6 <- as.data.frame(gr6$df)
 
 dm.1 <- full_join(values.gr1, values.gr2, by = "time")
@@ -5008,24 +5008,24 @@ rm(gr1, gr2, gr3, gr4, gr5, gr6, dm.1,
    values.gr1, values.gr2, values.gr3, values.gr4, values.gr5,
    values.gr6)
 
-gr1 <- fluctuation_test(error.arima.rec.h1.sq, error.bench.sq, mu = 0.5)
+gr1 <- fluctuation_test(error.arima.rec.h1.sq, error.bench.sq, mu = 0.1)
 values.gr1 <- as.data.frame(gr1$df)
 band1 <- gr1$CV[1]
 band2 <- gr1$CV[2]
 
-gr2 <- fluctuation_test(error.arimax.rec.h1.sq, error.bench.sq, mu = 0.5)
+gr2 <- fluctuation_test(error.arimax.rec.h1.sq, error.bench.sq, mu = 0.1)
 values.gr2 <- as.data.frame(gr2$df)
 
-gr3 <- fluctuation_test(error.ets.rec.h1.sq, error.bench.sq, mu = 0.5)
+gr3 <- fluctuation_test(error.ets.rec.h1.sq, error.bench.sq, mu = 0.1)
 values.gr3 <- as.data.frame(gr3$df)
 
-gr4 <- fluctuation_test(error.adl.rec.h1.sq, error.bench.sq, mu = 0.5)
+gr4 <- fluctuation_test(error.adl.rec.h1.sq, error.bench.sq, mu = 0.1)
 values.gr4 <- as.data.frame(gr4$df)
 
-gr5 <- fluctuation_test(error.var.rec.h1.sq, error.bench.sq, mu = 0.5)
+gr5 <- fluctuation_test(error.var.rec.h1.sq, error.bench.sq, mu = 0.1)
 values.gr5 <- as.data.frame(gr5$df)
 
-gr6 <- fluctuation_test(error.favar.rec.h1.sq, error.bench.sq, mu = 0.5)
+gr6 <- fluctuation_test(error.favar.rec.h1.sq, error.bench.sq, mu = 0.1)
 values.gr6 <- as.data.frame(gr6$df)
 
 dm.1 <- full_join(values.gr1, values.gr2, by = "time")
@@ -5038,7 +5038,6 @@ colnames(dm.1) <- c("time", "dmstat1", "dmstat2", "dmstat3", "dmstat4",
 
 dm.1 <- melt(dm.1, id=c("time"))
 
-colores <- c("#00ABC5","#cfb0b4" ,"#ff3c84","#FF7F32", "#edf71c", "#941cf7")
 
 ggplot(aes(x = time , y = value, group = variable, color = variable),
        data = dm.1) +
@@ -5072,24 +5071,24 @@ rm(gr1, gr2, gr3, gr4, gr5, gr6, dm.1,
    values.gr1, values.gr2, values.gr3, values.gr4, values.gr5,
    values.gr6)
 
-gr1 <- fluctuation_test(error.arima.rec.h2.sq, error.bench.sq[2:58], mu = 0.5)
+gr1 <- fluctuation_test(error.arima.rec.h2.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr1 <- as.data.frame(gr1$df)
 band3 <- gr1$CV[1]
 band4 <- gr1$CV[2]
 
-gr2 <- fluctuation_test(error.arimax.rec.h2.sq, error.bench.sq[2:58], mu = 0.5)
+gr2 <- fluctuation_test(error.arimax.rec.h2.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr2 <- as.data.frame(gr2$df)
 
-gr3 <- fluctuation_test(error.ets.rec.h2.sq, error.bench.sq[2:58], mu = 0.5)
+gr3 <- fluctuation_test(error.ets.rec.h2.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr3 <- as.data.frame(gr3$df)
 
-gr4 <- fluctuation_test(error.adl.rec.h2.sq, error.bench.sq[2:58], mu = 0.5)
+gr4 <- fluctuation_test(error.adl.rec.h2.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr4 <- as.data.frame(gr4$df)
 
-gr5 <- fluctuation_test(error.var.rec.h2.sq, error.bench.sq[2:58], mu = 0.5)
+gr5 <- fluctuation_test(error.var.rec.h2.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr5 <- as.data.frame(gr5$df)
 
-gr6 <- fluctuation_test(error.favar.rec.h2.sq, error.bench.sq[2:58], mu = 0.5)
+gr6 <- fluctuation_test(error.favar.rec.h2.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr6 <- as.data.frame(gr6$df)
 
 dm.1 <- full_join(values.gr1, values.gr2, by = "time")
@@ -5127,31 +5126,30 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
 
 ggsave(file="gr.rec.h2.eps", width=6.5, height=4, dpi=300)
 
-
 # Pronósticos h=7 recursivo.
 
 rm(gr1, gr2, gr3, gr4, gr5, gr6, dm.1, 
    values.gr1, values.gr2, values.gr3, values.gr4, values.gr5,
    values.gr6)
 
-gr1 <- fluctuation_test(error.arima.rec.h7.sq, error.bench.sq[7:58], mu = 0.5)
+gr1 <- fluctuation_test(error.arima.rec.h7.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr1 <- as.data.frame(gr1$df)
 band5 <- gr1$CV[1]
 band6 <- gr1$CV[2]
 
-gr2 <- fluctuation_test(error.arimax.rec.h7.sq, error.bench.sq[7:58], mu = 0.5)
+gr2 <- fluctuation_test(error.arimax.rec.h7.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr2 <- as.data.frame(gr2$df)
 
-gr3 <- fluctuation_test(error.ets.rec.h7.sq, error.bench.sq[7:58], mu = 0.5)
+gr3 <- fluctuation_test(error.ets.rec.h7.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr3 <- as.data.frame(gr3$df)
 
-gr4 <- fluctuation_test(error.adl.rec.h7.sq, error.bench.sq[7:58], mu = 0.5)
+gr4 <- fluctuation_test(error.adl.rec.h7.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr4 <- as.data.frame(gr4$df)
 
-gr5 <- fluctuation_test(error.var.rec.h7.sq, error.bench.sq[7:58], mu = 0.5)
+gr5 <- fluctuation_test(error.var.rec.h7.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr5 <- as.data.frame(gr5$df)
 
-gr6 <- fluctuation_test(error.favar.rec.h7.sq, error.bench.sq[7:58], mu = 0.5)
+gr6 <- fluctuation_test(error.favar.rec.h7.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr6 <- as.data.frame(gr6$df)
 
 dm.1 <- full_join(values.gr1, values.gr2, by = "time")
@@ -5195,24 +5193,24 @@ rm(gr1, gr2, gr3, gr4, gr5, gr6, dm.1,
    values.gr1, values.gr2, values.gr3, values.gr4, values.gr5,
    values.gr6)
 
-gr1 <- fluctuation_test(error.arima.rol.h1.sq, error.bench.sq, mu = 0.5)
+gr1 <- fluctuation_test(error.arima.rol.h1.sq, error.bench.sq, mu = 0.1)
 values.gr1 <- as.data.frame(gr1$df)
 band1 <- gr1$CV[1]
 band2 <- gr1$CV[2]
 
-gr2 <- fluctuation_test(error.arimax.rol.h1.sq, error.bench.sq, mu = 0.5)
+gr2 <- fluctuation_test(error.arimax.rol.h1.sq, error.bench.sq, mu = 0.1)
 values.gr2 <- as.data.frame(gr2$df)
 
-gr3 <- fluctuation_test(error.ets.rol.h1.sq, error.bench.sq, mu = 0.5)
+gr3 <- fluctuation_test(error.ets.rol.h1.sq, error.bench.sq, mu = 0.1)
 values.gr3 <- as.data.frame(gr3$df)
 
-gr4 <- fluctuation_test(error.adl.rol.h1.sq, error.bench.sq, mu = 0.5)
+gr4 <- fluctuation_test(error.adl.rol.h1.sq, error.bench.sq, mu = 0.1)
 values.gr4 <- as.data.frame(gr4$df)
 
-gr5 <- fluctuation_test(error.var.rol.h1.sq, error.bench.sq, mu = 0.5)
+gr5 <- fluctuation_test(error.var.rol.h1.sq, error.bench.sq, mu = 0.1)
 values.gr5 <- as.data.frame(gr5$df)
 
-gr6 <- fluctuation_test(error.favar.rol.h1.sq, error.bench.sq, mu = 0.5)
+gr6 <- fluctuation_test(error.favar.rol.h1.sq, error.bench.sq, mu = 0.1)
 values.gr6 <- as.data.frame(gr6$df)
 
 dm.1 <- full_join(values.gr1, values.gr2, by = "time")
@@ -5256,24 +5254,24 @@ rm(gr1, gr2, gr3, gr4, gr5, gr6, dm.1,
    values.gr1, values.gr2, values.gr3, values.gr4, values.gr5,
    values.gr6)
 
-gr1 <- fluctuation_test(error.arima.rol.h2.sq, error.bench.sq[2:58], mu = 0.5)
+gr1 <- fluctuation_test(error.arima.rol.h2.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr1 <- as.data.frame(gr1$df)
 band3 <- gr1$CV[1]
 band4 <- gr1$CV[2]
 
-gr2 <- fluctuation_test(error.arimax.rol.h2.sq, error.bench.sq[2:58], mu = 0.5)
+gr2 <- fluctuation_test(error.arimax.rol.h2.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr2 <- as.data.frame(gr2$df)
 
-gr3 <- fluctuation_test(error.ets.rol.h2.sq, error.bench.sq[2:58], mu = 0.5)
+gr3 <- fluctuation_test(error.ets.rol.h2.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr3 <- as.data.frame(gr3$df)
 
-gr4 <- fluctuation_test(error.adl.rol.h2.sq, error.bench.sq[2:58], mu = 0.5)
+gr4 <- fluctuation_test(error.adl.rol.h2.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr4 <- as.data.frame(gr4$df)
 
-gr5 <- fluctuation_test(error.var.rol.h2.sq, error.bench.sq[2:58], mu = 0.5)
+gr5 <- fluctuation_test(error.var.rol.h2.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr5 <- as.data.frame(gr5$df)
 
-gr6 <- fluctuation_test(error.favar.rol.h2.sq, error.bench.sq[2:58], mu = 0.5)
+gr6 <- fluctuation_test(error.favar.rol.h2.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr6 <- as.data.frame(gr6$df)
 
 dm.1 <- full_join(values.gr1, values.gr2, by = "time")
@@ -5317,24 +5315,24 @@ rm(gr1, gr2, gr3, gr4, gr5, gr6, dm.1,
    values.gr1, values.gr2, values.gr3, values.gr4, values.gr5,
    values.gr6)
 
-gr1 <- fluctuation_test(error.arima.rol.h7.sq, error.bench.sq[7:58], mu = 0.5)
+gr1 <- fluctuation_test(error.arima.rol.h7.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr1 <- as.data.frame(gr1$df)
 band5 <- gr1$CV[1]
 band6 <- gr1$CV[2]
 
-gr2 <- fluctuation_test(error.arimax.rol.h7.sq, error.bench.sq[7:58], mu = 0.5)
+gr2 <- fluctuation_test(error.arimax.rol.h7.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr2 <- as.data.frame(gr2$df)
 
-gr3 <- fluctuation_test(error.ets.rol.h7.sq, error.bench.sq[7:58], mu = 0.5)
+gr3 <- fluctuation_test(error.ets.rol.h7.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr3 <- as.data.frame(gr3$df)
 
-gr4 <- fluctuation_test(error.adl.rol.h7.sq, error.bench.sq[7:58], mu = 0.5)
+gr4 <- fluctuation_test(error.adl.rol.h7.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr4 <- as.data.frame(gr4$df)
 
-gr5 <- fluctuation_test(error.var.rol.h7.sq, error.bench.sq[7:58], mu = 0.5)
+gr5 <- fluctuation_test(error.var.rol.h7.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr5 <- as.data.frame(gr5$df)
 
-gr6 <- fluctuation_test(error.favar.rol.h7.sq, error.bench.sq[7:58], mu = 0.5)
+gr6 <- fluctuation_test(error.favar.rol.h7.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr6 <- as.data.frame(gr6$df)
 
 dm.1 <- full_join(values.gr1, values.gr2, by = "time")
@@ -5379,21 +5377,21 @@ rm(gr1, gr2, gr3, gr4, gr5, gr6, dm.1,
    values.gr1, values.gr2, values.gr3, values.gr4, values.gr5,
    values.gr6)
 
-gr1 <- fluctuation_test(error.arima.f.h1.b.sq, error.bench.sq, mu = 0.5)
+gr1 <- fluctuation_test(error.arima.f.h1.b.sq, error.bench.sq, mu = 0.1)
 values.gr1 <- as.data.frame(gr1$df)
 band1 <- gr1$CV[1]
 band2 <- gr1$CV[2]
 
-gr2 <- fluctuation_test(error.arimax.f.h1.b.sq, error.bench.sq, mu = 0.5)
+gr2 <- fluctuation_test(error.arimax.f.h1.b.sq, error.bench.sq, mu = 0.1)
 values.gr2 <- as.data.frame(gr2$df)
 
-gr3 <- fluctuation_test(error.ets.f.h1.b.sq, error.bench.sq, mu = 0.5)
+gr3 <- fluctuation_test(error.ets.f.h1.b.sq, error.bench.sq, mu = 0.1)
 values.gr3 <- as.data.frame(gr3$df)
 
-gr5 <- fluctuation_test(error.var.f.h1.b.sq, error.bench.sq, mu = 0.5)
+gr5 <- fluctuation_test(error.var.f.h1.b.sq, error.bench.sq, mu = 0.1)
 values.gr5 <- as.data.frame(gr5$df)
 
-gr6 <- fluctuation_test(error.favar.f.h1.b.sq, error.bench.sq, mu = 0.5)
+gr6 <- fluctuation_test(error.favar.f.h1.b.sq, error.bench.sq, mu = 0.1)
 values.gr6 <- as.data.frame(gr6$df)
 
 dm.1 <- full_join(values.gr1, values.gr2, by = "time")
@@ -5436,21 +5434,21 @@ rm(gr1, gr2, gr3, gr4, gr5, gr6, dm.1,
    values.gr1, values.gr2, values.gr3, values.gr4, values.gr5,
    values.gr6)
 
-gr1 <- fluctuation_test(error.arima.f.h2.b.sq, error.bench.sq[2:58], mu = 0.5)
+gr1 <- fluctuation_test(error.arima.f.h2.b.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr1 <- as.data.frame(gr1$df)
 band3 <- gr1$CV[1]
 band4 <- gr1$CV[2]
 
-gr2 <- fluctuation_test(error.arimax.f.h2.b.sq, error.bench.sq[1:58], mu = 0.5)
+gr2 <- fluctuation_test(error.arimax.f.h2.b.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr2 <- as.data.frame(gr2$df)
 
-gr3 <- fluctuation_test(error.ets.f.h2.b.sq, error.bench.sq[1:58], mu = 0.5)
+gr3 <- fluctuation_test(error.ets.f.h2.b.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr3 <- as.data.frame(gr3$df)
 
-gr5 <- fluctuation_test(error.var.f.h2.b.sq, error.bench.sq[1:58], mu = 0.5)
+gr5 <- fluctuation_test(error.var.f.h2.b.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr5 <- as.data.frame(gr5$df)
 
-gr6 <- fluctuation_test(error.favar.f.h2.b.sq, error.bench.sq[1:58], mu = 0.5)
+gr6 <- fluctuation_test(error.favar.f.h2.b.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr6 <- as.data.frame(gr6$df)
 
 dm.1 <- full_join(values.gr1, values.gr2, by = "time")
@@ -5492,21 +5490,21 @@ rm(gr1, gr2, gr3, gr5, gr6, dm.1,
    values.gr1, values.gr2, values.gr3, values.gr5,
    values.gr6)
 
-gr1 <- fluctuation_test(error.arima.f.h7.b.sq, error.bench.sq[7:58], mu = 0.5)
+gr1 <- fluctuation_test(error.arima.f.h7.b.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr1 <- as.data.frame(gr1$df)
 band5 <- gr1$CV[1]
 band6 <- gr1$CV[2]
 
-gr2 <- fluctuation_test(error.arimax.f.h7.b.sq, error.bench.sq[7:58], mu = 0.5)
+gr2 <- fluctuation_test(error.arimax.f.h7.b.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr2 <- as.data.frame(gr2$df)
 
-gr3 <- fluctuation_test(error.ets.f.h7.b.sq, error.bench.sq[7:58], mu = 0.5)
+gr3 <- fluctuation_test(error.ets.f.h7.b.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr3 <- as.data.frame(gr3$df)
 
-gr5 <- fluctuation_test(error.var.f.h7.b.sq, error.bench.sq[7:58], mu = 0.5)
+gr5 <- fluctuation_test(error.var.f.h7.b.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr5 <- as.data.frame(gr5$df)
 
-gr6 <- fluctuation_test(error.favar.f.h7.b.sq, error.bench.sq[7:58], mu = 0.5)
+gr6 <- fluctuation_test(error.favar.f.h7.b.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr6 <- as.data.frame(gr6$df)
 
 dm.1 <- full_join(values.gr1, values.gr2, by = "time")
@@ -5532,9 +5530,10 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   ylab("Estadístico Diebold-Mariano") +
   scale_color_manual(name = "", labels = c("ARIMA", "ARIMAX","ETS","ADL","VAR", "FAVAR"), 
                      values = c(colores[1], colores[2],colores[3], colores[4],
-                                colores[5], colores[6]),
+                                colores[5], colores[6])) + 
+  theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
-        legend.position ="bottom") +
+        legend.position="bottom") +                     
   guides(colour = guide_legend(nrow = 1)) + 
   labs(title = "Fluctuation Test",
        subtitle = "Pronósticos: esquema fijo 'bagged', siete pasos hacia adelante",
@@ -5548,21 +5547,21 @@ rm(gr1, gr2, gr3, gr5, gr6, dm.1,
    values.gr1, values.gr2, values.gr3, values.gr5,
    values.gr6)
 
-gr1 <- fluctuation_test(error.arima.rec.h1.b.sq, error.bench.sq, mu = 0.5)
+gr1 <- fluctuation_test(error.arima.rec.h1.b.sq, error.bench.sq, mu = 0.1)
 values.gr1 <- as.data.frame(gr1$df)
 band1 <- gr1$CV[1]
 band2 <- gr1$CV[2]
 
-gr2 <- fluctuation_test(error.arimax.rec.h1.b.sq, error.bench.sq, mu = 0.5)
+gr2 <- fluctuation_test(error.arimax.rec.h1.b.sq, error.bench.sq, mu = 0.1)
 values.gr2 <- as.data.frame(gr2$df)
 
-gr3 <- fluctuation_test(error.ets.rec.h1.b.sq, error.bench.sq, mu = 0.5)
+gr3 <- fluctuation_test(error.ets.rec.h1.b.sq, error.bench.sq, mu = 0.1)
 values.gr3 <- as.data.frame(gr3$df)
 
-gr5 <- fluctuation_test(error.var.rec.h1.b.sq, error.bench.sq, mu = 0.5)
+gr5 <- fluctuation_test(error.var.rec.h1.b.sq, error.bench.sq, mu = 0.1)
 values.gr5 <- as.data.frame(gr5$df)
 
-gr6 <- fluctuation_test(error.favar.rec.h1.b.sq, error.bench.sq, mu = 0.5)
+gr6 <- fluctuation_test(error.favar.rec.h1.b.sq, error.bench.sq, mu = 0.1)
 values.gr6 <- as.data.frame(gr6$df)
 
 dm.1 <- full_join(values.gr1, values.gr2, by = "time")
@@ -5606,21 +5605,21 @@ rm(gr1, gr2, gr3, gr5, gr6, dm.1,
    values.gr1, values.gr2, values.gr3, values.gr5,
    values.gr6)
 
-gr1 <- fluctuation_test(error.arima.rec.h2.b.sq, error.bench.sq[2:58], mu = 0.5)
+gr1 <- fluctuation_test(error.arima.rec.h2.b.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr1 <- as.data.frame(gr1$df)
 band3 <- gr1$CV[1]
 band4 <- gr1$CV[2]
 
-gr2 <- fluctuation_test(error.arimax.rec.h2.b.sq, error.bench.sq[2:58], mu = 0.5)
+gr2 <- fluctuation_test(error.arimax.rec.h2.b.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr2 <- as.data.frame(gr2$df)
 
-gr3 <- fluctuation_test(error.ets.rec.h2.b.sq, error.bench.sq[2:58], mu = 0.5)
+gr3 <- fluctuation_test(error.ets.rec.h2.b.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr3 <- as.data.frame(gr3$df)
 
-gr5 <- fluctuation_test(error.var.rec.h2.b.sq, error.bench.sq[2:58], mu = 0.5)
+gr5 <- fluctuation_test(error.var.rec.h2.b.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr5 <- as.data.frame(gr5$df)
 
-gr6 <- fluctuation_test(error.favar.rec.h2.b.sq, error.bench.sq[2:58], mu = 0.5)
+gr6 <- fluctuation_test(error.favar.rec.h2.b.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr6 <- as.data.frame(gr6$df)
 
 dm.1 <- full_join(values.gr1, values.gr2, by = "time")
@@ -5663,21 +5662,21 @@ rm(gr1, gr2, gr3, gr5, gr6, dm.1,
    values.gr1, values.gr2, values.gr3, values.gr5,
    values.gr6)
 
-gr1 <- fluctuation_test(error.arima.rol.h7.b.sq, error.bench.sq[7:58], mu = 0.5)
+gr1 <- fluctuation_test(error.arima.rol.h7.b.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr1 <- as.data.frame(gr1$df)
 band5 <- gr1$CV[1]
 band6 <- gr1$CV[2]
 
-gr2 <- fluctuation_test(error.arimax.rec.h7.b.sq, error.bench.sq[7:58], mu = 0.5)
+gr2 <- fluctuation_test(error.arimax.rec.h7.b.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr2 <- as.data.frame(gr2$df)
 
-gr3 <- fluctuation_test(error.ets.rec.h7.b.sq, error.bench.sq[7:58], mu = 0.5)
+gr3 <- fluctuation_test(error.ets.rec.h7.b.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr3 <- as.data.frame(gr3$df)
 
-gr5 <- fluctuation_test(error.var.rec.h7.b.sq, error.bench.sq[7:58], mu = 0.5)
+gr5 <- fluctuation_test(error.var.rec.h7.b.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr5 <- as.data.frame(gr5$df)
 
-gr6 <- fluctuation_test(error.favar.rec.h7.b.sq, error.bench.sq[7:58], mu = 0.5)
+gr6 <- fluctuation_test(error.favar.rec.h7.b.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr6 <- as.data.frame(gr6$df)
 
 dm.1 <- full_join(values.gr1, values.gr2, by = "time")
@@ -5721,21 +5720,21 @@ rm(gr1, gr2, gr3, gr5, gr6, dm.1,
    values.gr1, values.gr2, values.gr3, values.gr5,
    values.gr6)
 
-gr1 <- fluctuation_test(error.arima.rol.h1.b.sq, error.bench.sq, mu = 0.5)
+gr1 <- fluctuation_test(error.arima.rol.h1.b.sq, error.bench.sq, mu = 0.1)
 values.gr1 <- as.data.frame(gr1$df)
 band1 <- gr1$CV[1]
 band2 <- gr1$CV[2]
 
-gr2 <- fluctuation_test(error.arimax.rol.h1.b.sq, error.bench.sq, mu = 0.5)
+gr2 <- fluctuation_test(error.arimax.rol.h1.b.sq, error.bench.sq, mu = 0.1)
 values.gr2 <- as.data.frame(gr2$df)
 
-gr3 <- fluctuation_test(error.ets.rol.h1.b.sq, error.bench.sq, mu = 0.5)
+gr3 <- fluctuation_test(error.ets.rol.h1.b.sq, error.bench.sq, mu = 0.1)
 values.gr3 <- as.data.frame(gr3$df)
 
-gr5 <- fluctuation_test(error.var.rol.h1.b.sq, error.bench.sq, mu = 0.5)
+gr5 <- fluctuation_test(error.var.rol.h1.b.sq, error.bench.sq, mu = 0.1)
 values.gr5 <- as.data.frame(gr5$df)
 
-gr6 <- fluctuation_test(error.favar.rol.h1.b.sq, error.bench.sq, mu = 0.5)
+gr6 <- fluctuation_test(error.favar.rol.h1.b.sq, error.bench.sq, mu = 0.1)
 values.gr6 <- as.data.frame(gr6$df)
 
 dm.1 <- full_join(values.gr1, values.gr2, by = "time")
@@ -5778,21 +5777,21 @@ rm(gr1, gr2, gr3, gr5, gr6, dm.1,
    values.gr1, values.gr2, values.gr3, values.gr5,
    values.gr6)
 
-gr1 <- fluctuation_test(error.arima.rol.h2.b.sq, error.bench.sq[2:58], mu = 0.5)
+gr1 <- fluctuation_test(error.arima.rol.h2.b.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr1 <- as.data.frame(gr1$df)
 band3 <- gr1$CV[1]
 band4 <- gr1$CV[2]
 
-gr2 <- fluctuation_test(error.arimax.rol.h2.b.sq, error.bench.sq[2:58], mu = 0.5)
+gr2 <- fluctuation_test(error.arimax.rol.h2.b.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr2 <- as.data.frame(gr2$df)
 
-gr3 <- fluctuation_test(error.ets.rol.h2.b.sq, error.bench.sq[2:58], mu = 0.5)
+gr3 <- fluctuation_test(error.ets.rol.h2.b.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr3 <- as.data.frame(gr3$df)
 
-gr5 <- fluctuation_test(error.var.rol.h2.b.sq, error.bench.sq[2:58], mu = 0.5)
+gr5 <- fluctuation_test(error.var.rol.h2.b.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr5 <- as.data.frame(gr5$df)
 
-gr6 <- fluctuation_test(error.favar.rol.h2.b.sq, error.bench.sq[2:58], mu = 0.5)
+gr6 <- fluctuation_test(error.favar.rol.h2.b.sq, error.bench.sq[2:58], mu = 0.1)
 values.gr6 <- as.data.frame(gr6$df)
 
 dm.1 <- full_join(values.gr1, values.gr2, by = "time")
@@ -5835,21 +5834,21 @@ rm(gr1, gr2, gr3, gr5, gr6, dm.1,
    values.gr1, values.gr2, values.gr3, values.gr5,
    values.gr6)
 
-gr1 <- fluctuation_test(error.arima.rol.h7.b.sq, error.bench.sq[7:58], mu = 0.5)
+gr1 <- fluctuation_test(error.arima.rol.h7.b.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr1 <- as.data.frame(gr1$df)
 band5 <- gr1$CV[1]
 band6 <- gr1$CV[2]
 
-gr2 <- fluctuation_test(error.arimax.rol.h7.b.sq, error.bench.sq[7:58], mu = 0.5)
+gr2 <- fluctuation_test(error.arimax.rol.h7.b.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr2 <- as.data.frame(gr2$df)
 
-gr3 <- fluctuation_test(error.ets.rol.h7.b.sq, error.bench.sq[7:58], mu = 0.5)
+gr3 <- fluctuation_test(error.ets.rol.h7.b.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr3 <- as.data.frame(gr3$df)
 
-gr5 <- fluctuation_test(error.var.rol.h7.b.sq, error.bench.sq[7:58], mu = 0.5)
+gr5 <- fluctuation_test(error.var.rol.h7.b.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr5 <- as.data.frame(gr5$df)
 
-gr6 <- fluctuation_test(error.favar.rol.h7.b.sq, error.bench.sq[7:58], mu = 0.5)
+gr6 <- fluctuation_test(error.favar.rol.h7.b.sq, error.bench.sq[7:58], mu = 0.1)
 values.gr6 <- as.data.frame(gr6$df)
 
 dm.1 <- full_join(values.gr1, values.gr2, by = "time")
@@ -5894,21 +5893,21 @@ ggsave(file="gr.rol.h7.b.eps", width=6.5, height=4, dpi=300)
 
 # Fijos h = 1.
 
-gr1c <- fluctuation_test(error.arima.f.h1.sq, error.arima.f.h1.b.sq , mu = 0.5)
+gr1c <- fluctuation_test(error.arima.f.h1.sq, error.arima.f.h1.b.sq , mu = 0.1)
 values.gr1c <- as.data.frame(gr1c$df)
 band5 <- gr1c$CV[1]
 band6 <- gr1c$CV[2]
 
-gr2c <- fluctuation_test(error.arimax.f.h1.sq, error.arimax.f.h1.b.sq, mu = 0.5)
+gr2c <- fluctuation_test(error.arimax.f.h1.sq, error.arimax.f.h1.b.sq, mu = 0.1)
 values.gr2c <- as.data.frame(gr2c$df)
 
-gr3c <- fluctuation_test(error.ets.f.h1.sq, error.ets.f.h1.b.sq, mu = 0.5)
+gr3c <- fluctuation_test(error.ets.f.h1.sq, error.ets.f.h1.b.sq, mu = 0.1)
 values.gr3c <- as.data.frame(gr3c$df)
 
-gr4c <- fluctuation_test(error.var.f.h1.sq, error.var.f.h1.b.sq, mu = 0.5)
+gr4c <- fluctuation_test(error.var.f.h1.sq, error.var.f.h1.b.sq, mu = 0.1)
 values.gr4c <- as.data.frame(gr4c$df)
 
-gr5c <- fluctuation_test(error.favar.f.h1.sq, error.favar.f.h1.b.sq, mu = 0.5)
+gr5c <- fluctuation_test(error.favar.f.h1.sq, error.favar.f.h1.b.sq, mu = 0.1)
 values.gr5c <- as.data.frame(gr5c$df)
 
 dm.1c <- full_join(values.gr1c, values.gr2c, by = "time")
@@ -5925,7 +5924,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   theme_bw() + 
   geom_line(size = 1) +
   xlim(29,58) +
-  ylim(-5,5) + 
+  ylim(-6,5) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
   geom_hline(aes(yintercept = band5), size = 1, color = "black") +
@@ -5941,8 +5940,10 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   guides(colour = guide_legend(nrow = 1)) + 
   labs(title = "Fluctuation Test",
        subtitle = "Comparación pronósticos vs. 'bagging': esquema fijo un paso adelante",
-       caption = "Nota: valores negativos reflejan un mejor desempeño de la versión bagging. \
+       caption = "Nota: valores negativos reflejan un peor desempeño de la versión bagging.\
        Fuente: elaboración propia")
+
+ggsave(file="gr.f.h1.com.eps", width=6.5, height=4, dpi=300)
 
 # Fijos h = 2.
 
@@ -5950,21 +5951,21 @@ rm(gr1c, gr2c, gr3c, gr4c, gr5c, dm.1c,
    values.gr1c, values.gr2c, values.gr3c, 
    values.gr4c, values.gr5c)
 
-gr1c <- fluctuation_test(error.arima.f.h2.sq, error.arima.f.h2.b.sq , mu = 0.5)
+gr1c <- fluctuation_test(error.arima.f.h2.sq, error.arima.f.h2.b.sq , mu = 0.1)
 values.gr1c <- as.data.frame(gr1c$df)
 band5 <- gr1c$CV[1]
 band6 <- gr1c$CV[2]
 
-gr2c <- fluctuation_test(error.arimax.f.h2.sq, error.arimax.f.h2.b.sq, mu = 0.5)
+gr2c <- fluctuation_test(error.arimax.f.h2.sq, error.arimax.f.h2.b.sq, mu = 0.1)
 values.gr2c <- as.data.frame(gr2c$df)
 
-gr3c <- fluctuation_test(error.ets.f.h2.sq, error.ets.f.h2.b.sq, mu = 0.5)
+gr3c <- fluctuation_test(error.ets.f.h2.sq, error.ets.f.h2.b.sq, mu = 0.1)
 values.gr3c <- as.data.frame(gr3c$df)
 
-gr4c <- fluctuation_test(error.var.f.h2.sq, error.var.f.h2.b.sq, mu = 0.5)
+gr4c <- fluctuation_test(error.var.f.h2.sq, error.var.f.h2.b.sq, mu = 0.1)
 values.gr4c <- as.data.frame(gr4c$df)
 
-gr5c <- fluctuation_test(error.favar.f.h2.sq, error.favar.f.h2.b.sq, mu = 0.5)
+gr5c <- fluctuation_test(error.favar.f.h2.sq, error.favar.f.h2.b.sq, mu = 0.1)
 values.gr5c <- as.data.frame(gr5c$df)
 
 dm.1c <- full_join(values.gr1c, values.gr2c, by = "time")
@@ -5997,8 +5998,10 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   guides(colour = guide_legend(nrow = 1)) + 
   labs(title = "Fluctuation Test",
        subtitle = "Comparación pronósticos vs. 'bagging': esquema fijo dos pasos adelante",
-       caption = "Nota: valores negativos reflejan un mejor desempeño de la versión bagging. \
+       caption = "Nota: valores negativos reflejan un peor desempeño de la versión bagging.\
        Fuente: elaboración propia")
+
+ggsave(file="gr.f.h2.com.eps", width=6.5, height=4, dpi=300)
 
 # Fijo con h=7.
 
@@ -6006,21 +6009,21 @@ rm(gr1c, gr2c, gr3c, gr4c, gr5c, dm.1c,
    values.gr1c, values.gr2c, values.gr3c,
    values.gr4c, values.gr5c)
 
-gr1c <- fluctuation_test(error.arima.f.h7.sq, error.arima.f.h7.b.sq , mu = 0.5)
+gr1c <- fluctuation_test(error.arima.f.h7.sq, error.arima.f.h7.b.sq , mu = 0.1)
 values.gr1c <- as.data.frame(gr1c$df)
 band5 <- gr1c$CV[1]
 band6 <- gr1c$CV[2]
 
-gr2c <- fluctuation_test(error.arimax.f.h7.sq, error.arimax.f.h7.b.sq, mu = 0.5)
+gr2c <- fluctuation_test(error.arimax.f.h7.sq, error.arimax.f.h7.b.sq, mu = 0.1)
 values.gr2c <- as.data.frame(gr2c$df)
 
-gr3c <- fluctuation_test(error.ets.f.h7.sq, error.ets.f.h7.b.sq, mu = 0.5)
+gr3c <- fluctuation_test(error.ets.f.h7.sq, error.ets.f.h7.b.sq, mu = 0.1)
 values.gr3c <- as.data.frame(gr3c$df)
 
-gr4c <- fluctuation_test(error.var.f.h7.sq, error.var.f.h7.b.sq, mu = 0.5)
+gr4c <- fluctuation_test(error.var.f.h7.sq, error.var.f.h7.b.sq, mu = 0.1)
 values.gr4c <- as.data.frame(gr4c$df)
 
-gr5c <- fluctuation_test(error.favar.f.h7.sq, error.favar.f.h7.b.sq, mu = 0.5)
+gr5c <- fluctuation_test(error.favar.f.h7.sq, error.favar.f.h7.b.sq, mu = 0.1)
 values.gr5c <- as.data.frame(gr5c$df)
 
 dm.1c <- full_join(values.gr1c, values.gr2c, by = "time")
@@ -6037,7 +6040,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   theme_bw() + 
   geom_line(size = 1) +
   xlim(26,52) +
-  ylim(-5,5) + 
+  ylim(-5,6) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
   geom_hline(aes(yintercept = band5), size = 1, color = "black") +
@@ -6052,9 +6055,11 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
         legend.position="bottom") +
   guides(colour = guide_legend(nrow = 1)) + 
   labs(title = "Fluctuation Test",
-       subtitle = "Comparación pronósticos vs. 'bagging': esquema fijo siente pasos adelante",
-       caption = "Nota: valores negativos reflejan un mejor desempeño de la versión bagging. \
+       subtitle = "Comparación pronósticos vs. 'bagging': esquema fijo siete pasos adelante",
+       caption = "Nota: valores negativos reflejan un peor desempeño de la versión bagging.\
        Fuente: elaboración propia")
+
+ggsave(file="gr.f.h7.com.eps", width=6.5, height=4, dpi=300)
 
 # Rolling h = 1.
 
@@ -6062,21 +6067,21 @@ rm(gr1c, gr2c, gr3c, gr4c, gr5c, dm.1c,
    values.gr1c, values.gr2c, values.gr3c, 
    values.gr4c, values.gr5c)
 
-gr1c <- fluctuation_test(error.arima.rol.h1.sq, error.arima.rol.h1.b.sq , mu = 0.5)
+gr1c <- fluctuation_test(error.arima.rol.h1.sq, error.arima.rol.h1.b.sq , mu = 0.1)
 values.gr1c <- as.data.frame(gr1c$df)
 band5 <- gr1c$CV[1]
 band6 <- gr1c$CV[2]
 
-gr2c <- fluctuation_test(error.arimax.rol.h1.sq, error.arimax.rol.h1.b.sq, mu = 0.5)
+gr2c <- fluctuation_test(error.arimax.rol.h1.sq, error.arimax.rol.h1.b.sq, mu = 0.1)
 values.gr2c <- as.data.frame(gr2c$df)
 
-gr3c <- fluctuation_test(error.ets.rol.h1.sq, error.ets.rol.h1.b.sq, mu = 0.5)
+gr3c <- fluctuation_test(error.ets.rol.h1.sq, error.ets.rol.h1.b.sq, mu = 0.1)
 values.gr3c <- as.data.frame(gr3c$df)
 
-gr4c <- fluctuation_test(error.var.rol.h1.sq, error.var.rol.h1.b.sq, mu = 0.5)
+gr4c <- fluctuation_test(error.var.rol.h1.sq, error.var.rol.h1.b.sq, mu = 0.1)
 values.gr4c <- as.data.frame(gr4c$df)
 
-gr5c <- fluctuation_test(error.favar.rol.h1.sq, error.favar.rol.h1.b.sq, mu = 0.5)
+gr5c <- fluctuation_test(error.favar.rol.h1.sq, error.favar.rol.h1.b.sq, mu = 0.1)
 values.gr5c <- as.data.frame(gr5c$df)
 
 dm.1c <- full_join(values.gr1c, values.gr2c, by = "time")
@@ -6093,7 +6098,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   theme_bw() + 
   geom_line(size = 1) +
   xlim(29,57) +
-  ylim(-5,4) + 
+  ylim(-6,4) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
   geom_hline(aes(yintercept = band5), size = 1, color = "black") +
@@ -6108,9 +6113,12 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
         legend.position="bottom") +
   guides(colour = guide_legend(nrow = 1)) + 
   labs(title = "Fluctuation Test",
-       subtitle = "Comparación pronósticos vs. 'bagging': esquema fijo un paso adelante",
-       caption = "Nota: valores negativos reflejan un mejor desempeño de la versión bagging. \
+       subtitle = "Comparación pronósticos vs. 'bagging': esquema 'rolling' un paso adelante",
+       caption = "Nota: valores negativos reflejan un peor desempeño de la versión bagging.\
        Fuente: elaboración propia")
+
+ggsave(file="gr.rol.h1.com.eps", width=6.5, height=4, dpi=300)
+
 
 # Rolling h = 2.
 
@@ -6118,21 +6126,21 @@ rm(gr1c, gr2c, gr3c, gr4c, gr5c, dm.1c,
    values.gr1c, values.gr2c, values.gr3c,
    values.gr4c, values.gr5c)
 
-gr1c <- fluctuation_test(error.arima.f.h2.sq, error.arima.f.h2.b.sq , mu = 0.5)
+gr1c <- fluctuation_test(error.arima.f.h2.sq, error.arima.f.h2.b.sq , mu = 0.1)
 values.gr1c <- as.data.frame(gr1c$df)
 band5 <- gr1c$CV[1]
 band6 <- gr1c$CV[2]
 
-gr2c <- fluctuation_test(error.arimax.f.h2.sq, error.arimax.f.h2.b.sq, mu = 0.5)
+gr2c <- fluctuation_test(error.arimax.f.h2.sq, error.arimax.f.h2.b.sq, mu = 0.1)
 values.gr2c <- as.data.frame(gr2c$df)
 
-gr3c <- fluctuation_test(error.ets.f.h2.sq, error.ets.f.h2.b.sq, mu = 0.5)
+gr3c <- fluctuation_test(error.ets.f.h2.sq, error.ets.f.h2.b.sq, mu = 0.1)
 values.gr3c <- as.data.frame(gr3c$df)
 
-gr4c <- fluctuation_test(error.var.f.h2.sq, error.var.f.h2.b.sq, mu = 0.5)
+gr4c <- fluctuation_test(error.var.f.h2.sq, error.var.f.h2.b.sq, mu = 0.1)
 values.gr4c <- as.data.frame(gr4c$df)
 
-gr5c <- fluctuation_test(error.favar.f.h2.sq, error.favar.f.h2.b.sq, mu = 0.5)
+gr5c <- fluctuation_test(error.favar.f.h2.sq, error.favar.f.h2.b.sq, mu = 0.1)
 values.gr5c <- as.data.frame(gr5c$df)
 
 dm.1c <- full_join(values.gr1c, values.gr2c, by = "time")
@@ -6165,8 +6173,10 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   guides(colour = guide_legend(nrow = 1)) + 
   labs(title = "Fluctuation Test",
        subtitle = "Comparación pronósticos vs. 'bagging': esquema 'rolling' dos pasos adelante",
-       caption = "Nota: valores negativos reflejan un mejor desempeño de la versión bagging. \
+       caption = "Nota: valores negativos reflejan un peor desempeño de la versión bagging.\
        Fuente: elaboración propia")
+
+ggsave(file="gr.rol.h2.com.eps", width=6.5, height=4, dpi=300)
 
 # Rolling con h=7.
 
@@ -6174,21 +6184,21 @@ rm(gr1c, gr2c, gr3c, gr4c, gr5c, dm.1c,
    values.gr1c, values.gr2c, values.gr3c,
    values.gr4c, values.gr5c)
 
-gr1c <- fluctuation_test(error.arima.rol.h7.sq, error.arima.rol.h7.b.sq , mu = 0.5)
+gr1c <- fluctuation_test(error.arima.rol.h7.sq, error.arima.rol.h7.b.sq , mu = 0.1)
 values.gr1c <- as.data.frame(gr1c$df)
 band5 <- gr1c$CV[1]
 band6 <- gr1c$CV[2]
 
-gr2c <- fluctuation_test(error.arimax.rol.h7.sq, error.arimax.rol.h7.b.sq, mu = 0.5)
+gr2c <- fluctuation_test(error.arimax.rol.h7.sq, error.arimax.rol.h7.b.sq, mu = 0.1)
 values.gr2c <- as.data.frame(gr2c$df)
 
-gr3c <- fluctuation_test(error.ets.rol.h7.sq, error.ets.rol.h7.b.sq, mu = 0.5)
+gr3c <- fluctuation_test(error.ets.rol.h7.sq, error.ets.rol.h7.b.sq, mu = 0.1)
 values.gr3c <- as.data.frame(gr3c$df)
 
-gr4c <- fluctuation_test(error.var.rol.h7.sq, error.var.rol.h7.b.sq, mu = 0.5)
+gr4c <- fluctuation_test(error.var.rol.h7.sq, error.var.rol.h7.b.sq, mu = 0.1)
 values.gr4c <- as.data.frame(gr4c$df)
 
-gr5c <- fluctuation_test(error.favar.rol.h7.sq, error.favar.rol.h7.b.sq, mu = 0.5)
+gr5c <- fluctuation_test(error.favar.rol.h7.sq, error.favar.rol.h7.b.sq, mu = 0.1)
 values.gr5c <- as.data.frame(gr5c$df)
 
 dm.1c <- full_join(values.gr1c, values.gr2c, by = "time")
@@ -6205,7 +6215,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   theme_bw() + 
   geom_line(size = 1) +
   xlim(26,52) +
-  ylim(-5,4) + 
+  ylim(-5,5.5) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
   geom_hline(aes(yintercept = band5), size = 1, color = "black") +
@@ -6221,8 +6231,11 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   guides(colour = guide_legend(nrow = 1)) + 
   labs(title = "Fluctuation Test",
        subtitle = "Comparación pronósticos vs. 'bagging': esquema 'rolling' siete pasos adelante",
-       caption = "Nota: valores negativos reflejan un mejor desempeño de la versión bagging. \
+       caption = "Nota: valores negativos reflejan un peor desempeño de la versión bagging.\
        Fuente: elaboración propia")
+
+ggsave(file="gr.rol.h7.com.eps", width=6.5, height=4, dpi=300)
+
 
 # Recursivo h = 1.
 
@@ -6230,21 +6243,21 @@ rm(gr1c, gr2c, gr3c, gr4c, gr5c, dm.1c,
    values.gr1c, values.gr2c, values.gr3c, 
    values.gr4c, values.gr5c)
 
-gr1c <- fluctuation_test(error.arima.rec.h1.sq, error.arima.rec.h1.b.sq , mu = 0.5)
+gr1c <- fluctuation_test(error.arima.rec.h1.sq, error.arima.rec.h1.b.sq , mu = 0.1)
 values.gr1c <- as.data.frame(gr1c$df)
 band5 <- gr1c$CV[1]
 band6 <- gr1c$CV[2]
 
-gr2c <- fluctuation_test(error.arimax.rec.h1.sq, error.arimax.rec.h1.b.sq, mu = 0.5)
+gr2c <- fluctuation_test(error.arimax.rec.h1.sq, error.arimax.rec.h1.b.sq, mu = 0.1)
 values.gr2c <- as.data.frame(gr2c$df)
 
-gr3c <- fluctuation_test(error.ets.rec.h1.sq, error.ets.rec.h1.b.sq, mu = 0.5)
+gr3c <- fluctuation_test(error.ets.rec.h1.sq, error.ets.rec.h1.b.sq, mu = 0.1)
 values.gr3c <- as.data.frame(gr3c$df)
 
-gr4c <- fluctuation_test(error.var.rec.h1.sq, error.var.rec.h1.b.sq, mu = 0.5)
+gr4c <- fluctuation_test(error.var.rec.h1.sq, error.var.rec.h1.b.sq, mu = 0.1)
 values.gr4c <- as.data.frame(gr4c$df)
 
-gr5c <- fluctuation_test(error.favar.rol.h1.sq, error.favar.rec.h1.b.sq, mu = 0.5)
+gr5c <- fluctuation_test(error.favar.rol.h1.sq, error.favar.rec.h1.b.sq, mu = 0.1)
 values.gr5c <- as.data.frame(gr5c$df)
 
 dm.1c <- full_join(values.gr1c, values.gr2c, by = "time")
@@ -6261,7 +6274,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   theme_bw() + 
   geom_line(size = 1) +
   xlim(29,57) +
-  ylim(-5,4) + 
+  ylim(-6,4) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
   geom_hline(aes(yintercept = band5), size = 1, color = "black") +
@@ -6277,8 +6290,10 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   guides(colour = guide_legend(nrow = 1)) + 
   labs(title = "Fluctuation Test",
        subtitle = "Comparación pronósticos vs. 'bagging': esquema recursivo un paso adelante",
-       caption = "Nota: valores negativos reflejan un mejor desempeño de la versión bagging. \
+       caption = "Nota: valores negativos reflejan un peor desempeño de la versión bagging.\
        Fuente: elaboración propia")
+
+ggsave(file="gr.rec.h1.com.eps", width=6.5, height=4, dpi=300)
 
 # Recursivo h = 2.
 
@@ -6286,21 +6301,21 @@ rm(gr1c, gr2c, gr3c, gr4c, gr5c, dm.1c,
    values.gr1c, values.gr2c, values.gr3c,
    values.gr4c, values.gr5c)
 
-gr1c <- fluctuation_test(error.arima.rec.h2.sq, error.arima.rec.h2.b.sq , mu = 0.5)
+gr1c <- fluctuation_test(error.arima.rec.h2.sq, error.arima.rec.h2.b.sq , mu = 0.1)
 values.gr1c <- as.data.frame(gr1c$df)
 band5 <- gr1c$CV[1]
 band6 <- gr1c$CV[2]
 
-gr2c <- fluctuation_test(error.arimax.rec.h2.sq, error.arimax.rec.h2.b.sq, mu = 0.5)
+gr2c <- fluctuation_test(error.arimax.rec.h2.sq, error.arimax.rec.h2.b.sq, mu = 0.1)
 values.gr2c <- as.data.frame(gr2c$df)
 
-gr3c <- fluctuation_test(error.ets.rec.h2.sq, error.ets.rec.h2.b.sq, mu = 0.5)
+gr3c <- fluctuation_test(error.ets.rec.h2.sq, error.ets.rec.h2.b.sq, mu = 0.1)
 values.gr3c <- as.data.frame(gr3c$df)
 
-gr4c <- fluctuation_test(error.var.rec.h2.sq, error.var.rec.h2.b.sq, mu = 0.5)
+gr4c <- fluctuation_test(error.var.rec.h2.sq, error.var.rec.h2.b.sq, mu = 0.1)
 values.gr4c <- as.data.frame(gr4c$df)
 
-gr5c <- fluctuation_test(error.favar.rec.h2.sq, error.favar.rec.h2.b.sq, mu = 0.5)
+gr5c <- fluctuation_test(error.favar.rec.h2.sq, error.favar.rec.h2.b.sq, mu = 0.1)
 values.gr5c <- as.data.frame(gr5c$df)
 
 dm.1c <- full_join(values.gr1c, values.gr2c, by = "time")
@@ -6333,9 +6348,10 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   guides(colour = guide_legend(nrow = 1)) + 
   labs(title = "Fluctuation Test",
        subtitle = "Comparación pronósticos vs. 'bagging': esquema recursivo dos pasos adelante",
-       caption = "Nota: valores negativos reflejan un mejor desempeño de la versión bagging. \
+       caption = "Nota: valores negativos reflejan un peor desempeño de la versión bagging.\
        Fuente: elaboración propia")
 
+ggsave(file="gr.rec.h2.com.eps", width=6.5, height=4, dpi=300)
 
 # Recursivo con h=7
 
@@ -6343,21 +6359,21 @@ rm(gr1c, gr2c, gr3c, gr4c, gr5c, dm.1c,
    values.gr1c, values.gr2c, values.gr3c,
    values.gr4c, values.gr5c)
 
-gr1c <- fluctuation_test(error.arima.rec.h7.sq, error.arima.rec.h7.b.sq , mu = 0.5)
+gr1c <- fluctuation_test(error.arima.rec.h7.sq, error.arima.rec.h7.b.sq , mu = 0.1)
 values.gr1c <- as.data.frame(gr1c$df)
 band5 <- gr1c$CV[1]
 band6 <- gr1c$CV[2]
 
-gr2c <- fluctuation_test(error.arimax.rec.h7.sq, error.arimax.rec.h7.b.sq, mu = 0.5)
+gr2c <- fluctuation_test(error.arimax.rec.h7.sq, error.arimax.rec.h7.b.sq, mu = 0.1)
 values.gr2c <- as.data.frame(gr2c$df)
 
-gr3c <- fluctuation_test(error.ets.rec.h7.sq, error.ets.rec.h7.b.sq, mu = 0.5)
+gr3c <- fluctuation_test(error.ets.rec.h7.sq, error.ets.rec.h7.b.sq, mu = 0.1)
 values.gr3c <- as.data.frame(gr3c$df)
 
-gr4c <- fluctuation_test(error.var.rec.h7.sq, error.var.rec.h7.b.sq, mu = 0.5)
+gr4c <- fluctuation_test(error.var.rec.h7.sq, error.var.rec.h7.b.sq, mu = 0.1)
 values.gr4c <- as.data.frame(gr4c$df)
 
-gr5c <- fluctuation_test(error.favar.rec.h7.sq, error.favar.rec.h7.b.sq, mu = 0.5)
+gr5c <- fluctuation_test(error.favar.rec.h7.sq, error.favar.rec.h7.b.sq, mu = 0.1)
 values.gr5c <- as.data.frame(gr5c$df)
 
 dm.1c <- full_join(values.gr1c, values.gr2c, by = "time")
@@ -6374,7 +6390,7 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   theme_bw() + 
   geom_line(size = 1) +
   xlim(26,52) +
-  ylim(-5,4) + 
+  ylim(-5,5.5) + 
   geom_hline(aes(yintercept = 0), size = 1, color = "black",
              linetype = "dashed") + 
   geom_hline(aes(yintercept = band5), size = 1, color = "black") +
@@ -6390,8 +6406,9 @@ ggplot(aes(x = time , y = value, group = variable, color = variable),
   guides(colour = guide_legend(nrow = 1)) + 
   labs(title = "Fluctuation Test",
        subtitle = "Comparación pronósticos vs. 'bagging': esquema recursivo siete pasos adelante",
-       caption = "Nota: valores negativos reflejan un mejor desempeño de la versión bagging. \
+       caption = "Nota: valores negativos reflejan un peor desempeño de la versión bagging.\
        Fuente: elaboración propia")
 
+ggsave(file="gr.rec.h7.com.eps", width=6.5, height=4, dpi=300)
 
 rm(list = ls())
