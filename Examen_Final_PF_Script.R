@@ -2842,6 +2842,9 @@ for(i in 1:57){
   print(paste("VAMOS:", i, "PERIODOS"))
 }
 
+
+write.csv(pr.rol.h2.b, "pr.rol.h2.b.csv", row.names = FALSE)
+
 # Importamos.
 
 pr.rol.h2.b <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/forecasts/pr.rol.h2.b.csv")
@@ -2963,6 +2966,9 @@ for(i in 1:52){
   pr.rol.h7.b[i,5] <- mean(pr.var)
   print(paste("VAMOS:", i, "PERIODOS"))
 }
+
+
+write.csv(pr.rol.h7.b, "pr.rol.h7.b.csv", row.names = FALSE)
 
 # Importamos.
 
