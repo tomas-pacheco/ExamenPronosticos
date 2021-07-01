@@ -61,7 +61,7 @@ data$muertes.arg.rel <- data$muertosarg/data$muertesmundo
 
 # Ponemos cero donde hay NA (porque no había pandemia).
 
-data$muertes.arg.rel<-ifelse(is.na(data$muertes.arg.rel),0,data$muertes.arg.rel)
+data$muertes.arg.rel <-ifelse(is.na(data$muertes.arg.rel),0,data$muertes.arg.rel)
 
 # Los casos en Argentina respecto de los casos en el resto del mundo.
 
