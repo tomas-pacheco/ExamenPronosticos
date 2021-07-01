@@ -40,7 +40,16 @@ options(scipen=999)
 
 # Abrimos la base de datos.
 
+# Forma 1. Con la base ubicada en el directorio.
+
 data <- read.csv("Datos_ExamenFinal_PF_Kleiman_Pacheco_Riquelme.csv")
+
+# Forma 2. Bajandola del repositorio de Github.
+
+data <- read.csv("https://raw.githubusercontent.com/tomas-pacheco/ExamenPronosticos/main/Datos_ExamenFinal_PF_Kleiman_Pacheco_Riquelme.csv")
+
+# Le damos el formato deseado.
+
 data <- data[,-1]
 rownames(data) <- data$time
 
